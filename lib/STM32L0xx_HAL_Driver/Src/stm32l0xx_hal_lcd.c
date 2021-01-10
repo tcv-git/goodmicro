@@ -369,9 +369,9 @@ HAL_StatusTypeDef HAL_LCD_Init(LCD_HandleTypeDef *hlcd)
   * @param  Data specifies LCD Data Value to be written.
   * @note   For LCD glass COM*SEG as 8*40 for example, the LCD common terminals COM[0,7]
   *         are mapped on 32bits LCD_RAM_REGISTER[0,14] according to rules: COM(n) spread
-  *  	    on LCD_RAM_REGISTER(2*n) and  LCD_RAM_REGISTER(2*n+1).The segment terminals
-  *		    SEG[0,39] of COM(n) correspond to LSB bits of related LCD_RAM_REGISTER(2*n)[0,31]
-  *		    and LCD_RAM_REGISTER(2*n+1)[0,7]
+  *         on LCD_RAM_REGISTER(2*n) and  LCD_RAM_REGISTER(2*n+1).The segment terminals
+  *         SEG[0,39] of COM(n) correspond to LSB bits of related LCD_RAM_REGISTER(2*n)[0,31]
+  *         and LCD_RAM_REGISTER(2*n+1)[0,7]
   * @retval None
   */
 HAL_StatusTypeDef HAL_LCD_Write(LCD_HandleTypeDef *hlcd, uint32_t RAMRegisterIndex, uint32_t RAMRegisterMask, uint32_t Data)

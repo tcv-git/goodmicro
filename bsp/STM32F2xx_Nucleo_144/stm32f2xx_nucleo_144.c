@@ -386,7 +386,7 @@ static void SPIx_Init(void)
             on write baudrate is considered.
           - SD card SPI interface max baudrate is 25MHz for write/read
        to feat these constraints SPI baudrate is set to:
-	      - For STM32F207xx devices: 10,5 MHz maximum (PCLK2/SPI_BAUDRATEPRESCALER_8 = 84 MHz/8 = 10,5 MHz)
+          - For STM32F207xx devices: 10,5 MHz maximum (PCLK2/SPI_BAUDRATEPRESCALER_8 = 84 MHz/8 = 10,5 MHz)
     */
     hnucleo_Spi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
     hnucleo_Spi.Init.Direction = SPI_DIRECTION_2LINES;

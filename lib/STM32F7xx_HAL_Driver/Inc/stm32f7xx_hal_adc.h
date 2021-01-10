@@ -781,7 +781,7 @@ uint32_t HAL_ADC_GetError(ADC_HandleTypeDef *hadc);
                                       ((__REGTRIG__) == ADC_EXTERNALTRIGCONV_T4_TRGO)  || \
                                       ((__REGTRIG__) == ADC_EXTERNALTRIGCONV_T6_TRGO)  || \
                                       ((__REGTRIG__) == ADC_EXTERNALTRIGCONV_EXT_IT11) || \
-																			((__REGTRIG__) == ADC_SOFTWARE_START))
+                                      ((__REGTRIG__) == ADC_SOFTWARE_START))
 #define IS_ADC_DATA_ALIGN(__ALIGN__) (((__ALIGN__) == ADC_DATAALIGN_RIGHT) || \
                                       ((__ALIGN__) == ADC_DATAALIGN_LEFT))
 

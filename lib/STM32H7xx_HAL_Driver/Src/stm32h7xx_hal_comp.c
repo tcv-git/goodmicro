@@ -297,7 +297,7 @@ HAL_StatusTypeDef HAL_COMP_Init(COMP_HandleTypeDef *hcomp)
       /* Allocate lock resource and initialize it */
       hcomp->Lock = HAL_UNLOCKED;
 
-	  /* Set COMP error code to none */
+      /* Set COMP error code to none */
       COMP_CLEAR_ERRORCODE(hcomp);
 
 #if (USE_HAL_COMP_REGISTER_CALLBACKS == 1)
@@ -312,7 +312,7 @@ HAL_StatusTypeDef HAL_COMP_Init(COMP_HandleTypeDef *hcomp)
       /* Init the low level hardware */
       hcomp->MspInitCallback(hcomp);
 #else
-	 /* Init the low level hardware */
+     /* Init the low level hardware */
       HAL_COMP_MspInit(hcomp);
 #endif /* USE_HAL_COMP_REGISTER_CALLBACKS */
     }

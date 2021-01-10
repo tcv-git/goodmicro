@@ -41,7 +41,7 @@
    - This driver is used to drive directly an LCD TFT using LTDC controller.
    - This driver select dynamically the mounted LCD, ILI9341 240x320 LCD mounted
      on MB1075B discovery board, and use the adequate timing and setting for
-	 the specified LCD using device ID of the ILI9341 mounted on MB1075B discovery board
+     the specified LCD using device ID of the ILI9341 mounted on MB1075B discovery board
 
 2. Driver description:
 ---------------------

@@ -2890,7 +2890,7 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
     {
       HAL_SPI_TxCpltCallback(hspi);
     }
-	else
+    else
     {
       /* end of the appropriate call */
     }

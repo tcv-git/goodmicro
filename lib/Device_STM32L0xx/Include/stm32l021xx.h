@@ -4911,7 +4911,7 @@ typedef struct
 /*
 * @brief Specific device feature definitions (not present on all devices in the STM32L0 family)
 */
-#define TIM_TIM2_REMAP_HSI_SUPPORT	     /*!<Support remap HSI on TIM2 */
+#define TIM_TIM2_REMAP_HSI_SUPPORT       /*!<Support remap HSI on TIM2 */
 
 /*******************  Bit definition for TIM_CR1 register  ********************/
 #define TIM_CR1_CEN_Pos           (0U)

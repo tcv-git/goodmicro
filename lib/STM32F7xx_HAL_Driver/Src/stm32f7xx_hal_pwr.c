@@ -126,7 +126,7 @@ void HAL_PWR_EnableBkUpAccess(void)
 void HAL_PWR_DisableBkUpAccess(void)
 {
   /* Disable access to RTC and backup registers */
-	CLEAR_BIT(PWR->CR1, PWR_CR1_DBP);
+  CLEAR_BIT(PWR->CR1, PWR_CR1_DBP);
 }
 
 /**
@@ -303,7 +303,7 @@ void HAL_PWR_ConfigPVD(PWR_PVDTypeDef *sConfigPVD)
 void HAL_PWR_EnablePVD(void)
 {
   /* Enable the power voltage detector */
-	SET_BIT(PWR->CR1, PWR_CR1_PVDE);
+  SET_BIT(PWR->CR1, PWR_CR1_PVDE);
 }
 
 /**
@@ -313,7 +313,7 @@ void HAL_PWR_EnablePVD(void)
 void HAL_PWR_DisablePVD(void)
 {
   /* Disable the power voltage detector */
-	CLEAR_BIT(PWR->CR1, PWR_CR1_PVDE);
+  CLEAR_BIT(PWR->CR1, PWR_CR1_PVDE);
 }
 
 /**

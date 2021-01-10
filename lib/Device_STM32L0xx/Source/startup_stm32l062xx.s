@@ -156,8 +156,8 @@ g_pfnVectors:
   .word     TIM2_IRQHandler                   /* TIM2                         */
   .word     0                                 /* Reserved                     */
   .word     TIM6_DAC_IRQHandler               /* TIM6 and DAC                 */
-  .word     0               				          /* Reserved                     */
-  .word     0              					          /* Reserved                     */
+  .word     0                                 /* Reserved                     */
+  .word     0                                 /* Reserved                     */
   .word     TIM21_IRQHandler                  /* TIM21                        */
   .word     0                                 /* Reserved                     */
   .word     TIM22_IRQHandler                  /* TIM22                        */

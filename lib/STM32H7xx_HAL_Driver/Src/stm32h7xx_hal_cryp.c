@@ -4240,8 +4240,8 @@ static void CRYP_GCMCCM_SetPayloadPhase_IT(CRYP_HandleTypeDef *hcryp)
   }
   else if ((hcryp->Size % 16U) != 0U)
   {
-	/* Set padding only in case of input fifo interrupt */
-	if ((hcryp->Instance->IMSCR & CRYP_IMSCR_INIM)!= 0x0U)
+    /* Set padding only in case of input fifo interrupt */
+    if ((hcryp->Instance->IMSCR & CRYP_IMSCR_INIM)!= 0x0U)
  {
     /* Compute the number of padding bytes in last block of payload */
     npblb = ((((uint32_t)hcryp->Size / 16U) + 1U) * 16U) - (uint32_t)(hcryp->Size);
@@ -4292,7 +4292,7 @@ static void CRYP_GCMCCM_SetPayloadPhase_IT(CRYP_HandleTypeDef *hcryp)
 
     /* Disable the input FIFO Interrupt */
     __HAL_CRYP_DISABLE_IT(hcryp, CRYP_IT_INI);
-	}
+    }
 
     /*Read the output block from the output FIFO */
     if ((hcryp->Instance->SR & CRYP_FLAG_OFNE) != 0x0U)

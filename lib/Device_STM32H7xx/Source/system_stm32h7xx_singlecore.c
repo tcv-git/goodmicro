@@ -156,7 +156,7 @@ void SystemInit (void)
   if(FLASH_LATENCY_DEFAULT  > (READ_BIT((FLASH->ACR), FLASH_ACR_LATENCY)))
   {
     /* Program the new number of wait states to the LATENCY bits in the FLASH_ACR register */
-	MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, (uint32_t)(FLASH_LATENCY_DEFAULT));
+    MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, (uint32_t)(FLASH_LATENCY_DEFAULT));
   }
 
   /* Set HSION bit */
@@ -172,7 +172,7 @@ void SystemInit (void)
   if(FLASH_LATENCY_DEFAULT  < (READ_BIT((FLASH->ACR), FLASH_ACR_LATENCY)))
   {
     /* Program the new number of wait states to the LATENCY bits in the FLASH_ACR register */
-	MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, (uint32_t)(FLASH_LATENCY_DEFAULT));
+    MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, (uint32_t)(FLASH_LATENCY_DEFAULT));
   }
 
 #if defined(D3_SRAM_BASE)

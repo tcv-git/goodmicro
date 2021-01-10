@@ -842,7 +842,7 @@ __weak void HAL_CEC_RxCpltCallback(CEC_HandleTypeDef *hcec, uint32_t RxFrameSize
     [..]
     This subsection provides a set of functions allowing to control the CEC.
      (+) HAL_CEC_GetState() API can be helpful to check in run-time the state of the CEC peripheral.
-	 (+) HAL_CEC_GetError() API can be helpful to check in run-time the error of the CEC peripheral.
+     (+) HAL_CEC_GetError() API can be helpful to check in run-time the error of the CEC peripheral.
 @endverbatim
   * @{
   */

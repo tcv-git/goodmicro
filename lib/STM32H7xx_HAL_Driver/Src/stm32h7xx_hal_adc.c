@@ -26,7 +26,7 @@
   [..]
   (+) 16-bit, 14-bit, 12-bit, 10-bit or 8-bit configurable resolution.
        Note: On devices STM32H72xx and STM32H73xx, these resolution are applicable to instances ADC1 and ADC2.
-	   ADC3 is featuring resolutions 12-bit, 10-bit, 8-bit, 6-bit.
+       ADC3 is featuring resolutions 12-bit, 10-bit, 8-bit, 6-bit.
 
   (+) Interrupt generation at the end of regular conversion and in case of
       analog watchdog or overrun events.

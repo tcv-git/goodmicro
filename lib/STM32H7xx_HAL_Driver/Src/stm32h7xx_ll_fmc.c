@@ -16,7 +16,7 @@
   ==============================================================================
   [..] The Flexible memory controller (FMC) includes following memory controllers:
        (+) The NOR/PSRAM memory controller
-	   (+) The NAND memory controller
+       (+) The NAND memory controller
        (+) The Synchronous DRAM (SDRAM) controller
 
   [..] The FMC functional block makes the interface with synchronous and asynchronous static

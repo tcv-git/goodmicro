@@ -167,14 +167,14 @@ typedef struct
 #define __HAL_RCC_ETHMACPTP_IS_CLK_ENABLED() ((RCC->AHB1ENR &(RCC_AHB1ENR_ETHMACPTPEN))!= RESET)
 #define __HAL_RCC_ETH_IS_CLK_ENABLED()        (__HAL_RCC_ETHMAC_IS_CLK_ENABLED()   && \
                                                __HAL_RCC_ETHMACTX_IS_CLK_ENABLED() && \
-	                                       __HAL_RCC_ETHMACRX_IS_CLK_ENABLED())
+                                               __HAL_RCC_ETHMACRX_IS_CLK_ENABLED())
 #define __HAL_RCC_ETHMAC_IS_CLK_DISABLED()    ((RCC->AHB1ENR &(RCC_AHB1ENR_ETHMACEN))== RESET)
 #define __HAL_RCC_ETHMACTX_IS_CLK_DISABLED()  ((RCC->AHB1ENR &(RCC_AHB1ENR_ETHMACTXEN))== RESET)
 #define __HAL_RCC_ETHMACRX_IS_CLK_DISABLED()  ((RCC->AHB1ENR &(RCC_AHB1ENR_ETHMACRXEN))== RESET)
 #define __HAL_RCC_ETHMACPTP_IS_CLK_DISABLED() ((RCC->AHB1ENR &(RCC_AHB1ENR_ETHMACPTPEN))== RESET)
 #define __HAL_RCC_ETH_IS_CLK_DISABLED()        (__HAL_RCC_ETHMAC_IS_CLK_DISABLED()   && \
                                                 __HAL_RCC_ETHMACTX_IS_CLK_DISABLED() && \
-	                                        __HAL_RCC_ETHMACRX_IS_CLK_DISABLED())
+                                                __HAL_RCC_ETHMACRX_IS_CLK_DISABLED())
 /**
   * @}
   */

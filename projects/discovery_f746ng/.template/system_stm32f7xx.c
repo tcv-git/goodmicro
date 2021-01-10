@@ -351,7 +351,7 @@ void SystemInit_ExtMemCtl(void)
   /* Enable the FMC interface clock */
   RCC->AHB3ENR |= 0x00000001;
 
-	/* Configure and enable SDRAM bank1 */
+  /* Configure and enable SDRAM bank1 */
   FMC_Bank5_6->SDCR[0]  = 0x00001954;
   FMC_Bank5_6->SDTR[0]  = 0x01115351;
 

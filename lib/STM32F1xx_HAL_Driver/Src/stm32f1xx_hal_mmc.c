@@ -1305,7 +1305,7 @@ HAL_StatusTypeDef HAL_MMC_WriteBlocks_DMA(MMC_HandleTypeDef *hmmc, uint8_t *pDat
     hmmc->Instance->DCTRL = 0U;
 
     /* Enable MMC Error interrupts */
-	__HAL_MMC_ENABLE_IT(hmmc, (SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_STBITERR));
+    __HAL_MMC_ENABLE_IT(hmmc, (SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_STBITERR));
 
     /* Set the DMA transfer complete callback */
     hmmc->hdmatx->XferCpltCallback = MMC_DMATransmitCplt;

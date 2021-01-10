@@ -64,7 +64,7 @@
          (++) In polling mode, the output of the function is done when the transfer is complete.
          (++) In interrupt mode, HAL_QSPI_FifoThresholdCallback() will be called when the fifo threshold
              is reached and HAL_QSPI_RxCpltCallback() will be called when the transfer is complete.
-	     (++) In DMA mode,HAL_QSPI_RxCpltCallback() will be called when the transfer is complete.
+         (++) In DMA mode,HAL_QSPI_RxCpltCallback() will be called when the transfer is complete.
 
     *** Auto-polling functional mode ***
     ====================================

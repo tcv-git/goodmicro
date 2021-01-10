@@ -98,7 +98,7 @@ typedef enum
   */
 
 /**
-* @brief	Define for STM32F0XX_NUCLEO board
+* @brief  Define for STM32F0XX_NUCLEO board
   */
 #if !defined (USE_STM32F0XX_NUCLEO)
  #define USE_STM32F0XX_NUCLEO

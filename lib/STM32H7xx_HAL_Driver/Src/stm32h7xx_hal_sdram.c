@@ -724,7 +724,7 @@ HAL_StatusTypeDef HAL_SDRAM_Read_DMA(SDRAM_HandleTypeDef *hsdram, uint32_t *pAdd
     }
     hsdram->hmdma->XferErrorCallback = SDRAM_DMAError;
 
-	/* Enable the DMA Stream */
+    /* Enable the DMA Stream */
     status = HAL_MDMA_Start_IT(hsdram->hmdma, (uint32_t)pAddress, (uint32_t)pDstBuffer, (uint32_t)(BufferSize * 4U), 1);
 
     /* Process Unlocked */
@@ -768,7 +768,7 @@ HAL_StatusTypeDef HAL_SDRAM_Write_DMA(SDRAM_HandleTypeDef *hsdram, uint32_t *pAd
     hsdram->hmdma->XferCpltCallback = SDRAM_DMACplt;
     hsdram->hmdma->XferErrorCallback = SDRAM_DMAError;
 
-	/* Enable the DMA Stream */
+    /* Enable the DMA Stream */
   status = HAL_MDMA_Start_IT(hsdram->hmdma, (uint32_t)pSrcBuffer, (uint32_t)pAddress, (uint32_t)(BufferSize * 4U), 1);
 
     /* Process Unlocked */

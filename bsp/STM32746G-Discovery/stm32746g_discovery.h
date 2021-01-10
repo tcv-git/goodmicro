@@ -148,7 +148,7 @@ typedef enum
 
 #define BUTTONx_GPIO_CLK_ENABLE(__INDEX__)    do { if((__INDEX__) == 0) WAKEUP_BUTTON_GPIO_CLK_ENABLE(); else\
                                                    if((__INDEX__) == 1) TAMPER_BUTTON_GPIO_CLK_ENABLE(); else\
-												                        KEY_BUTTON_GPIO_CLK_ENABLE(); } while(0)
+                                                                        KEY_BUTTON_GPIO_CLK_ENABLE(); } while(0)
 
 #define BUTTONx_GPIO_CLK_DISABLE(__INDEX__)    (((__INDEX__) == 0) ? WAKEUP_BUTTON_GPIO_CLK_DISABLE() :\
                                                 ((__INDEX__) == 1) ? TAMPER_BUTTON_GPIO_CLK_DISABLE() : KEY_BUTTON_GPIO_CLK_DISABLE())

@@ -825,7 +825,7 @@ uint8_t BSP_AUDIO_IN_PDMToPCM(uint16_t *PDMBuf, uint16_t *PCMBuf)
   for(index = 0; index < DEFAULT_AUDIO_IN_CHANNEL_NBR; index++)
   {
     /* PDM to PCM filter */
-	PDM_Filter((uint8_t*)&AppPDM[index], (uint16_t*)&(PCMBuf[index]), &PDM_FilterHandler[index]);
+    PDM_Filter((uint8_t*)&AppPDM[index], (uint16_t*)&(PCMBuf[index]), &PDM_FilterHandler[index]);
   }
   /* Duplicate samples since a single microphone in mounted on STM32F4-Discovery */
   for(index = 0; index < PCM_OUT_SIZE; index++)

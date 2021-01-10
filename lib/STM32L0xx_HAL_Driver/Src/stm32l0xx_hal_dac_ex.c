@@ -433,7 +433,7 @@ HAL_StatusTypeDef HAL_DAC_Start_DMA(DAC_HandleTypeDef* hdac, uint32_t Channel, u
       default:
         break;
     }
-    UNUSED(tmpreg);		/* avoid warning on tmpreg affectation with stupid compiler */
+    UNUSED(tmpreg);   /* avoid warning on tmpreg affectation with stupid compiler */
   }
   else
   {
@@ -776,7 +776,7 @@ HAL_StatusTypeDef HAL_DAC_Start_DMA(DAC_HandleTypeDef* hdac, uint32_t Channel, u
     default:
       break;
   }
-  UNUSED(tmpreg);		/* avoid warning on tmpreg affectation with stupid compiler */
+  UNUSED(tmpreg);   /* avoid warning on tmpreg affectation with stupid compiler */
 
   /* Enable the DMA Stream */
   /* Enable the DAC DMA underrun interrupt */

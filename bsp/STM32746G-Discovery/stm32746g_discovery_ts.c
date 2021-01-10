@@ -302,7 +302,7 @@ uint8_t BSP_TS_GetState(TS_StateTypeDef *TS_State)
       /* Remap touch event */
       switch(event)
       {
-        case FT5336_TOUCH_EVT_FLAG_PRESS_DOWN	:
+        case FT5336_TOUCH_EVT_FLAG_PRESS_DOWN :
           TS_State->touchEventId[index] = TOUCH_EVENT_PRESS_DOWN;
           break;
         case FT5336_TOUCH_EVT_FLAG_LIFT_UP :

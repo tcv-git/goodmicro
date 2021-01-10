@@ -886,7 +886,7 @@ HAL_StatusTypeDef HAL_NAND_Write_Page_8b(NAND_HandleTypeDef *hnand, NAND_Address
     *(__IO uint8_t *)((uint32_t)(deviceAddress | CMD_AREA)) = NAND_CMD_WRITE_TRUE1;
     __DSB();
 
-	/* Get tick */
+    /* Get tick */
     tickstart = HAL_GetTick();
 
     /* Read status until NAND is ready */
@@ -1024,7 +1024,7 @@ HAL_StatusTypeDef HAL_NAND_Write_Page_16b(NAND_HandleTypeDef *hnand, NAND_Addres
     *(__IO uint8_t *)((uint32_t)(deviceAddress | CMD_AREA)) = NAND_CMD_WRITE_TRUE1;
     __DSB();
 
-	/* Get tick */
+    /* Get tick */
     tickstart = HAL_GetTick();
 
     /* Read status until NAND is ready */

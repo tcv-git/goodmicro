@@ -246,7 +246,7 @@ void BSP_LED_On(Led_TypeDef Led)
 {
   GPIO_TypeDef*     gpio_led;
 
-  if (Led == LED1)	/* Switch On LED connected to GPIO */
+  if (Led == LED1)  /* Switch On LED connected to GPIO */
   {
     gpio_led = LED1_GPIO_PORT;
     HAL_GPIO_WritePin(gpio_led, GPIO_PIN[Led], GPIO_PIN_SET);
@@ -282,7 +282,7 @@ void BSP_LED_Toggle(Led_TypeDef Led)
 {
   GPIO_TypeDef*     gpio_led;
 
-  if (Led == LED1)	/* Toggle LED connected to GPIO */
+  if (Led == LED1)  /* Toggle LED connected to GPIO */
   {
     gpio_led = LED1_GPIO_PORT;
     HAL_GPIO_TogglePin(gpio_led, GPIO_PIN[Led]);

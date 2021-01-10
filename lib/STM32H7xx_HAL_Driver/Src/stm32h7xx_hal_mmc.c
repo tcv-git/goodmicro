@@ -3083,8 +3083,8 @@ HAL_StatusTypeDef MMC_ReadExtCSD(MMC_HandleTypeDef *hmmc, uint32_t *pFieldData, 
       for(count = 0U; count < 8U; count++)
       {
         tmp_data = SDMMC_ReadFIFO(hmmc->Instance);
-		/* eg : SEC_COUNT   : FieldIndex = 212 => i+count = 53 */
-		/*      DEVICE_TYPE : FieldIndex = 196 => i+count = 49 */
+        /* eg : SEC_COUNT   : FieldIndex = 212 => i+count = 53 */
+        /*      DEVICE_TYPE : FieldIndex = 196 => i+count = 49 */
         if ((i + count) == ((uint32_t)FieldIndex/4U))
         {
           *pFieldData = tmp_data;
