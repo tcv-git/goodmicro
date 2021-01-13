@@ -1,0 +1,124 @@
+system_stm32f405-439.txt
+PUBLIC DOMAIN
+http:///www.purposeful.co.uk/software/goodmicro
+
+
+  I, Tom Vajzovic, am the author of this software and its documentation.
+  I permanently abandon all copyright and other intellectual property rights
+  in them.
+
+  I am fairly certain that the software does what the documentation says it
+  does, but I do not guarantee that it does, or that it does what you think it
+  should.  I do not guarantee that it will not have undesirable side effects.
+
+  If you use, modify or distribute this software then you do so at your own
+  risk.  If you do not pass on this warning then you may be responsible for any
+  problems encountered by those who obtain the software through you.
+
+
+Define USE_CLOCK_CONFIG to #include "clock_config.h"
+
+Define one of STM32F405xx STM32F407xx STM32F415xx STM32F417xx STM32F427xx STM32F429xx STM32F437xx STM32F439xx.
+
+Define any or none of the following macros.  Any invalid or incompatible values
+will produce an error.  Those that are undefined will take the default value
+given below.
+
+VDD_mV (note case): supply voltage in mV, if not defined will assume all voltage dependant features are available
+
+PWR_CR_VOS_Value on stm32f40x: one of PWR_CR_VOS_SCALE3 PWR_CR_VOS_SCALE2 PWR_CR_VOS_SCALE1 default PWR_CR_VOS_SCALE1
+PWR_CR_VOS_Value on stm32f42x: one of PWR_CR_VOS_SCALE2 PWR_CR_VOS_SCALE1 default PWR_CR_VOS_SCALE1
+
+PWR_CR_ODEN_Value on stm32f40x: must be undefined
+PWR_CR_ODEN_Value on stm32f42x: one of PWR_CR_ODEN_DISABLE PWR_CR_ODEN_ENABLE default PWR_CR_ODEN_ENABLE
+
+SYSCFG_CMPCR_CMP_PD_Value one of SYSCFG_CMPCR_CMP_PD_DISABLE SYSCFG_CMPCR_CMP_PD_ENABLE default SYSCFG_CMPCR_CMP_PD_ENABLE if supply voltage allows
+
+RCC_CR_HSEBYP_Value one of RCC_CR_HSEBYP_DISABLE RCC_CR_HSEBYP_ENABLE default RCC_CR_HSEBYP_DISABLE
+
+HSE_VALUE (if bypass disabled): 4000000 to 26000000 or may be undefined, default undefined
+HSE_VALUE (if bypass enabled):  1000000 to 50000000 or may be undefined, default undefined
+
+HSION 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0
+HSEON 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0; must be 0 if HSE_VALUE is undefined
+PLLON 0 or 1 default 1 if required for system clock or MCO output, else 0
+
+SYSCLK may be defined or it will be calculated
+
+RCC_CFGR_SW_Value one of RCC_CFGR_SW_HSE RCC_CFGR_SW_HSI RCC_CFGR_SW_PLL default RCC_CFGR_SW_PLL unless PLLON is 0
+
+RCC_PLLCFGR_PLLSRC_Value one of RCC_PLLCFGR_PLLSRC_HSE RCC_PLLCFGR_PLLSRC_HSI default RCC_PLLCFGR_PLLSRC_HSE if HSE_VALUE is defined
+
+PLL_M  [2:63]    default will be calculated
+PLL_N  [50:432]  default will be calculated
+PLL_P  2,4,6,8   default will be calculated
+PLL_Q  [2:15]    default will be calculated
+
+SSCGEN     0 or 1     default 0
+SPREADSEL  0 or 1     default 0 if SSCGEN is 0, must be defined if SSCGEN is 1
+INCSTEP    [0:32767]  default 0 if SSCGEN is 0, must be defined if SSCGEN is 1
+MODPER     [0:8191]   default 0 if SSCGEN is 0, must be defined if SSCGEN is 1
+
+PLLI2SON   on stm32f40x: 0 or 1    default 0
+PLLI2S_N   on stm32f40x: [50:432]  must be defined if PLLI2SON is 1
+PLLI2S_R   on stm32f40x: [2:7]     must be defined if PLLI2SON is 1
+PLLI2S_Q   on stm32f40x:           must be undefined
+PLLI2SDIVQ on stm32f40x:           must be undefined
+PLLSAION   on stm32f40x:           must be undefined
+PLLSAI_N   on stm32f40x:           must be undefined
+PLLSAI_R   on stm32f40x:           must be undefined
+PLLSAI_Q   on stm32f40x:           must be undefined
+PLLSAIDIVQ on stm32f40x:           must be undefined
+PLLSAIDIVR on stm32f40x:           must be undefined
+
+PLLI2SON   on stm32f42x: 0 or 1    default 0
+PLLI2S_N   on stm32f42x: [50:432]  must be defined if PLLI2SON is 1
+PLLI2S_R   on stm32f42x: [2:7]     must be defined if PLLI2SON is 1
+PLLI2S_Q   on stm32f42x: [2:15]    must be defined if PLLI2SON is 1
+PLLI2SDIVQ on stm32f42x: [1:32]    must be defined if PLLI2SON is 1
+PLLSAION   on stm32f42x: 0 or 1    default 0
+PLLSAI_N   on stm32f42x: [50:432]  must be defined if PLLSAION is 1
+PLLSAI_Q   on stm32f42x: [2:15]    must be defined if PLLSAION is 1
+PLLSAI_R   on stm32f42x: [2:7]     must be defined if PLLSAION is 1
+PLLSAIDIVQ on stm32f42x: [1:32]    must be defined if PLLSAION is 1
+PLLSAIDIVR on stm32f42x: 2,4,8,16  must be defined if PLLSAION is 1
+
+RCC_CFGR_MCO1_Value one of RCC_CFGR_MCO1_HSI    RCC_CFGR_MCO1_LSE    RCC_CFGR_MCO1_HSE  RCC_CFGR_MCO1_PLL   default RCC_CFGR_MCO1_HSI
+RCC_CFGR_MCO2_Value one of RCC_CFGR_MCO2_SYSCLK RCC_CFGR_MCO2_PLLI2S RCC_CFGR_MCO2_HSE  RCC_CFGR_MCO2_PLL   default RCC_CFGR_MCO2_SYSCLK
+
+MCO1PRE  1,2,3,4,5  default lowest possible
+MCO2PRE  1,2,3,4,5  default lowest possible
+
+RTCPRE  0 or [2:31]  default (HSE_VALUE/1000000) if HSE_VALUE defined, else 0
+
+HPRE   1,2,4,8,16,64,128,256,512  default lowest possible
+PPRE1  1,2,4,8,16                 default lowest possible
+PPRE2  1,2,4,8,16                 default lowest possible
+
+TIMPRE on stm32f40x:  must be undefined
+TIMPRE on stm32f42x:  0 or 1 default 1
+
+The following are defined for application use (with uLL suffix):
+
+SYSCLK (if not already defined)
+HCLK
+APB1_CLK
+APB2_CLK
+TIM1_CLK
+TIM2_CLK
+TIM3_CLK
+TIM4_CLK
+TIM5_CLK
+TIM6_CLK
+TIM7_CLK
+TIM8_CLK
+TIM9_CLK
+TIM10_CLK
+TIM11_CLK
+TIM12_CLK
+TIM13_CLK
+TIM14_CLK
+
+FIXME does HPRE divide APB clocks?
+FIXME does HPRE divide SYSCLK MCO output?
+FIXME is SYSCLK ever different from HCLK?
