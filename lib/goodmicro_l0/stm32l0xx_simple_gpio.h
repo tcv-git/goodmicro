@@ -133,8 +133,6 @@ extern "C" {
 #define GPIO_alternate_open_drain_pull_down_fast(port,pins,function)   GPIO_setup ((port), (pins), 2, (function), 1,   2,  2)
 #define GPIO_alternate_open_drain_pull_down_vfast(port,pins,function)  GPIO_setup ((port), (pins), 2, (function), 1,   2,  3)
 #define GPIO_analog(port,pins)                                         GPIO_setup ((port), (pins), 3, (       0), 0,   0,  0)
-#define GPIO_analog_pull_up(port,pins)                                 GPIO_setup ((port), (pins), 3, (       0), 0,   1,  0)
-#define GPIO_analog_pull_down(port,pins)                               GPIO_setup ((port), (pins), 3, (       0), 0,   2,  0)
 
 static inline unsigned int __attribute__((always_inline)) spread_bits (unsigned short bits)
 {
