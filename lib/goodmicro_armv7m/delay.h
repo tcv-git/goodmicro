@@ -28,9 +28,9 @@
 #endif
 #endif
 
-#if (defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx) \
-  || defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx))
-#include "stm32f4xx_system_configuration.h"
+#if (defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx) \
+  || defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx))
+#include "system_stm32f405-439.h"
 #endif
 
 #ifdef __cplusplus
