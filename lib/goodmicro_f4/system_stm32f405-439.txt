@@ -16,13 +16,18 @@ http:///www.purposeful.co.uk/software/goodmicro
   problems encountered by those who obtain the software through you.
 
 
-Define USE_CLOCK_CONFIG to #include "clock_config.h"
+Every project using an STM32 part should define a part number macro.  This is
+usually defined on the command line via the Makefile or other project settings.
 
-Define one of STM32F405xx STM32F407xx STM32F415xx STM32F417xx STM32F427xx STM32F429xx STM32F437xx STM32F439xx.
+This system configuration code supports parts identified with the following
+macros: STM32F405xx STM32F407xx STM32F415xx STM32F417xx STM32F427xx STM32F429xx
+STM32F437xx STM32F439xx.
 
-Define any or none of the following macros.  Any invalid or incompatible values
-will produce an error.  Those that are undefined will take the default value
-given below.
+To use system_stm32f405-439.c a header called system_config.h must exist
+somewhere on the include path.  It may be completely empty to use all the
+default settings.  Otherwise it may contain any or none of the macros described
+below.  Any invalid or incompatible values will produce an error.  Those that
+are undefined will take the default value given below.
 
 VDD_mV (note case): supply voltage in mV, if not defined will assume all voltage dependant features are available
 
@@ -39,8 +44,10 @@ RCC_CR_HSEBYP_Value one of RCC_CR_HSEBYP_DISABLE RCC_CR_HSEBYP_ENABLE default RC
 HSE_VALUE (if bypass disabled): 4000000 to 26000000 or may be undefined, default undefined
 HSE_VALUE (if bypass enabled):  1000000 to 50000000 or may be undefined, default undefined
 
+NB: if HSE_VALUE is not defined then the the less accurate internal RC oscilator (HSI) will be used.
+
 HSION 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0
-HSEON 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0; must be 0 if HSE_VALUE is undefined
+HSEON 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0; must be 0 if HSE_VALUE is not defined
 PLLON 0 or 1 default 1 if required for system clock or MCO output, else 0
 
 SYSCLK may be defined or it will be calculated
@@ -49,10 +56,10 @@ RCC_CFGR_SW_Value one of RCC_CFGR_SW_HSE RCC_CFGR_SW_HSI RCC_CFGR_SW_PLL default
 
 RCC_PLLCFGR_PLLSRC_Value one of RCC_PLLCFGR_PLLSRC_HSE RCC_PLLCFGR_PLLSRC_HSI default RCC_PLLCFGR_PLLSRC_HSE if HSE_VALUE is defined
 
-PLL_M  [2:63]    default will be calculated
-PLL_N  [50:432]  default will be calculated
-PLL_P  2,4,6,8   default will be calculated
-PLL_Q  [2:15]    default will be calculated
+PLL_M  [2:63]    default depends on clock source
+PLL_N  [50:432]  default depends on clock source
+PLL_P  2,4,6,8   default depends on clock source
+PLL_Q  [2:15]    default depends on clock source
 
 SSCGEN     0 or 1     default 0
 SPREADSEL  0 or 1     default 0 if SSCGEN is 0, must be defined if SSCGEN is 1

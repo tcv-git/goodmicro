@@ -21,10 +21,7 @@
 
 #include "stm32f4xx.h"
 #include "stm32f4xx_missing.h"
-
-#ifdef USE_CLOCK_CONFIG
-#include "clock_config.h"
-#endif
+#include "system_config.h"
 
 
 // #############################################################################
