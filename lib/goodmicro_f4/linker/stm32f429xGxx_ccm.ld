@@ -1,0 +1,1 @@
+stm32f427xGxx_ccm.ld

@@ -1,0 +1,1 @@
+stm32f427xIxx_ccm_noexit.ld
