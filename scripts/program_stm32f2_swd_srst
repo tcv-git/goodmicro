@@ -1,0 +1,79 @@
+#! /bin/bash -e
+
+# program_stm32f2_swd_srst.sh
+# PUBLIC DOMAIN
+# http:///www.purposeful.co.uk/software/goodmicro
+
+
+# I, Tom Vajzovic, am the author of this software and its documentation.
+# I permanently abandon all copyright and other intellectual property rights
+# in them.
+#
+# I am fairly certain that the software does what the documentation says it
+# does, but I do not guarantee that it does, or that it does what you think it
+# should.  I do not guarantee that it will not have undesirable side effects.
+#
+# If you use, modify or distribute this software then you do so at your own
+# risk.  If you do not pass on this warning then you may be responsible for any
+# problems encountered by those who obtain the software through you.
+
+
+this_script="$(readlink -ve "$BASH_SOURCE")"
+this_script_dir="$(dirname "$this_script")"
+this_script_name="$(basename "$this_script")"
+
+if [ $# -ne 1 ]
+then
+  echo Usage: $this_script_name FILE.hex >&2
+  exit 1
+fi
+
+hex="$(readlink -ven "$1")"
+
+winprog=""
+
+if [ -x "/cygdrive/c/Program Files (x86)/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe" ]
+then
+  winprog="/cygdrive/c/Program Files (x86)/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe"
+fi
+
+if [ -x "/cygdrive/c/Program Files/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe" ]
+then
+  winprog="/cygdrive/c/Program Files/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe"
+fi
+
+if [ -n "$winprog" ]
+then
+  exec "$winprog" -c SWD FREQ=1800 -P "$hex" -V -Rst
+fi
+
+if [ -x /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI ]
+then
+  LD_LIBRARY_PATH=/usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-} exec /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI --connect port=SWD freq=2000 reset=SWrst mode=NORMAL --write "$hex" --verify -rst -run
+fi
+
+if ! which openocd >/dev/null
+then
+  echo $this_script_name: neither STM32_Programmer_CLI nor openocd installed >&2
+  exit 1
+fi
+
+cfg="$(tempfile -s.openocd.cfg)"
+
+trap "rm -f \"$cfg\"" EXIT
+
+cat >"$cfg" <<EOF
+#
+# stlink to stm32f2xx by swd with no reset lines
+#
+
+source [find interface/stlink.cfg]
+
+transport select hla_swd
+
+source [find target/stm32f2x.cfg]
+
+reset_config none
+EOF
+
+openocd -f "$cfg" -c "program \"$hex\" verify reset exit"
