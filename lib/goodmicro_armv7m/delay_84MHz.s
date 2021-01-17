@@ -27,18 +27,21 @@
 .global   delay_s
 .global   delay_ms
 .global   delay_us
+.global   delay_ns
 .global   delay_sysclk_long
 .global   delay_sysclk
 
 .type     delay_s          , %function
 .type     delay_ms         , %function
 .type     delay_us         , %function
+.type     delay_ns         , %function
 .type     delay_sysclk_long, %function
 .type     delay_sysclk     , %function
 
 @ void delay_s           (unsigned int)
 @ void delay_ms          (unsigned int)
 @ void delay_us          (unsigned int)
+@ void delay_ns          (unsigned int)
 @ void delay_sysclk_long (unsigned long long int)
 @ void delay_sysclk      (unsigned int)
 
@@ -76,6 +79,27 @@ delay_us:
         b 2f
 
 .size delay_us, .-delay_us
+
+.thumb_func
+
+@; delay_ns: := delay_sysclk_long (      r0 * 0.084    )
+@;           := delay_sysclk_long (ceil (r0 * 21 / 250))
+delay_ns:
+        ldr   r3, =0xE0001004
+        ldr   r1, [r3]
+        push {r1, r3, lr}
+        movs  r1, 21
+        umull r0, r1, r0, r1
+        ldr   r3, =17179869  @; 2^32 / 250
+        adds  r0, 249
+        adcs  r1, 0
+        movs  r2, 250
+        bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        mov  r12, r1
+        pop  {r1, r3, lr}
+        b     2f
+
+.size delay_ns, .-delay_ns
 
 .thumb_func
 

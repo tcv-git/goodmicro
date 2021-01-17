@@ -70,6 +70,7 @@ run for longer than a whole period of the underlying clock.  Eg: using the
 void delay_s           (unsigned int);
 void delay_ms          (unsigned int);
 void delay_us          (unsigned int);
+void delay_ns          (unsigned int);
 void delay_100_ns      (unsigned int);
 void delay_sysclk_long (unsigned long long int);
 void delay_sysclk      (unsigned int);
