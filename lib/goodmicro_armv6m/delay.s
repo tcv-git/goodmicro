@@ -18,6 +18,9 @@
 @; through you.
 
 
+@; delay function using the SysTick timer
+
+
 .syntax unified
 .cpu    cortex-m0
 .thumb

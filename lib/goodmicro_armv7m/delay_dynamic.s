@@ -18,6 +18,10 @@
 @; through you.
 
 
+@; delay functions using the SystemCoreClock variable and the SysTick timer
+@; FIXME use the debug cycle counter
+
+
 .syntax unified
 .cpu    cortex-m3
 .thumb

@@ -18,6 +18,10 @@
 @; through you.
 
 
+@; delay functions using the debug cycle counter
+@; assuming fixed system core clock of 168 MHz
+
+
 .syntax unified
 .cpu    cortex-m3
 .thumb
