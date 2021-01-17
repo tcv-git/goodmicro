@@ -3,6 +3,8 @@
 #ifndef SYSTEM_CONFIG_H_INCLUDED
 #define SYSTEM_CONFIG_H_INCLUDED
 
+#define VDD_mV         3000
+
 #define HSE_VALUE   8000000u
 #define SYSCLK    168000000u
 
