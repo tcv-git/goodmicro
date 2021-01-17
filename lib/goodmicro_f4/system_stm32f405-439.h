@@ -51,36 +51,37 @@
 #define PWR_CR_VOS_Value  PWR_CR_VOS_SCALE1
 #endif
 
-#ifdef PWR_CR_VOS_SCALE3
+#ifdef PWR_CR_VOS_SCALE3 // if part has VOS scale 3
 
 #if (PWR_CR_VOS_Value != PWR_CR_VOS_SCALE1) && (PWR_CR_VOS_Value != PWR_CR_VOS_SCALE2) && (PWR_CR_VOS_Value != PWR_CR_VOS_SCALE3)
-#error Invalid definition of PWR_CR_VOS_Value (must be PWR_CR_VOS_SCALE1, PWR_CR_VOS_SCALE2 or PWR_CR_VOS_SCALE3 on this part)
+#error Invalid definition of PWR_CR_VOS_Value (must be PWR_CR_VOS_SCALE1, PWR_CR_VOS_SCALE2 or PWR_CR_VOS_SCALE3)
 #endif
 
-#else  // PWR_CR_VOS_SCALE3
+#else  // part has VOS scale 3
 
 #if (PWR_CR_VOS_Value != PWR_CR_VOS_SCALE1) && (PWR_CR_VOS_Value != PWR_CR_VOS_SCALE2)
-#error Invalid definition of PWR_CR_VOS_Value (must be PWR_CR_VOS_SCALE1 or PWR_CR_VOS_SCALE2 on this part)
+#error Invalid definition of PWR_CR_VOS_Value (must be PWR_CR_VOS_SCALE1 or PWR_CR_VOS_SCALE2)
 #endif
 
-#endif // PWR_CR_VOS_SCALE3
+#endif // part has VOS scale 3
 
 // -----------------------------------------------------------------------------
 //  PWR_CR_ODEN_Value
 // -----------------------------------------------------------------------------
 
-#ifdef PWR_CR_ODEN_Pos
+#ifdef PWR_CR_ODEN_Pos // if part has overdrive
 
-#ifndef PWR_CR_ODEN_Value
-
-#if (PWR_CR_VOS_Value == PWR_CR_VOS_SCALE3) || (defined(VDD_mV) && (VDD_mV < 2100))
-
+#if (PWR_CR_VOS_Value == PWR_CR_VOS_SCALE3) && !defined(PWR_CR_ODEN_Value)
 #define PWR_CR_ODEN_Value  PWR_CR_ODEN_DISABLE
-#else
-#define PWR_CR_ODEN_Value  PWR_CR_ODEN_ENABLE
 #endif
 
-#endif // PWR_CR_ODEN_Value
+#if defined(VDD_mV) && (VDD_mV < 2100) && !defined(PWR_CR_ODEN_Value)
+#define PWR_CR_ODEN_Value  PWR_CR_ODEN_DISABLE
+#endif
+
+#ifndef PWR_CR_ODEN_Value
+#define PWR_CR_ODEN_Value  PWR_CR_ODEN_ENABLE
+#endif
 
 #if (PWR_CR_ODEN_Value != PWR_CR_ODEN_DISABLE) && (PWR_CR_ODEN_Value != PWR_CR_ODEN_ENABLE)
 #error Invalid definition of PWR_CR_ODEN_Value (must be PWR_CR_ODEN_DISABLE or PWR_CR_ODEN_ENABLE)
@@ -94,27 +95,25 @@
 #error VDD_mV is less than 2100 but PWR_CR_ODEN_Value is not PWR_CR_ODEN_DISABLE
 #endif
 
-#else  // PWR_CR_ODEN_Pos
+#else // part has overdrive
 
 #ifdef PWR_CR_ODEN_Value
 #error PWR_CR_ODEN_Value is defined but is not available on selected part
 #endif
 
-#endif // PWR_CR_ODEN_Pos
+#endif // part has overdrive
 
 // -----------------------------------------------------------------------------
 //  SYSCFG_CMPCR_CMP_PD_Value
 // -----------------------------------------------------------------------------
 
-#ifndef SYSCFG_CMPCR_CMP_PD_Value
-
-#if defined(VDD_mV) && (VDD_mV < 2400)
+#if defined(VDD_mV) && (VDD_mV < 2400) && !defined(SYSCFG_CMPCR_CMP_PD_Value)
 #define SYSCFG_CMPCR_CMP_PD_Value  SYSCFG_CMPCR_CMP_PD_DISABLE
-#else
-#define SYSCFG_CMPCR_CMP_PD_Value  SYSCFG_CMPCR_CMP_PD_ENABLE
 #endif
 
-#endif // SYSCFG_CMPCR_CMP_PD_Value
+#ifndef SYSCFG_CMPCR_CMP_PD_Value
+#define SYSCFG_CMPCR_CMP_PD_Value  SYSCFG_CMPCR_CMP_PD_ENABLE
+#endif
 
 #if (SYSCFG_CMPCR_CMP_PD_Value != SYSCFG_CMPCR_CMP_PD_DISABLE) && (SYSCFG_CMPCR_CMP_PD_Value != SYSCFG_CMPCR_CMP_PD_ENABLE)
 #error Invalid definition of SYSCFG_CMPCR_CMP_PD_Value (must be SYSCFG_CMPCR_CMP_PD_DISABLE or SYSCFG_CMPCR_CMP_PD_ENABLE)
@@ -202,7 +201,6 @@
 // -----------------------------------------------------------------------------
 
 #if defined(PWR_CR_ODEN_Pos) && (PWR_CR_ODEN_Value == PWR_CR_ODEN_ENABLE)
-
 #define APB1CLK_MAX  45000000
 #define APB2CLK_MAX  90000000
 #else
@@ -224,9 +222,157 @@
 
 // #############################################################################
 //
-//      high-speed external clock settings
+//      identify system clock source
 //
 // #############################################################################
+
+#if (!defined(HSEON) || HSEON) && defined(HSE_VALUE) && !defined(RCC_CFGR_SW_Value)
+
+#if defined(SYSCLK) && (SYSCLK == HSE_VALUE)
+#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSE
+#endif
+
+#if defined(PLLON) && !PLLON && !defined(SYSCLK)
+#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSE
+#endif
+
+#endif // (!defined(HSEON) || HSEON) && defined(HSE_VALUE) && !defined(RCC_CFGR_SW_Value)
+
+#if (!defined(HISON) || HSION) && !defined(RCC_CFGR_SW_Value)
+
+#if defined(SYSCLK) && (SYSCLK == HSI_VALUE)
+#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSI
+#endif
+
+#if defined(PLLON) && !PLLON && !defined(SYSCLK)
+#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSI
+#endif
+
+#endif // (!defined(HISON) || HSION) && !defined(RCC_CFGR_SW_Value)
+
+#ifndef RCC_CFGR_SW_Value
+#define RCC_CFGR_SW_Value  RCC_CFGR_SW_PLL
+#endif
+
+#if (RCC_CFGR_SW_Value != RCC_CFGR_SW_HSI) && (RCC_CFGR_SW_Value != RCC_CFGR_SW_HSE) && (RCC_CFGR_SW_Value != RCC_CFGR_SW_PLL)
+#error Invalid definition of RCC_CFGR_SW_Value (must be RCC_CFGR_SW_HSI, RCC_CFGR_SW_HSE or RCC_CFGR_SW_PLL)
+#endif
+
+
+// #############################################################################
+//
+//      identify PLL input
+//
+// #############################################################################
+
+#if (!defined(HSEON) || HSEON) && defined(HSE_VALUE) && !defined(RCC_PLLCFGR_PLLSRC_Value)
+#define RCC_PLLCFGR_PLLSRC_Value  RCC_PLLCFGR_PLLSRC_HSE
+#endif
+
+#ifndef RCC_PLLCFGR_PLLSRC_Value
+#define RCC_PLLCFGR_PLLSRC_Value  RCC_PLLCFGR_PLLSRC_HSI
+#endif
+
+#if (RCC_PLLCFGR_PLLSRC_Value != RCC_PLLCFGR_PLLSRC_HSI) && (RCC_PLLCFGR_PLLSRC_Value != RCC_PLLCFGR_PLLSRC_HSE)
+#error Invalid definition of RCC_PLLCFGR_PLLSRC_Value (must be RCC_PLLCFGR_PLLSRC_HSI or RCC_PLLCFGR_PLLSRC_HSE)
+#endif
+
+#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE) && !defined(HSE_VALUE)
+#error RCC_PLLCFGR_PLLSRC_Value is RCC_PLLCFGR_PLLSRC_HSE but HSE_VALUE is not defined
+#endif
+
+#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSI)
+#define PLL_INPUT  HSI_VALUE
+#endif
+
+#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE)
+#define PLL_INPUT  HSE_VALUE
+#endif
+
+
+// #############################################################################
+//
+//      check PLLON
+//
+// #############################################################################
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && !defined(PLLON)
+#define PLLON  1
+#endif
+
+#if defined(RCC_CFGR_MCO1_Value) && (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_PLL) && !defined(PLLON)
+#define PLLON  1
+#endif
+
+#if defined(RCC_CFGR_MCO2_Value) && (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLL) && !defined(PLLON)
+#define PLLON  1
+#endif
+
+#ifndef PLLON
+#define PLLON  0
+#endif
+
+#if (PLLON != 0) && (PLLON != 1)
+#error Invalid definition of PLLON (must be 0 or 1)
+#endif
+
+
+// #############################################################################
+//
+//      check HSION
+//
+// #############################################################################
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI) && !defined(HSION)
+#define HSION  1
+#endif
+
+#if PLLON && (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSI) && !defined(HSION)
+#define HSION  1
+#endif
+
+#if defined(RCC_CFGR_MCO1_Value) && (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSI) && !defined(HSION)
+#define HSION  1
+#endif
+
+#ifndef HSION
+#define HSION  0
+#endif
+
+#if (HSION != 0) && (HSION != 1)
+#error Invalid definition of HSION (must be 0 or 1)
+#endif
+
+
+// #############################################################################
+//
+//      check HSEON, HSEBYP and HSE_VALUE
+//
+// #############################################################################
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE) && !defined(HSEON)
+#define HSEON  1
+#endif
+
+#if PLLON && (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE) && !defined(HSEON)
+#define HSEON  1
+#endif
+
+#if defined(RCC_CFGR_MCO1_Value) && (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSE) && !defined(HSEON)
+#define HSEON  1
+#endif
+
+#if defined(RCC_CFGR_MCO2_Value) && (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_HSE) && !defined(HSEON)
+#define HSEON  1
+#endif
+
+#ifndef HSEON
+#define HSEON  0
+#endif
+
+#if (HSEON != 0) && (HSEON != 1)
+#error Invalid definition of HSEON (must be 0 or 1)
+#endif
 
 #ifndef RCC_CR_HSEBYP_Value
 #define RCC_CR_HSEBYP_Value  RCC_CR_HSEBYP_DISABLE
@@ -236,212 +382,30 @@
 #error Invalid definition of RCC_CR_HSEBYP_Value (must be RCC_CR_HSEBYP_DISABLE or RCC_CR_HSEBYP_ENABLE)
 #endif
 
-#if (RCC_CR_HSEBYP_Value != RCC_CR_HSEBYP_ENABLE)
-#define HSE_VALUE_MIN    4000000
-#define HSE_VALUE_MAX   26000000
-#else
-#define HSE_VALUE_MIN    1000000
-#define HSE_VALUE_MAX   50000000
-#endif
-
 // IMPORTANT: no default definition of HSE_VALUE
 
-#if defined(HSE_VALUE) && ((HSE_VALUE < HSE_VALUE_MIN) || (HSE_VALUE > HSE_VALUE_MAX))
-#error Definition of HSE_VALUE out of range
+#if (RCC_CR_HSEBYP_Value == RCC_CR_HSEBYP_DISABLE) && defined(HSE_VALUE) && ((HSE_VALUE < 4000000) || (HSE_VALUE > 26000000))
+#error Invalid definition of HSE_VALUE (must be in [4000000:26000000] because HSE bypass is disabled)
+#endif
+
+#if (RCC_CR_HSEBYP_Value == RCC_CR_HSEBYP_ENABLE) && defined(HSE_VALUE) && ((HSE_VALUE < 1000000) || (HSE_VALUE > 50000000))
+#error Invalid definition of HSE_VALUE (must be in [1000000:50000000] because HSE bypass is enabled)
 #endif
 
 
 // #############################################################################
 //
-//      identify clock source
+//      check PLL input is available
 //
 // #############################################################################
 
-#if !defined(RCC_CFGR_SW_Value) && (!defined(HSEON) || (HSEON == 1)) && defined(HSE_VALUE)
-
-#if defined(SYSCLK) && (SYSCLK == HSE_VALUE)
-#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSE
+#if PLLON && (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSI) && !HSION
+#error RCC_PLLCFGR_PLLSRC_Value is RCC_PLLCFGR_PLLSRC_HSI but HSION is 0
 #endif
 
-#if defined(PLLON) && (PLLON == 0) && !defined(SYSCLK)
-#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSE
+#if PLLON && (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE) && !HSEON
+#error RCC_PLLCFGR_PLLSRC_Value is RCC_PLLCFGR_PLLSRC_HSE but HSEON is 0
 #endif
-
-#endif // !defined(RCC_CFGR_SW_Value) && (!defined(HSEON) || (HSEON != 0)) && defined(HSE_VALUE)
-
-#if !defined(RCC_CFGR_SW_Value) && (!defined(HISON) || (HSION == 1))
-
-#if defined(SYSCLK) && (SYSCLK == HSI_VALUE)
-#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSI
-#endif
-
-#if defined(PLLON) && (PLLON == 0) && !defined(SYSCLK)
-#define                                      RCC_CFGR_SW_Value  RCC_CFGR_SW_HSI
-#endif
-
-#endif // !defined(RCC_CFGR_SW_Value) && (!defined(HISON) || (HSION != 0))
-
-#ifndef RCC_CFGR_SW_Value
-#define RCC_CFGR_SW_Value  RCC_CFGR_SW_PLL
-#endif
-
-#if (RCC_CFGR_SW_Value != RCC_CFGR_SW_HSE) && (RCC_CFGR_SW_Value != RCC_CFGR_SW_HSI) && (RCC_CFGR_SW_Value != RCC_CFGR_SW_PLL)
-#error Invalid definition of RCC_CFGR_SW_Value
-#endif
-
-
-// #############################################################################
-//
-//      check clock source (HSI)
-//
-// #############################################################################
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI)
-
-#ifndef SYSCLK
-#define SYSCLK  HSI_VALUE
-#endif
-
-#if (SYSCLK != HSI_VALUE)
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSI but SYSCLK does not match HSI_VALUE
-#endif
-
-#ifndef HSION
-#define HSION  1
-#endif
-
-#if (HSION != 1)
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSI but HSION is not 1
-#endif
-
-#ifndef PLLON
-#define PLLON  0
-#endif
-
-#endif // (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI)
-
-
-// #############################################################################
-//
-//      check clock source (HSE)
-//
-// #############################################################################
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE)
-
-#ifndef HSE_VALUE
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSE but HSE_VALUE is undefined
-#endif
-
-#ifndef SYSCLK
-#define SYSCLK  HSE_VALUE
-#endif
-
-#if (SYSCLK != HSE_VALUE)
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSE but SYSCLK does not match HSE_VALUE
-#endif
-
-#ifndef HSEON
-#define HSEON  1
-#endif
-
-#if (HSEON != 1)
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSE but HSEON is not 1
-#endif
-
-#ifndef PLLON
-#define PLLON  0
-#endif
-
-#endif // (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE)
-
-
-// #############################################################################
-//
-//      check PLL input
-//
-// #############################################################################
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL)
-
-#ifndef PLLON
-#define PLLON  1
-#endif
-
-#if (PLLON != 1)
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_PLL but PLLON is not 1
-#endif
-
-#endif // (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL)
-
-#if defined(HSE_VALUE) && (!defined(HSEON) || (HSEON == 1)) && !defined(RCC_PLLCFGR_PLLSRC_Value)
-#define RCC_PLLCFGR_PLLSRC_Value  RCC_PLLCFGR_PLLSRC_HSE
-#endif
-
-#ifndef RCC_PLLCFGR_PLLSRC_Value
-#define RCC_PLLCFGR_PLLSRC_Value  RCC_PLLCFGR_PLLSRC_HSI
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value != RCC_PLLCFGR_PLLSRC_HSE) && (RCC_PLLCFGR_PLLSRC_Value != RCC_PLLCFGR_PLLSRC_HSI)
-#error Invalid definition of RCC_PLLCFGR_PLLSRC_Value
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE) && !defined(HSE_VALUE)
-#error RCC_PLLCFGR_PLLSRC_Value is RCC_PLLCFGR_PLLSRC_HSE but HSE_VALUE is not defined
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE) && !defined(HSEON)
-#define HSEON  1
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSI) && !defined(HSION)
-#define HSION  1
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE) && (HSEON != 1)
-#error RCC_PLLCFGR_PLLSRC_Value is RCC_PLLCFGR_PLLSRC_HSE but HSEON is not 1
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSI) && (HSION != 1)
-#error RCC_PLLCFGR_PLLSRC_Value is RCC_PLLCFGR_PLLSRC_HSI but HSION is not 1
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSE)
-#define PLL_INPUT  HSE_VALUE
-#endif
-
-#if (RCC_PLLCFGR_PLLSRC_Value == RCC_PLLCFGR_PLLSRC_HSI)
-#define PLL_INPUT  HSI_VALUE
-#endif
-
-
-// #############################################################################
-//
-//      check SYSCLK configuration
-//
-// #############################################################################
-
-// IMPORTANT: no default definition of SYSCLK
-
-#if defined(SYSCLK) && (SYSCLK > SYSCLK_MAX)
-#error Definition of SYSCLK exceeds maximum possible
-#endif
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE) && defined(HSE_VALUE) && defined(SYSCLK) && (SYSCLK != HSE_VALUE)
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSE but SYSCLK is not equal to HSE_VALUE
-#endif
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI) && defined(SYSCLK) && (SYSCLK != HSI_VALUE)
-#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSI but SYSCLK is not equal to HSI_VALUE
-#endif
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && defined(SYSCLK) \
-  && defined(PLL_M) && defined(PLL_N) && defined(PLL_P) \
-  && ((SYSCLK * PLL_M * PLL_P) != (PLL_INPUT * PLL_N))
-
-#error Defined SYSCLK does not agree with defined PLL_M, PLL_N and PLL_P
-#endif
-
 
 
 // #############################################################################
@@ -450,18 +414,10 @@
 //
 // #############################################################################
 
-/*
-  External crystal:                           4000000 <=          HSE         <=  26000000
-  Integer M:          2 <= M <= 63             950000 <=       (HSE / M)      <=   2100000
-  Integer N:         50 <= N <= 432         100000000 <=    ((HSE / M) * N)   <= 432000000
-  Integer P:       P = (2 or 4 or 6 or 8)               (((HSE / M) * N) / P) <= 168000000 or 180000000
-  Integer Q:          2 <= Q <= 15                      (((HSE / M) * N) / Q) <=  48000000 (exactly 48000000 for USB)
-*/
-
-#define VALID_PLL_M(m)        (((m) >= RCC_PLLM_MIN_VALUE) && ((m) <= RCC_PLLM_MAX_VALUE))
-#define VALID_PLL_N(n)        (((n) >= RCC_PLLN_MIN_VALUE) && ((n) <= RCC_PLLN_MAX_VALUE))
-#define VALID_PLL_P(p)        (((p) == 2) || ((p) == 4) || ((p) == 6) || ((p) == 8))
-#define VALID_PLL_Q(q)        (((q) >= RCC_PLLQ_MIN_VALUE) && ((q) <= RCC_PLLQ_MAX_VALUE))
+#define VALID_PLL_M(m)  (((m) >= RCC_PLLM_MIN_VALUE) && ((m) <= RCC_PLLM_MAX_VALUE))
+#define VALID_PLL_N(n)  (((n) >= RCC_PLLN_MIN_VALUE) && ((n) <= RCC_PLLN_MAX_VALUE))
+#define VALID_PLL_P(p)  (((p) == 2) || ((p) == 4) || ((p) == 6) || ((p) == 8))
+#define VALID_PLL_Q(q)  (((q) >= RCC_PLLQ_MIN_VALUE) && ((q) <= RCC_PLLQ_MAX_VALUE))
 
 
 // #############################################################################
@@ -470,7 +426,7 @@
 //
 // #############################################################################
 
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && !(defined(PLL_M) && defined(PLL_N) && defined(PLL_P))
+#if PLLON && !(defined(PLL_M) && defined(PLL_N) && defined(PLL_P))
 
 #ifdef PLL_M
 #error PLL_M defined without PLL_N and PLL_P
@@ -653,19 +609,20 @@
 
 #endif // not #error
 
-#endif // (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && !(defined(PLL_M) && defined(PLL_N) && defined(PLL_P))
+#endif // PLLON && !(defined(PLL_M) && defined(PLL_N) && defined(PLL_P))
 
+// -----------------------------------------------------------------------------
+//      PLL_Q when PLL is on
+// -----------------------------------------------------------------------------
 
-// #############################################################################
-//
-//      check defined PLL configuration is valid
-//
-// #############################################################################
+#if PLLON && !defined(PLL_Q)
 
-
-#if (PLLON != 0) && !(defined(PLL_M) && defined(PLL_N) && defined(PLL_P))
-#error PLLON is set but PLL_M, PLL_N and PLL_P are not all defined
+#define PLL_Q  (((PLL_INPUT * PLL_N) + ((USBCLK_MAX * PLL_M) - 1)) / (USBCLK_MAX * PLL_M))
 #endif
+
+// -----------------------------------------------------------------------------
+//      PLL default parameters when PLL is off
+// -----------------------------------------------------------------------------
 
 #ifndef PLL_M
 #define PLL_M     16
@@ -680,32 +637,15 @@
 #endif
 
 #ifndef PLL_Q
-#if (PLLON != 0)
-#define PLL_Q     (((PLL_INPUT * PLL_N) + ((USBCLK_MAX * PLL_M) - 1)) / (USBCLK_MAX * PLL_M))
-#else
 #define PLL_Q      4
 #endif
-#endif
 
-#ifndef SSCGEN
-#define SSCGEN     0
-#endif
 
-#if (SSCGEN != 0) && !(defined(SPREADSEL) && defined(MODPER) && defined(INCSTEP))
-#error SSCGEN is set but SPREADSEL, MODPER and INCSTEP are not all defined
-#endif
-
-#ifndef SPREADSEL
-#define SPREADSEL  0
-#endif
-
-#ifndef MODPER
-#define MODPER     0
-#endif
-
-#ifndef INCSTEP
-#define INCSTEP    0
-#endif
+// #############################################################################
+//
+//      check PLL configuration is valid
+//
+// #############################################################################
 
 #if !VALID_PLL_M(PLL_M)
 #error Invalid definition of PLL_M (must be in [2:63])
@@ -723,12 +663,51 @@
 #error Invalid definition of PLL_Q (must be in [2:15])
 #endif
 
-#if defined(PLL_R) && (PLL_R != 2)
-#error Invalid definition of PLL_R (must be 2 or undefined)
+#if PLLON
+
+#if (PLL_INPUT < (RCC_PLLVCO_INPUT_MIN * PLL_M)) || (PLL_INPUT > (RCC_PLLVCO_INPUT_MAX * PLL_M))
+#error Main PLL VCO input out of range
+#endif
+
+#if ((PLL_INPUT * PLL_N) < (RCC_PLLVCO_OUTPUT_MIN * PLL_M)) || ((PLL_INPUT * PLL_N) > (RCC_PLLVCO_OUTPUT_MAX * PLL_M))
+#error Main PLL VCO output out of range
+#endif
+
+#if (PLL_INPUT * PLL_N) > (USBCLK_MAX * PLL_M * PLL_Q)
+#error USB clock exceeds maximum
+#endif
+
+#endif // PLLON
+
+
+// #############################################################################
+//
+//      main PLL spread spectrum
+//
+// #############################################################################
+
+#ifndef SSCGEN
+#define SSCGEN  0
 #endif
 
 #if (SSCGEN != 0) && (SSCGEN != 1)
 #error Invalid definition of SSCGEN (must be 0 or 1)
+#endif
+
+#if SSCGEN && !(defined(SPREADSEL) && defined(MODPER) && defined(INCSTEP))
+#error SSCGEN is 1 but SPREADSEL, MODPER and INCSTEP are not all defined
+#endif
+
+#ifndef SPREADSEL
+#define SPREADSEL  0
+#endif
+
+#ifndef MODPER
+#define MODPER  0
+#endif
+
+#ifndef INCSTEP
+#define INCSTEP  0
 #endif
 
 #if (SPREADSEL != 0) && (SPREADSEL != 1)
@@ -743,37 +722,11 @@
 #error Invalid definition of INCSTEP (must be in [0:32767])
 #endif
 
-#if (SSCGEN != 0) && (PLLON != 1)
-#warning SSCGEN is set but PLLON is not 1
+#if SSCGEN && !PLLON
+#warning SSCGEN is 1 but PLLON is 0
 #endif
 
-#if (MODPER != 0) && (SSCGEN != 1)
-#warning MODPER is defined as non-zero but SSCGEN is not 1
-#endif
-
-#if (INCSTEP != 0) && (SSCGEN != 1)
-#warning INCSTEP is defined as non-zero but SSCGEN is not 1
-#endif
-
-#if (PLLON != 0)
-
-#if (PLL_INPUT < (RCC_PLLVCO_INPUT_MIN * PLL_M)) || (PLL_INPUT > (RCC_PLLVCO_INPUT_MAX * PLL_M))
-#error Main PLL VCO input out of range
-#endif
-
-#if ((PLL_INPUT * PLL_N) < (RCC_PLLVCO_OUTPUT_MIN * PLL_M)) || ((PLL_INPUT * PLL_N) > (RCC_PLLVCO_OUTPUT_MAX * PLL_M))
-#error Main PLL VCO output out of range
-#endif
-
-#if (PLL_INPUT * PLL_N) > (SYSCLK_MAX * PLL_M * PLL_P)
-#error system core clock exceeds maximum
-#endif
-
-#if (PLL_INPUT * PLL_N) > (USBCLK_MAX * PLL_M * PLL_Q)
-#error USB clock exceeds maximum
-#endif
-
-#if (SSCGEN != 0)
+#if PLLON && SSCGEN
 
 #if ((40000 * MODPER * PLL_M) < PLL_INPUT)
 #error PLL spread modulation frequency exceeds maximum (10kHz)
@@ -787,14 +740,17 @@
 #error PLL spread depth exceeds maximum (2%)
 #endif
 
-#endif // (SSCGEN != 0)
-#else  // (PLLON != 0)
+#else // PLLON && SSCGEN
 
-#if (SSCGEN != 0)
-#warning SSCGEN is defined as non-zero but PLLON is 0
+#if (MODPER != 0)
+#warning MODPER is non-zero but PLLON or SSCGEN is 0
 #endif
 
-#endif // (PLLON != 0)
+#if (INCSTEP != 0)
+#warning INCSTEP is non-zero but PLLON or SSCGEN is 0
+#endif
+
+#endif // PLLON && SSCGEN
 
 
 // #############################################################################
@@ -811,41 +767,19 @@
 #error Invalid definition of PLLI2SON (must be 0 or 1)
 #endif
 
-#if (PLLI2SON != 0) && !defined(PLLI2S_N)
-#error PLLI2S_N must be defined (because PLLI2SON is 1)
+#if PLLI2SON && !defined(PLLI2S_N)
+#error PLLI2SON is 1 but PLLI2S_N is not defined
 #endif
 
-#if (PLLI2SON != 0) && !defined(PLLI2S_R)
-#error PLLI2S_R must be defined (because PLLI2SON is 1)
+#if PLLI2SON && !defined(PLLI2S_R)
+#error PLLI2SON is 1 but PLLI2S_R is not defined
 #endif
 
-#if defined(PLLI2S_N) && ((PLLI2S_N < 50) || (PLLI2S_N > 432))
-#error Invalid definition of PLLI2S_N (must be in [50:432])
-#endif
-
-#if defined(PLLI2S_R) && ((PLLI2S_R < 2) || (PLLI2S_R > 7))
-#error Invalid definition of PLLI2S_R (must be in [2:7])
-#endif
-
-#if (PLLI2SON != 0)
-
-#if ((PLL_INPUT * PLLI2S_N) < (RCC_PLLVCO_OUTPUT_MIN * PLL_M)) || ((PLL_INPUT * PLLI2S_N) > (RCC_PLLVCO_OUTPUT_MAX * PLL_M))
-#error PLLI2S VCO output out of range [100MHz:432MHz]
-#endif
-
-// no limit on PLLI2S_R output frequency stricter than than VCO/2
-
-#else  // (PLLI2SON != 0)
-
-#ifdef PLLI2S_N
+#if defined(PLLI2S_N) && !PLLI2SON
 #warning PLLI2S_N is defined but PLLI2SON is 0
 #endif
 
-#ifdef PLLI2S_Q
-#warning PLLI2S_Q is defined but PLLI2SON is 0
-#endif
-
-#ifdef PLLI2S_R
+#if defined(PLLI2S_R) && !PLLI2SON
 #warning PLLI2S_R is defined but PLLI2SON is 0
 #endif
 
@@ -854,10 +788,27 @@
 #endif
 
 #ifndef PLLI2S_R
-#define PLLI2S_R    2
+#define PLLI2S_R  2
 #endif
 
-#endif // (PLLI2SON != 0)
+#if (PLLI2S_N < 50) || (PLLI2S_N > 432)
+#error Invalid definition of PLLI2S_N (must be in [50:432])
+#endif
+
+#if (PLLI2S_R < 2) || (PLLI2S_R > 7)
+#error Invalid definition of PLLI2S_R (must be in [2:7])
+#endif
+
+#if PLLI2SON
+
+#if ((PLL_INPUT * PLLI2S_N) < (RCC_PLLVCO_OUTPUT_MIN * PLL_M)) || ((PLL_INPUT * PLLI2S_N) > (RCC_PLLVCO_OUTPUT_MAX * PLL_M))
+#error PLLI2S VCO output out of range [100MHz:432MHz]
+#endif
+
+// no limit on PLLI2S_R output frequency stricter than than VCO/2
+
+#endif // PLLI2SON
+
 
 // #############################################################################
 //
@@ -865,18 +816,22 @@
 //
 // #############################################################################
 
-#ifdef RCC_PLLI2SCFGR_PLLI2SQ_Pos
+#ifdef RCC_PLLI2SCFGR_PLLI2SQ_Pos // if part has PLLI2S Q output
 
-#if (PLLI2SON != 0) && !defined(PLLI2S_Q)
-#error PLLI2S_Q must be defined (because PLLI2SON is 1)
+#if PLLI2SON && !defined(PLLI2S_Q)
+#error PLLI2SON is 1 but PLLI2S_Q is not defined
 #endif
 
-#if (PLLI2SON != 0) && !defined(PLLI2SDIVQ)
-#error PLLI2SDIVQ must be defined (because PLLI2SON is 1)
+#if PLLI2SON && !defined(PLLI2SDIVQ)
+#error PLLI2SON is 1 but PLLI2SDIVQ is not defined
+#endif
+
+#if defined(PLLI2S_Q) && !PLLI2SON
+#warning PLLI2S_Q is defined but PLLI2SON is 0
 #endif
 
 #ifndef PLLI2S_Q
-#define PLLI2S_Q    4
+#define PLLI2S_Q  4
 #endif
 
 #ifndef PLLI2SDIVQ
@@ -893,7 +848,7 @@
 
 // no limit on PLLI2S_Q output frequency stricter than than VCO/2
 
-#else  // RCC_PLLI2SCFGR_PLLI2SQ_Pos
+#else // part has PLLI2S Q output
 
 #ifdef PLLI2S_Q
 #error PLLI2S_Q is defined but is not available on selected part
@@ -903,7 +858,7 @@
 #error PLLI2SDIVQ is defined but is not available on selected part
 #endif
 
-#endif // RCC_PLLI2SCFGR_PLLI2SQ_Pos
+#endif // part has PLLI2S Q output
 
 
 // #############################################################################
@@ -912,7 +867,7 @@
 //
 // #############################################################################
 
-#ifdef RCC_PLLSAICFGR_PLLSAIN_Pos
+#ifdef RCC_PLLSAICFGR_PLLSAIN_Pos // if part has PLLSAI
 
 #ifndef PLLSAION
 #define PLLSAION  0
@@ -922,36 +877,48 @@
 #error Invalid definition of PLLSAION (must be 0 or 1)
 #endif
 
-#if (PLLSAION != 0) && !defined(PLLSAI_N)
-#error PLLSAI_N must be defined (because PLLSAION is 1)
+#if PLLSAION && !defined(PLLSAI_N)
+#error PLLSAION is 1 but PLLSAI_N is not defined
 #endif
 
-#if (PLLSAION != 0) && !defined(PLLSAI_Q)
-#error PLLSAI_Q must be defined (because PLLSAION is 1)
+#if PLLSAION && !defined(PLLSAI_Q)
+#error PLLSAION is 1 but PLLSAI_Q is not defined
 #endif
 
-#if (PLLSAION != 0) && !defined(PLLSAI_R)
-#error PLLSAI_R must be defined (because PLLSAION is 1)
+#if PLLSAION && !defined(PLLSAI_R)
+#error PLLSAION is 1 but PLLSAI_R is not defined
 #endif
 
-#if (PLLSAION != 0) && !defined(PLLSAIDIVQ)
-#error PLLSAIDIVQ must be defined (because PLLSAION is 1)
+#if PLLSAION && !defined(PLLSAIDIVQ)
+#error PLLSAION is 1 but PLLSAIDIVQ is not defined
 #endif
 
-#if (PLLSAION != 0) && !defined(PLLSAIDIVR)
-#error PLLSAIDIVR must be defined (because PLLSAION is 1)
+#if PLLSAION && !defined(PLLSAIDIVR)
+#error PLLSAION is 1 but PLLSAIDIVR is not defined
 #endif
 
-#if defined(PLLSAI_N) && ((PLLSAI_N < 50) || (PLLSAI_N > 432))
-#error Invalid definition of PLLSAI_N (must be in [50:432])
+#if defined(PLLSAI_N) && !PLLSAION
+#warning PLLSAI_N is defined but PLLSAION is 0
 #endif
 
-#if defined(PLLSAI_Q) && ((PLLSAI_Q < 2) || (PLLSAI_Q > 15))
-#error Invalid definition of PLLSAI_Q (must be in [2:15])
+#if defined(PLLSAI_Q) && !PLLSAION
+#warning PLLSAI_Q is defined but PLLSAION is 0
 #endif
 
-#if defined(PLLSAI_R) && ((PLLSAI_R < 2) || (PLLSAI_R > 7))
-#error Invalid definition of PLLSAI_R (must be in [2:7])
+#if defined(PLLSAI_R) && !PLLSAION
+#warning PLLSAI_R is defined but PLLSAION is 0
+#endif
+
+#ifndef PLLSAI_N
+#define PLLSAI_N  192
+#endif
+
+#ifndef PLLSAI_Q
+#define PLLSAI_Q  4
+#endif
+
+#ifndef PLLSAI_R
+#define PLLSAI_R  2
 #endif
 
 #ifndef PLLSAIDIVQ
@@ -962,6 +929,18 @@
 #define PLLSAIDIVR  2
 #endif
 
+#if (PLLSAI_N < 50) || (PLLSAI_N > 432)
+#error Invalid definition of PLLSAI_N (must be in [50:432])
+#endif
+
+#if (PLLSAI_Q < 2) || (PLLSAI_Q > 15)
+#error Invalid definition of PLLSAI_Q (must be in [2:15])
+#endif
+
+#if (PLLSAI_R < 2) || (PLLSAI_R > 7)
+#error Invalid definition of PLLSAI_R (must be in [2:7])
+#endif
+
 #if (PLLSAIDIVQ < 1) || (PLLSAIDIVQ > 32)
 #error Invalid definition of PLLSAIDIVQ (must be in [1:32])
 #endif
@@ -970,7 +949,7 @@
 #error Invalid definition of PLLSAIDIVR (must be one of 2,4,8,16)
 #endif
 
-#if (PLLSAION != 0)
+#if PLLSAION
 
 #if ((PLL_INPUT * PLLSAI_N) < (RCC_PLLVCO_OUTPUT_MIN * PLL_M)) || ((PLL_INPUT * PLLSAI_N) > (RCC_PLLVCO_OUTPUT_MAX * PLL_M))
 #error PLLSAI VCO output out of range [100MHz:432MHz]
@@ -979,35 +958,9 @@
 // no limit on PLLSAI_Q output frequency stricter than than VCO/2
 // no limit on PLLSAI_R output frequency stricter than than VCO/2
 
-#else  // (PLLSAION != 0)
+#endif // PLLSAION
 
-#ifdef PLLSAI_N
-#warning PLLSAI_N is defined but PLLSAION is 0
-#endif
-
-#ifdef PLLSAI_Q
-#warning PLLSAI_Q is defined but PLLSAION is 0
-#endif
-
-#ifdef PLLSAI_R
-#warning PLLSAI_R is defined but PLLSAION is 0
-#endif
-
-#ifndef PLLSAI_N
-#define PLLSAI_N  192
-#endif
-
-#ifndef PLLSAI_Q
-#define PLLSAI_Q    4
-#endif
-
-#ifndef PLLSAI_R
-#define PLLSAI_R    2
-#endif
-
-#endif // (PLLSAION != 0)
-
-#else  // RCC_PLLSAICFGR_PLLSAIN_Pos
+#else // part has PLLSAI
 
 #ifdef PLLSAION
 #error PLLSAION is defined but is not available on selected part
@@ -1033,7 +986,70 @@
 #error PLLSAIDIVR is defined but is not available on selected part
 #endif
 
-#endif // RCC_PLLSAICFGR_PLLSAIN_Pos
+#endif // part has PLLSAI
+
+
+// #############################################################################
+//
+//      check SYSCLK
+//
+// #############################################################################
+
+// -----------------------------------------------------------------------------
+//      check system clock source is available
+// -----------------------------------------------------------------------------
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI) && !HSION
+#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSI but HSION is 0
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE) && !HSEON
+#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSE but HSEON is 0
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE) && !defined(HSE_VALUE)
+#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSE but HSE_VALUE is not defined
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && !PLLON
+#error RCC_CFGR_SW_Value is RCC_CFGR_SW_PLL but PLLON is 0
+#endif
+
+// -----------------------------------------------------------------------------
+//      define SYSCLK if not already
+// -----------------------------------------------------------------------------
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI) && !defined(SYSCLK)
+#define SYSCLK  HSI_VALUE
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE) && !defined(SYSCLK)
+#define SYSCLK  HSE_VALUE
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && !defined(SYSCLK)
+#define SYSCLK  ((1uLL * PLL_INPUT * PLL_N) / (PLL_M * PLL_P))
+#endif
+
+// -----------------------------------------------------------------------------
+//      check system clock is in allowed range and correct
+// -----------------------------------------------------------------------------
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI) && (SYSCLK != HSI_VALUE)
+#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSI but SYSCLK does not match HSI_VALUE
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE) && (SYSCLK != HSE_VALUE)
+#error RCC_CFGR_SW_Value is RCC_CFGR_SW_HSE but SYSCLK does not match HSE_VALUE
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && (SYSCLK != ((PLL_INPUT * PLL_N) / (PLL_M * PLL_P)))
+#error RCC_CFGR_SW_Value is RCC_CFGR_SW_PLL but SYSCLK does not match PLL output
+#endif
+
+#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && ((PLL_INPUT * PLL_N) > (SYSCLK_MAX * PLL_M * PLL_P))
+#error System clock exceeds maximum
+#endif
 
 
 // #############################################################################
@@ -1059,16 +1075,6 @@
 // -----------------------------------------------------------------------------
 
 #if (RCC_CFGR_SW_Value != RCC_CFGR_SW_PLL)
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSE) && !defined(SYSCLK)
-
-#define SYSCLK  HSE_VALUE
-#endif
-
-#if (RCC_CFGR_SW_Value == RCC_CFGR_SW_HSI) && !defined(SYSCLK)
-
-#define SYSCLK  HSI_VALUE
-#endif
 
 #if   (SYSCLK <= (APB1CLK_MAX * HPRE * 1)) && !defined(PPRE1)
 #define                                                       PPRE1   1
@@ -1146,15 +1152,17 @@
 #error APB2 clock exceeds maximum
 #endif
 
-#ifndef SYSCLK
-#define SYSCLK    ((1uLL * PLL_INPUT * PLL_N) / (PLL_M * PLL_P               ))
-#endif
-
 #define HCLK      ((1uLL * PLL_INPUT * PLL_N) / (PLL_M * PLL_P * HPRE        ))
 #define APB1_CLK  ((1uLL * PLL_INPUT * PLL_N) / (PLL_M * PLL_P * HPRE * PPRE1))
 #define APB2_CLK  ((1uLL * PLL_INPUT * PLL_N) / (PLL_M * PLL_P * HPRE * PPRE2))
 
 #endif // (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL)
+
+// -----------------------------------------------------------------------------
+//      system core clock
+// -----------------------------------------------------------------------------
+
+#define SYSTEM_CORE_CLOCK  HCLK
 
 
 // #############################################################################
@@ -1163,7 +1171,7 @@
 //
 // #############################################################################
 
-#ifdef RCC_DCKCFGR_TIMPRE_Pos
+#ifdef RCC_DCKCFGR_TIMPRE_Pos // if part has TIMPRE
 
 #ifndef TIMPRE
 #define TIMPRE  1
@@ -1173,13 +1181,13 @@
 #error Invalid definition of TIMPRE (must be 0 or 1)
 #endif
 
-#else  // RCC_DCKCFGR_TIMPRE_Pos
+#else // part has TIMPRE
 
 #ifdef TIMPRE
 #error TIMPRE is defined but is not available on selected part
 #endif
 
-#endif // RCC_DCKCFGR_TIMPRE_Pos
+#endif // part has TIMPRE
 
 // -----------------------------------------------------------------------------
 //      calculate timer clocks (without PLL)
@@ -1187,7 +1195,7 @@
 
 #if (RCC_CFGR_SW_Value != RCC_CFGR_SW_PLL)
 
-#if defined(TIMPRE) && (TIMPRE == 1)
+#if defined(TIMPRE) && TIMPRE
 
 #if (PPRE1 <= 4)
 #define APB1_TIM_CLK    HCLK
@@ -1201,7 +1209,7 @@
 #define APB2_TIM_CLK    ((4uLL * SYSCLK) / (HPRE * PPRE2))
 #endif
 
-#else  // (TIMPRE == 1)
+#else  // TIMPRE
 
 #if (PPRE1 == 1)
 #define APB1_TIM_CLK    APB1_CLK
@@ -1215,7 +1223,7 @@
 #define APB2_TIM_CLK    ((2uLL * SYSCLK) / (HPRE * PPRE2))
 #endif
 
-#endif // (TIMPRE == 1)
+#endif // TIMPRE
 
 #endif // (RCC_CFGR_SW_Value != RCC_CFGR_SW_PLL)
 
@@ -1225,7 +1233,7 @@
 
 #if (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL)
 
-#if defined(TIMPRE) && (TIMPRE == 1)
+#if defined(TIMPRE) && TIMPRE
 
 #if (PPRE1 <= 4)
 #define APB1_TIM_CLK  HCLK
@@ -1239,7 +1247,7 @@
 #define APB2_TIM_CLK  ((4uLL * PLL_INPUT * PLL_N) / (PLL_M * PLL_P * HPRE * PPRE2))
 #endif
 
-#else  // (TIMPRE == 1)
+#else  // TIMPRE
 
 #if (PPRE1 == 1)
 #define APB1_TIM_CLK  APB1_CLK
@@ -1253,7 +1261,7 @@
 #define APB2_TIM_CLK  ((2uLL * PLL_INPUT * PLL_N) / (PLL_M * PLL_P * HPRE * PPRE2))
 #endif
 
-#endif // (TIMPRE == 1)
+#endif // TIMPRE
 
 #endif // (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL)
 
@@ -1297,6 +1305,36 @@
 // #############################################################################
 
 // -----------------------------------------------------------------------------
+//      clock output source enable
+// -----------------------------------------------------------------------------
+
+// only warn for explicitly defined MCO sources, so check here before applying defaults
+
+#if defined(RCC_CFGR_MCO1_Value) && (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSI) && !HSION
+#warning RCC_CFGR_MCO1_Value is RCC_CFGR_MCO1_HSI but HSION is 0
+#endif
+
+#if defined(RCC_CFGR_MCO1_Value) && (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSE) && !HSEON
+#warning RCC_CFGR_MCO1_Value is RCC_CFGR_MCO1_HSE but HSEON is 0
+#endif
+
+#if defined(RCC_CFGR_MCO1_Value) && (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_PLL) && !PLLON
+#warning RCC_CFGR_MCO1_Value is RCC_CFGR_MCO1_PLL but PLLON is 0
+#endif
+
+#if defined(RCC_CFGR_MCO2_Value) && (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_HSE) && !HSEON
+#warning RCC_CFGR_MCO2_Value is RCC_CFGR_MCO2_HSE but HSEON is 0
+#endif
+
+#if defined(RCC_CFGR_MCO2_Value) && (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLL) && !PLLON
+#warning RCC_CFGR_MCO2_Value is RCC_CFGR_MCO2_PLL but PLLON is 0
+#endif
+
+#if defined(RCC_CFGR_MCO2_Value) && (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLLI2S) && !PLLI2SON
+#warning RCC_CFGR_MCO2_Value is RCC_CFGR_MCO2_PLLI2S but PLLI2SON is 0
+#endif
+
+// -----------------------------------------------------------------------------
 //      clock output source definitions
 // -----------------------------------------------------------------------------
 
@@ -1317,68 +1355,23 @@
 #endif
 
 // -----------------------------------------------------------------------------
-//      clock output source enable
-// -----------------------------------------------------------------------------
-
-#if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSI) && !defined(HSION)
-#define HSION  1
-#endif
-
-#if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSE) && !defined(HSEON)
-#define HSEON  1
-#endif
-
-#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_HSE) && !defined(HSEON)
-#define HSEON  1
-#endif
-
-#if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSI) && (HSION != 1)
-#error RCC_CFGR_MCO1_Value is RCC_CFGR_MCO1_HSI but HSION is not 1
-#endif
-
-#if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_HSE) && (HSEON != 1)
-#error RCC_CFGR_MCO1_Value is RCC_CFGR_MCO1_HSE but HSEON is not 1
-#endif
-
-#if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_PLL) && (PLLON != 1)
-#error RCC_CFGR_MCO1_Value is RCC_CFGR_MCO1_PLL but PLLON is not 1
-#endif
-
-#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_HSE) && (HSEON != 1)
-#error RCC_CFGR_MCO2_Value is RCC_CFGR_MCO2_HSE but HSEON is not 1
-#endif
-
-#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLL) && (PLLON != 1)
-#error RCC_CFGR_MCO2_Value is RCC_CFGR_MCO2_PLL but PLLON is not 1
-#endif
-
-#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLLI2S) && (PLLI2SON != 1)
-#error RCC_CFGR_MCO2_Value is RCC_CFGR_MCO2_PLLI2S but PLLI2SON is not 1
-#endif
-
-// -----------------------------------------------------------------------------
 //      clock output minimum dividers
 // -----------------------------------------------------------------------------
 
 #if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_PLL)
-
 #define MCO1PRE_MIN  (((PLL_INPUT * PLL_N) + (PLL_M * PLL_P * OUTPUT_FREQUENCY_MAX) - 1) / (PLL_M * PLL_P * OUTPUT_FREQUENCY_MAX))
 #else
 #define MCO1PRE_MIN  1
 #endif
 
 #if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLL)
-
 #define MCO2PRE_MIN  (((PLL_INPUT * PLL_N) + (PLL_M * PLL_P * OUTPUT_FREQUENCY_MAX) - 1) / (PLL_M * PLL_P * OUTPUT_FREQUENCY_MAX))
 
 #elif (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLLI2S)
-
 #define MCO2PRE_MIN  (((PLL_INPUT * PLLI2S_N) + (PLL_M * PLLI2S_R * OUTPUT_FREQUENCY_MAX) - 1) / (PLL_M * PLLI2S_R * OUTPUT_FREQUENCY_MAX))
 
 #elif (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_SYSCLK) && (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL)
-
-// FIXME should this include HPRE?
-#define MCO2PRE_MIN  (((PLL_INPUT * PLL_N) + (PLL_M * PLL_P * HPRE * OUTPUT_FREQUENCY_MAX) - 1) / (PLL_M * PLL_P * HPRE * OUTPUT_FREQUENCY_MAX))
+#define MCO2PRE_MIN  (((PLL_INPUT * PLL_N) + (PLL_M * PLL_P * OUTPUT_FREQUENCY_MAX) - 1) / (PLL_M * PLL_P * OUTPUT_FREQUENCY_MAX))
 
 #else
 #define MCO2PRE_MIN  1
@@ -1408,20 +1401,20 @@
 //      check clock output frequency
 // -----------------------------------------------------------------------------
 
-#if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_PLL) && (PLLON != 0) && ((PLL_INPUT * PLL_N) > (OUTPUT_FREQUENCY_MAX * PLL_M * PLL_P * MCO1PRE))
-#error MCO1 exceeds maximum output frequency
+#if (RCC_CFGR_MCO1_Value == RCC_CFGR_MCO1_PLL) && ((PLL_INPUT * PLL_N) > (OUTPUT_FREQUENCY_MAX * PLL_M * PLL_P * MCO1PRE))
+#warning MCO1 exceeds maximum output frequency
 #endif
 
-#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLL) && (PLLON != 0) && ((PLL_INPUT * PLL_N) > (OUTPUT_FREQUENCY_MAX * PLL_M * PLL_P * MCO1PRE))
-#error MCO2 exceeds maximum output frequency
+#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLL) && ((PLL_INPUT * PLL_N) > (OUTPUT_FREQUENCY_MAX * PLL_M * PLL_P * MCO1PRE))
+#warning MCO2 exceeds maximum output frequency
 #endif
 
 #if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_SYSCLK) && (RCC_CFGR_SW_Value == RCC_CFGR_SW_PLL) && ((PLL_INPUT * PLL_N) > (OUTPUT_FREQUENCY_MAX * PLL_M * PLL_P * MCO2PRE))
-#error MCO2 exceeds maximum output frequency
+#warning MCO2 exceeds maximum output frequency
 #endif
 
-#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLLI2S) && (PLLI2SON != 0) && ((PLL_INPUT * PLLI2S_N) > (OUTPUT_FREQUENCY_MAX * PLL_M * PLLI2S_R * MCO2PRE))
-#error MCO2 exceeds maximum output frequency
+#if (RCC_CFGR_MCO2_Value == RCC_CFGR_MCO2_PLLI2S) && ((PLL_INPUT * PLLI2S_N) > (OUTPUT_FREQUENCY_MAX * PLL_M * PLLI2S_R * MCO2PRE))
+#warning MCO2 exceeds maximum output frequency
 #endif
 
 
@@ -1447,19 +1440,5 @@
 #error Invalid definition of RTCPRE (must be in [0:31])
 #endif
 
-
-// #############################################################################
-//
-//      oscillators off if unused
-//
-// #############################################################################
-
-#ifndef HSION
-#define HSION  0
-#endif
-
-#ifndef HSEON
-#define HSEON  0
-#endif
 
 #endif // SYSTEM_STM32F405_439_H_INCLUDED

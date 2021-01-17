@@ -25,17 +25,21 @@ STM32F437xx STM32F439xx.
 
 To use system_stm32f405-439.c a header called system_config.h must exist
 somewhere on the include path.  It may be completely empty to use all the
-default settings.  Otherwise it may contain any or none of the macros described
-below.  Any invalid or incompatible values will produce an error.  Those that
-are undefined will take the default value given below.
+default settings.  Otherwise it may contain any of the macros described below.
+Any invalid or incompatible values will produce an error.  Those that are
+undefined will take the default value given below.
+
+In the descriptions below stm32f40x means STM32F405xx STM32F407xx STM32F415xx or
+STM32F417xx, and stm32f42x means STM32F427xx STM32F429xx STM32F437xx or
+STM32F439xx.
 
 VDD_mV (note case): supply voltage in mV, if not defined will assume all voltage dependant features are available
 
-PWR_CR_VOS_Value on stm32f40x: one of PWR_CR_VOS_SCALE3 PWR_CR_VOS_SCALE2 PWR_CR_VOS_SCALE1 default PWR_CR_VOS_SCALE1
-PWR_CR_VOS_Value on stm32f42x: one of PWR_CR_VOS_SCALE2 PWR_CR_VOS_SCALE1 default PWR_CR_VOS_SCALE1
+PWR_CR_VOS_Value on stm32f40x: one of PWR_CR_VOS_SCALE1 PWR_CR_VOS_SCALE2 default PWR_CR_VOS_SCALE1
+PWR_CR_VOS_Value on stm32f42x: one of PWR_CR_VOS_SCALE1 PWR_CR_VOS_SCALE2 PWR_CR_VOS_SCALE3 default PWR_CR_VOS_SCALE1
 
 PWR_CR_ODEN_Value on stm32f40x: must be undefined
-PWR_CR_ODEN_Value on stm32f42x: one of PWR_CR_ODEN_DISABLE PWR_CR_ODEN_ENABLE default PWR_CR_ODEN_ENABLE
+PWR_CR_ODEN_Value on stm32f42x: one of PWR_CR_ODEN_DISABLE PWR_CR_ODEN_ENABLE default PWR_CR_ODEN_ENABLE if supply voltage and regulator setting allows
 
 SYSCFG_CMPCR_CMP_PD_Value one of SYSCFG_CMPCR_CMP_PD_DISABLE SYSCFG_CMPCR_CMP_PD_ENABLE default SYSCFG_CMPCR_CMP_PD_ENABLE if supply voltage allows
 
@@ -47,14 +51,18 @@ HSE_VALUE (if bypass enabled):  1000000 to 50000000 or may be undefined, default
 NB: if HSE_VALUE is not defined then the the less accurate internal RC oscilator (HSI) will be used.
 
 HSION 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0
-HSEON 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0; must be 0 if HSE_VALUE is not defined
+HSEON 0 or 1 default 1 if required for system clock, PLL input or MCO output, else 0
 PLLON 0 or 1 default 1 if required for system clock or MCO output, else 0
 
-SYSCLK may be defined or it will be calculated
+If SYSCLK is defined in system_config.h then the clock source and/or PLL
+parameters will be chosen to provide the value specified or else an error will
+be reported.  If SYSCLK is not defined in system_config.h then the clock source
+and/or PLL parameters will be chosen to provide the maximum allowed clock and
+the resulting value of SYSCLK will be defined.
 
 RCC_CFGR_SW_Value one of RCC_CFGR_SW_HSE RCC_CFGR_SW_HSI RCC_CFGR_SW_PLL default RCC_CFGR_SW_PLL unless PLLON is 0
 
-RCC_PLLCFGR_PLLSRC_Value one of RCC_PLLCFGR_PLLSRC_HSE RCC_PLLCFGR_PLLSRC_HSI default RCC_PLLCFGR_PLLSRC_HSE if HSE_VALUE is defined
+RCC_PLLCFGR_PLLSRC_Value one of RCC_PLLCFGR_PLLSRC_HSE RCC_PLLCFGR_PLLSRC_HSI default RCC_PLLCFGR_PLLSRC_HSE if HSE_VALUE is defined and HSEON is not 0
 
 PLL_M  [2:63]    default depends on clock source
 PLL_N  [50:432]  default depends on clock source
@@ -68,13 +76,13 @@ MODPER     [0:8191]   default 0 if SSCGEN is 0, must be defined if SSCGEN is 1
 
 PLLI2SON   on stm32f40x: 0 or 1    default 0
 PLLI2S_N   on stm32f40x: [50:432]  must be defined if PLLI2SON is 1
-PLLI2S_R   on stm32f40x: [2:7]     must be defined if PLLI2SON is 1
 PLLI2S_Q   on stm32f40x:           must be undefined
+PLLI2S_R   on stm32f40x: [2:7]     must be defined if PLLI2SON is 1
 PLLI2SDIVQ on stm32f40x:           must be undefined
 PLLSAION   on stm32f40x:           must be undefined
 PLLSAI_N   on stm32f40x:           must be undefined
-PLLSAI_R   on stm32f40x:           must be undefined
 PLLSAI_Q   on stm32f40x:           must be undefined
+PLLSAI_R   on stm32f40x:           must be undefined
 PLLSAIDIVQ on stm32f40x:           must be undefined
 PLLSAIDIVR on stm32f40x:           must be undefined
 
@@ -90,17 +98,18 @@ PLLSAI_R   on stm32f42x: [2:7]     must be defined if PLLSAION is 1
 PLLSAIDIVQ on stm32f42x: [1:32]    must be defined if PLLSAION is 1
 PLLSAIDIVR on stm32f42x: 2,4,8,16  must be defined if PLLSAION is 1
 
-RCC_CFGR_MCO1_Value one of RCC_CFGR_MCO1_HSI    RCC_CFGR_MCO1_LSE    RCC_CFGR_MCO1_HSE  RCC_CFGR_MCO1_PLL   default RCC_CFGR_MCO1_HSI
-RCC_CFGR_MCO2_Value one of RCC_CFGR_MCO2_SYSCLK RCC_CFGR_MCO2_PLLI2S RCC_CFGR_MCO2_HSE  RCC_CFGR_MCO2_PLL   default RCC_CFGR_MCO2_SYSCLK
+RCC_CFGR_MCO1_Value one of RCC_CFGR_MCO1_HSI    RCC_CFGR_MCO1_LSE    RCC_CFGR_MCO1_HSE RCC_CFGR_MCO1_PLL default RCC_CFGR_MCO1_HSI
+RCC_CFGR_MCO2_Value one of RCC_CFGR_MCO2_SYSCLK RCC_CFGR_MCO2_PLLI2S RCC_CFGR_MCO2_HSE RCC_CFGR_MCO2_PLL default RCC_CFGR_MCO2_SYSCLK
 
 MCO1PRE  1,2,3,4,5  default lowest possible
 MCO2PRE  1,2,3,4,5  default lowest possible
 
 RTCPRE  0 or [2:31]  default (HSE_VALUE/1000000) if HSE_VALUE defined, else 0
 
-HPRE   1,2,4,8,16,64,128,256,512  default lowest possible
-PPRE1  1,2,4,8,16                 default lowest possible
-PPRE2  1,2,4,8,16                 default lowest possible
+HPRE   1,2,4,8,16,64,128,256,512  default 1
+
+PPRE1  1,2,4,8,16  default lowest possible
+PPRE2  1,2,4,8,16  default lowest possible
 
 TIMPRE on stm32f40x:  must be undefined
 TIMPRE on stm32f42x:  0 or 1 default 1
@@ -108,6 +117,7 @@ TIMPRE on stm32f42x:  0 or 1 default 1
 The following are defined for application use (with uLL suffix):
 
 SYSCLK (if not already defined)
+SYSTEM_CORE_CLOCK
 HCLK
 APB1_CLK
 APB2_CLK
@@ -125,7 +135,10 @@ TIM11_CLK
 TIM12_CLK
 TIM13_CLK
 TIM14_CLK
+FLASH_LATENCY
 
-FIXME does HPRE divide APB clocks?
-FIXME does HPRE divide SYSCLK MCO output?
-FIXME is SYSCLK ever different from HCLK?
+SYSTEM_CORE_CLOCK is the processor core speed; HCLK is the host bus speed.
+
+On STM32Fxxx these are both equal to (SYSCLK / HPRE) but code should use the
+correct identifier to be portable to parts where they might not be the same (eg:
+STM32Hxxx).
