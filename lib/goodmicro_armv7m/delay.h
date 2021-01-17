@@ -41,12 +41,13 @@ extern "C" {
 
 For a delay in seconds or milliseconds etc, C/C++ code should always use the
 inline wrapper functions named in capitals.  If the argument is a compile time
-constant and SYSCLK is defined then the conversion to clock cycles will happen
-at compile time.  If it isn't then the conversion will happen at run time, but
-the time taken to perform the conversion will happen after counting has begun.
+constant and SYSTEM_CORE_CLOCK is defined then the conversion to clock cycles
+will happen at compile time.  If it isn't then the conversion will happen at run
+time, but the time taken to perform the conversion will happen after counting
+has begun.
 
 These functions never delay less than the requested period.  They typically
-exceed it by 14-21 SYSCLK or ~100ns at 180MHz.
+exceed it by 14-21 SYSTEM_CORE_CLOCK periods or ~100ns at 180MHz.
 
 These functions are fully re-entrant: they can be called from interrupt handlers
 or multi-threaded applications even if the interrupted code might itself be
@@ -60,8 +61,9 @@ interrupt returns or the task is rescheduled, then the delay function will
 return immediately when the interruption ends.
 
 A delay will be incorrectly increased if it is interrupted and not allowed to
-run for longer than a whole debug cycle counter wrap period.  Eg: at 180MHz this
-is ~23 seconds.
+run for longer than a whole period of the underlying clock.  Eg: using the
+32-bit debug cycle counter and running at 180MHz this is ~23 seconds; using the
+24-bit SysTick counter and running at 64MHz this is 262ms.
 
 */
 
@@ -72,13 +74,11 @@ void delay_100_ns      (unsigned int);
 void delay_sysclk_long (unsigned long long int);
 void delay_sysclk      (unsigned int);
 
-#ifdef __GNUC__
-
-#ifdef SYSCLK
+#if defined(__GNUC__) && defined(SYSTEM_CORE_CLOCK) && (SYSTEM_CORE_CLOCK != 0)
 
 static inline void __attribute__((always_inline)) DELAY_S(unsigned int seconds)
 {
-  unsigned long long int product = ((unsigned long long int)seconds * SYSCLK);
+  unsigned long long int product = ((unsigned long long int)seconds * SYSTEM_CORE_CLOCK);
 
   if (__builtin_constant_p(product))
   {
@@ -99,7 +99,7 @@ static inline void __attribute__((always_inline)) DELAY_S(unsigned int seconds)
 
 static inline void __attribute__((always_inline)) DELAY_MS(unsigned int milliseconds)
 {
-  unsigned long long int product = (((unsigned long long int)milliseconds * SYSCLK) + 999);
+  unsigned long long int product = (((unsigned long long int)milliseconds * SYSTEM_CORE_CLOCK) + 999);
 
   if (__builtin_constant_p(product))
   {
@@ -120,7 +120,7 @@ static inline void __attribute__((always_inline)) DELAY_MS(unsigned int millisec
 
 static inline void __attribute__((always_inline)) DELAY_US(unsigned int microseconds)
 {
-  unsigned long long int product = (((unsigned long long int)microseconds * SYSCLK) + 999999);
+  unsigned long long int product = (((unsigned long long int)microseconds * SYSTEM_CORE_CLOCK) + 999999);
 
   if (__builtin_constant_p(product))
   {
@@ -141,7 +141,7 @@ static inline void __attribute__((always_inline)) DELAY_US(unsigned int microsec
 
 static inline void __attribute__((always_inline)) DELAY_100_NS(unsigned int t)
 {
-  unsigned long long int product = (((unsigned long long int)t * SYSCLK) + 9999999);
+  unsigned long long int product = (((unsigned long long int)t * SYSTEM_CORE_CLOCK) + 9999999);
 
   if (__builtin_constant_p(product))
   {
@@ -160,24 +160,20 @@ static inline void __attribute__((always_inline)) DELAY_100_NS(unsigned int t)
   }
 }
 
-#else /* SYSCLK */
+#else // defined(__GNUC__) && defined(SYSTEM_CORE_CLOCK) && (SYSTEM_CORE_CLOCK != 0)
 
-#warning include the definition of SYSCLK before including delay.h
-
-#define DELAY_S       delay_s
-#define DELAY_MS      delay_ms
-#define DELAY_US      delay_us
-#define DELAY_100_NS  delay_100_ns
-
-#endif /* SYSCLK */
-#else /* __GNUC__ */
+#ifndef SYSTEM_CORE_CLOCK
+#warning SYSTEM_CORE_CLOCK is not defined, code size will be greater and short delays will be less accurate
+// if system core clock changes at run-time or is not known at compile time then
+// define SYSTEM_CORE_CLOCK to 0 to avoid this warning
+#endif
 
 #define DELAY_S       delay_s
 #define DELAY_MS      delay_ms
 #define DELAY_US      delay_us
 #define DELAY_100_NS  delay_100_ns
 
-#endif /* __GNUC__ */
+#endif // defined(__GNUC__) && defined(SYSTEM_CORE_CLOCK) && (SYSTEM_CORE_CLOCK != 0)
 
 #ifdef __cplusplus
 }

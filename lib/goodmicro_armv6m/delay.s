@@ -16,6 +16,9 @@
 @; problems encountered by those who obtain the software through you.
 
 
+@; delay function using the SysTick timer
+
+
 .syntax unified
 .cpu    cortex-m0
 .thumb

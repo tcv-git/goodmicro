@@ -16,6 +16,10 @@
 @; problems encountered by those who obtain the software through you.
 
 
+@; delay functions using the debug cycle counter
+@; assuming fixed system core clock of 180 MHz
+
+
 .syntax unified
 .cpu    cortex-m3
 .thumb

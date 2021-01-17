@@ -16,7 +16,10 @@
 @; problems encountered by those who obtain the software through you.
 
 
+@; delay functions using the debug cycle counter
+@; assuming fixed system core clock of 176947200 Hz
 @; prime factors are 5^2 3^3 2^18
+
 
 .syntax unified
 .cpu    cortex-m3

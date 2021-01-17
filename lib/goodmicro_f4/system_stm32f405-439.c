@@ -250,7 +250,7 @@
 //
 // #############################################################################
 
-uint32_t SystemCoreClock = SYSCLK;
+uint32_t SystemCoreClock = SYSTEM_CORE_CLOCK;
 
 
 // #############################################################################
@@ -431,5 +431,5 @@ void SystemInit(void)
 
 void SystemCoreClockUpdate(void)
 {
-  SystemCoreClock = SYSCLK;
+  SystemCoreClock = SYSTEM_CORE_CLOCK;
 }
