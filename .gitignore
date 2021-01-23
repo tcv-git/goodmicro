@@ -1,3 +1,4 @@
 .*.sw?
+gdbs_*.log
 output/
 objects/

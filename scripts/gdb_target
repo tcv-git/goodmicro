@@ -1,0 +1,3 @@
+#! /bin/bash -eu
+
+exec gdb-multiarch -x "$(dirname "$BASH_SOURCE")/gdb-server-target.txt" "$@"
