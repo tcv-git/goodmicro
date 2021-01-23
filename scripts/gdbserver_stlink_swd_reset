@@ -1,0 +1,11 @@
+#! /bin/bash -eu
+
+logfile=$(tempfile -d. -p gdbs_ -s .log)
+logfile=$(readlink -e "$logfile")
+
+gdbs_dir='/opt/st/stm32cubeide_1.5.0/plugins/com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.linux64_1.5.0.202011040924/tools/bin'
+stcp_dir='/opt/st/stm32cubeide_1.5.0/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.linux64_1.5.0.202011040924/tools/bin'
+
+cd "$gdbs_dir"
+
+exec ./ST-LINK_gdbserver -e -f "$logfile" -l 31 -p 61234 -r 15 -d -k -cp "$stcp_dir" >/dev/null 2>&1
