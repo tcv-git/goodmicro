@@ -1,0 +1,31 @@
+
+nop.w takes 1 cycle
+
+bl func takes 4 cycles if func is only bx lr
+
+bl delay_sysclk takes at least 14 cycles:
+
+mov r0, 0; bl delay_sysclk takes 15 cycles (1 cycle to set up argument plus 14 for call and return)
+mov r0, 1; bl delay_sysclk takes 15 cycles (1 cycle to set up argument plus 14 for call and return)
+mov r0, 2; bl delay_sysclk takes 15 cycles (1 cycle to set up argument plus 14 for call and return)
+mov r0, 3; bl delay_sysclk takes 15 cycles (1 cycle to set up argument plus 14 for call and return)
+mov r0, 4; bl delay_sysclk takes 22 cycles (1 cycle to set up argument plus 21 for call and return)
+mov r0, 5; bl delay_sysclk takes 22 cycles (1 cycle to set up argument plus 21 for call and return)
+mov r0, 6; bl delay_sysclk takes 22 cycles (1 cycle to set up argument plus 21 for call and return)
+mov r0, 7; bl delay_sysclk takes 22 cycles (1 cycle to set up argument plus 21 for call and return)
+mov r0, 8; bl delay_sysclk takes 22 cycles (1 cycle to set up argument plus 21 for call and return)
+mov r0, 9; bl delay_sysclk takes 22 cycles (1 cycle to set up argument plus 21 for call and return)
+mov r0, 10; bl delay_sysclk takes 22 cycles (1 cycle to set up argument plus 21 for call and return)
+mov r0, 11; bl delay_sysclk takes 29 cycles (1 cycle to set up argument plus 28 for call and return)
+
+etc going up in multiples of 7 cycles
+
+call and return to delay_sysclk always takes (argument + 11) rounded up to multiple of 7 cycles
+
+safe to always subtract 11 from argument (as long as it doesn't end up negative)
+
+delay_ms := delay_sysclk(ceil((ms * (SYSTEM_CORE_CLOCK / 1000)) - 11))
+
+delay_ms := delay_sysclk(floor(((ms * SYSTEM_CORE_CLOCK) - 10001) / 1000))
+
+delay_us := delay_sysclk(floor(((us * SYSTEM_CORE_CLOCK) - 10000001) / 1000000))

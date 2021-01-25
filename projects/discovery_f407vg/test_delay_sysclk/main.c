@@ -19,51 +19,21 @@
 #include <stdint.h>
 #include "stm32f4xx_simple_gpio.h"
 
-
 void test_sequence        (uint32_t sysclk_periods, volatile uint32_t *bsrr_ptr, uint32_t bsrr_value1, uint32_t bsrr_value2);
 void just_return_sequence (uint32_t sysclk_periods, volatile uint32_t *bsrr_ptr, uint32_t bsrr_value1, uint32_t bsrr_value2);
 void nop_sequence         (uint32_t sysclk_periods, volatile uint32_t *bsrr_ptr, uint32_t bsrr_value1, uint32_t bsrr_value2);
 void nonop_sequence       (uint32_t sysclk_periods, volatile uint32_t *bsrr_ptr, uint32_t bsrr_value1, uint32_t bsrr_value2);
 void nomov_sequence       (uint32_t sysclk_periods, volatile uint32_t *bsrr_ptr, uint32_t bsrr_value1, uint32_t bsrr_value2);
 
-#define REAPEATS_DELAY      1
-#define REAPEATS_OTHER  10000
-
-
 int main(void)
 {
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
   (void)RCC->AHB1ENR;
 
-  GPIO_output_push_pull_vfast(GPIOD, PIN12);
+  GPIO_output_push_pull_vfast(GPIOA, PIN3);
 
   for (;;)
   {
-    unsigned int i;
-
-    for (i = 0; i < REAPEATS_DELAY; i++) {
-
-      test_sequence        (500000, &GPIOD->BSRR, PIN12_HI, PIN12_LO);
-    }
-
-    for (i = 0; i < REAPEATS_OTHER; i++) {
-
-      just_return_sequence (0, &GPIOD->BSRR, PIN12_HI, PIN12_LO);
-    }
-
-    for (i = 0; i < REAPEATS_OTHER; i++) {
-
-      nop_sequence         (0, &GPIOD->BSRR, PIN12_HI, PIN12_LO);
-    }
-
-    for (i = 0; i < REAPEATS_OTHER; i++) {
-
-      nonop_sequence       (0, &GPIOD->BSRR, PIN12_HI, PIN12_LO);
-    }
-
-    for (i = 0; i < REAPEATS_OTHER; i++) {
-
-      nomov_sequence       (0, &GPIOD->BSRR, PIN12_HI, PIN12_LO);
-    }
+    test_sequence(4, &GPIOA->BSRR, PIN3_HI, PIN3_LO);
   }
 }
