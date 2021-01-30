@@ -21,9 +21,9 @@ ASFILES += test_delay_sysclk_long.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/disco_f407vg/debug_printf.c
 CFILES += ../../../lib/goodmicro_f4/hwrand.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
+CFILES += debug_printf.c
 CFILES += main.c
 
 # input for C++ compiler
@@ -31,7 +31,7 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
-INCLUDE_PATH += ../../../bsp/disco_f407vg
+INCLUDE_PATH := .
 INCLUDE_PATH += ../../../lib/goodmicro_f4
 INCLUDE_PATH += ../../../lib/goodmicro_armv7m
 INCLUDE_PATH += ../../../lib/goodmicro_cm

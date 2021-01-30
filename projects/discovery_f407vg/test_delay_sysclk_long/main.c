@@ -91,7 +91,7 @@ int main (void)
 
   for (;;)
   {
-    uint64_t delay = (((uint64_t)hwrand32() << 5) ^ hwrand32());
+    uint64_t delay = (((uint64_t)hwrand32() << 3) ^ hwrand32());
    // uint64_t delay = ((uint64_t)hwrand32() & 0xFFFF);
 
     time_delay_sysclk_long(delay, &TIM5->CNT, &DWT->CYCCNT, CLOCK_RATIO);
