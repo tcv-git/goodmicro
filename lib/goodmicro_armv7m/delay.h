@@ -46,8 +46,12 @@ will happen at compile time.  If it isn't then the conversion will happen at run
 time, but the time taken to perform the conversion will happen after counting
 has begun.
 
-These functions never delay less than the requested period.  They typically
-exceed it by 14-21 SYSTEM_CORE_CLOCK periods or ~100ns at 180MHz.
+These functions never delay less than the requested period.  The cycle count
+for a call and return to delay_sysclk or delay_sysclk_long exceeds the argument
+given by 11-21 SYSTEM_CORE_CLOCK periods or ~100ns at 180MHz.  The calls with
+arguments in milliseconds or microseconds etc convert their argument to cycles
+rounding fractions up, and then exceed the resulting cycle count in the same
+way.
 
 These functions are fully re-entrant: they can be called from interrupt handlers
 or multi-threaded applications even if the interrupted code might itself be
@@ -60,8 +64,8 @@ up where it left off").  If an interrupted delay should have ended before the
 interrupt returns or the task is rescheduled, then the delay function will
 return immediately when the interruption ends.
 
-A delay will be incorrectly increased if it is interrupted and not allowed to
-run for longer than a whole period of the underlying clock.  Eg: using the
+A delay will only be incorrectly increased if it is interrupted and not allowed
+to run for longer than a whole period of the underlying clock.  Eg: using the
 32-bit debug cycle counter and running at 180MHz this is ~23 seconds; using the
 24-bit SysTick counter and running at 64MHz this is 262ms.
 
@@ -71,7 +75,7 @@ void delay_s           (unsigned int);
 void delay_ms          (unsigned int);
 void delay_us          (unsigned int);
 void delay_ns          (unsigned int);
-void delay_100_ns      (unsigned int);
+void delay_ns          (unsigned int);
 void delay_sysclk_long (unsigned long long int);
 void delay_sysclk      (unsigned int);
 
@@ -79,17 +83,17 @@ void delay_sysclk      (unsigned int);
 
 static inline void __attribute__((always_inline)) DELAY_S(unsigned int seconds)
 {
-  unsigned long long int product = ((unsigned long long int)seconds * SYSTEM_CORE_CLOCK);
+  unsigned long long int cycles = ((unsigned long long int)seconds * SYSTEM_CORE_CLOCK);
 
-  if (__builtin_constant_p(product))
+  if (__builtin_constant_p(cycles))
   {
-    if (product < (1uLL << 32))
+    if (cycles < (1uLL << 32))
     {
-      delay_sysclk(product);
+      delay_sysclk(cycles);
     }
     else
     {
-      delay_sysclk_long(product);
+      delay_sysclk_long(cycles);
     }
   }
   else
@@ -100,17 +104,17 @@ static inline void __attribute__((always_inline)) DELAY_S(unsigned int seconds)
 
 static inline void __attribute__((always_inline)) DELAY_MS(unsigned int milliseconds)
 {
-  unsigned long long int product = (((unsigned long long int)milliseconds * SYSTEM_CORE_CLOCK) + 999);
+  unsigned long long int cycles = ((((unsigned long long int)milliseconds * SYSTEM_CORE_CLOCK) + 999) / 1000);
 
-  if (__builtin_constant_p(product))
+  if (__builtin_constant_p(cycles))
   {
-    if (product < (1000uLL << 32))
+    if (cycles < (1uLL << 32))
     {
-      delay_sysclk(product / 1000);
+      delay_sysclk(cycles);
     }
     else
     {
-      delay_sysclk_long(product / 1000);
+      delay_sysclk_long(cycles);
     }
   }
   else
@@ -121,17 +125,17 @@ static inline void __attribute__((always_inline)) DELAY_MS(unsigned int millisec
 
 static inline void __attribute__((always_inline)) DELAY_US(unsigned int microseconds)
 {
-  unsigned long long int product = (((unsigned long long int)microseconds * SYSTEM_CORE_CLOCK) + 999999);
+  unsigned long long int cycles = ((((unsigned long long int)microseconds * SYSTEM_CORE_CLOCK) + 999999) / 1000000);
 
-  if (__builtin_constant_p(product))
+  if (__builtin_constant_p(cycles))
   {
-    if (product < (1000000uLL << 32))
+    if (cycles < (1uLL << 32))
     {
-      delay_sysclk(product / 1000000);
+      delay_sysclk(cycles);
     }
     else
     {
-      delay_sysclk_long(product / 1000000);
+      delay_sysclk_long(cycles);
     }
   }
   else
@@ -140,39 +144,40 @@ static inline void __attribute__((always_inline)) DELAY_US(unsigned int microsec
   }
 }
 
-static inline void __attribute__((always_inline)) DELAY_100_NS(unsigned int t)
+static inline void __attribute__((always_inline)) DELAY_NS(unsigned int nanoseconds)
 {
-  unsigned long long int product = (((unsigned long long int)t * SYSTEM_CORE_CLOCK) + 9999999);
+  unsigned long long int cycles = ((((unsigned long long int)nanoseconds * SYSTEM_CORE_CLOCK) + 999999999) / 1000000000);
 
-  if (__builtin_constant_p(product))
+  if (__builtin_constant_p(cycles))
   {
-    if (product < (10000000uLL << 32))
+    if (cycles < (1uLL << 32))
     {
-      delay_sysclk(product / 10000000);
+      delay_sysclk(cycles);
     }
     else
     {
-      delay_sysclk_long(product / 10000000);
+      delay_sysclk_long(cycles);
     }
   }
   else
   {
-    delay_100_ns(t);
+    delay_ns(nanoseconds);
   }
 }
 
 #else // defined(__GNUC__) && defined(SYSTEM_CORE_CLOCK) && (SYSTEM_CORE_CLOCK != 0)
 
-#ifndef SYSTEM_CORE_CLOCK
+#if defined(__GNUC__) && !defined(SYSTEM_CORE_CLOCK)
+
 #warning SYSTEM_CORE_CLOCK is not defined, code size will be greater and short delays will be less accurate
 // if system core clock changes at run-time or is not known at compile time then
 // define SYSTEM_CORE_CLOCK to 0 to avoid this warning
 #endif
 
-#define DELAY_S       delay_s
-#define DELAY_MS      delay_ms
-#define DELAY_US      delay_us
-#define DELAY_100_NS  delay_100_ns
+#define DELAY_S   delay_s
+#define DELAY_MS  delay_ms
+#define DELAY_US  delay_us
+#define DELAY_NS  delay_ns
 
 #endif // defined(__GNUC__) && defined(SYSTEM_CORE_CLOCK) && (SYSTEM_CORE_CLOCK != 0)
 
