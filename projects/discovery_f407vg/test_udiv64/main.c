@@ -16,7 +16,6 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include "delay.h"
 #include "debug_printf.h"
 #include "hwrand.h"
 #include "udiv64.h"
