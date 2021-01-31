@@ -1,4 +1,4 @@
-@; delay_dynamic.s
+@; delay_systick_dynamic.s
 @; PUBLIC DOMAIN
 @; http:///www.purposeful.co.uk/software/goodmicro
 
@@ -19,7 +19,6 @@
 
 
 @; delay functions using the SystemCoreClock variable and the SysTick timer
-@; FIXME use the debug cycle counter
 
 
 .syntax unified
