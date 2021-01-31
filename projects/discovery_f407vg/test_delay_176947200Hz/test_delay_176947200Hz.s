@@ -44,7 +44,7 @@ delay_s:
         ldr r1, [r3]
         ldr r2, =176947200
         umull r0, r12, r0, r2
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_s, .-delay_s
 
@@ -52,8 +52,8 @@ delay_s:
 .section  .text.delay_ms
 .thumb_func
 
-@; delay_ms: := delay_sysclk_long (      r0 * 176947.2   )
-@;           := delay_sysclk_long (ceil (r0 * 884736 / 5))
+@; delay_ms: := delay_coreclk_long (      r0 * 176947.2   )
+@;           := delay_coreclk_long (ceil (r0 * 884736 / 5))
 delay_ms:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
@@ -66,15 +66,15 @@ delay_ms:
         bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov   r12, r1
         pop  {r1, r3, lr}
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_ms, .-delay_ms
 
 
 .section  .text.delay_us
 .thumb_func
-@; delay_us: := delay_sysclk_long (      r0 * 176.9472     )
-@;           := delay_sysclk_long (ceil (r0 * 110592 / 625))
+@; delay_us: := delay_coreclk_long (      r0 * 176.9472     )
+@;           := delay_coreclk_long (ceil (r0 * 110592 / 625))
 delay_us:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
@@ -87,15 +87,15 @@ delay_us:
         bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov   r12, r1
         pop  {r1, r3, lr}
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_us, .-delay_us
 
 
 .section  .text.delay_ns
 .thumb_func
-@; delay_ns: := delay_sysclk_long (      r0 * .1769472      )
-@;           := delay_sysclk_long (ceil (r0 * 13824 / 78125))
+@; delay_ns: := delay_coreclk_long (      r0 * .1769472      )
+@;           := delay_coreclk_long (ceil (r0 * 13824 / 78125))
 delay_ns:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
@@ -110,14 +110,14 @@ delay_ns:
         bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov  r12, r1
         pop  {r1, r3, lr}
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_ns, .-delay_ns
 
 
-.section  .text.delay_sysclk_long
+.section  .text.delay_coreclk_long
 .thumb_func
 
-delay_sysclk_long_inner:
+delay_coreclk_long_inner:
         mov r1, r12
         bx lr

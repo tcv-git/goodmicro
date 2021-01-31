@@ -13,16 +13,17 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 # input for assembler
 ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
+ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_168MHz.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_f4/startup/startup_stm32f4xx.s
 ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f407xx.s
-ASFILES += test_delay_cyccnt_dynamic.s
+ASFILES += test_delay_coreclk_long.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/disco_f407vg/debug_printf.c
 CFILES += ../../../lib/goodmicro_f4/hwrand.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
+CFILES += debug_printf.c
 CFILES += main.c
 
 # input for C++ compiler
@@ -30,7 +31,7 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
-INCLUDE_PATH += ../../../bsp/disco_f407vg
+INCLUDE_PATH := .
 INCLUDE_PATH += ../../../lib/goodmicro_f4
 INCLUDE_PATH += ../../../lib/goodmicro_armv7m
 INCLUDE_PATH += ../../../lib/goodmicro_cm

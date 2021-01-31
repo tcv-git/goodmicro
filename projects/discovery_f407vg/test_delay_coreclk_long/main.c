@@ -26,7 +26,7 @@
 #define COURSE_CLOCK  (SYSTEM_CORE_CLOCK / CLOCK_RATIO)
 
 
-uint64_t test_delay_sysclk_long(uint64_t delay, volatile uint32_t *coarse_clock, volatile uint32_t *fine_clock);
+uint64_t test_delay_coreclk_long(uint64_t delay, volatile uint32_t *coarse_clock, volatile uint32_t *fine_clock);
 
 void coarse_clock_init(void);
 void coarse_clock_init(void)
@@ -49,9 +49,9 @@ void coarse_clock_init(void)
   TIM5->CR1   = TIM_CR1_CEN;
 }
 
-static uint64_t time_delay_sysclk_long(uint64_t delay, volatile uint32_t *coarse_clock, volatile uint32_t *fine_clock, uint32_t clock_ratio)
+static uint64_t time_delay_coreclk_long(uint64_t delay, volatile uint32_t *coarse_clock, volatile uint32_t *fine_clock, uint32_t clock_ratio)
 {
-  uint64_t packed_result = test_delay_sysclk_long(delay, coarse_clock, fine_clock);
+  uint64_t packed_result = test_delay_coreclk_long(delay, coarse_clock, fine_clock);
 
   uint32_t coarse_time = (packed_result & UINT32_MAX);
   uint32_t fine_time = (packed_result >> 32);
@@ -94,6 +94,6 @@ int main (void)
     uint64_t delay = (((uint64_t)hwrand32() << 3) ^ hwrand32());
    // uint64_t delay = ((uint64_t)hwrand32() & 0xFFFF);
 
-    time_delay_sysclk_long(delay, &TIM5->CNT, &DWT->CYCCNT, CLOCK_RATIO);
+    time_delay_coreclk_long(delay, &TIM5->CNT, &DWT->CYCCNT, CLOCK_RATIO);
   }
 }

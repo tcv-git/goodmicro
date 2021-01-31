@@ -1,4 +1,4 @@
-@; test_delay_sysclk_long.s
+@; test_delay_coreclk_long.s
 @; PUBLIC DOMAIN
 @; http:///www.purposeful.co.uk/software/goodmicro
 
@@ -20,25 +20,25 @@
 .cpu    cortex-m3
 .thumb
 
-.global   test_delay_sysclk_long
-.type     test_delay_sysclk_long, %function
+.global   test_delay_coreclk_long
+.type     test_delay_coreclk_long, %function
 
-.section  .text.test_delay_sysclk_long
+.section  .text.test_delay_coreclk_long
 .thumb_func
 
-@; uint64_t test_delay_sysclk_long(uint64_t delay, uint32_t *coarse_clock, uint32_t *fine_clock)
+@; uint64_t test_delay_coreclk_long(uint64_t delay, uint32_t *coarse_clock, uint32_t *fine_clock)
 
-test_delay_sysclk_long:
+test_delay_coreclk_long:
   push {r3-r7,lr}
   mov r4, r2
   mov r5, r3
   ldr r6, [r4]
   ldr r7, [r5]
-  bl delay_sysclk_long
+  bl delay_coreclk_long
   ldr r1, [r5]
   ldr r0, [r4]
   subs r0, r6
   subs r1, r7
   pop {r3-r7,pc}
 
-.size test_delay_sysclk_long, .-test_delay_sysclk_long
+.size test_delay_coreclk_long, .-test_delay_coreclk_long

@@ -27,22 +27,22 @@
 .global   delay_ms
 .global   delay_us
 .global   delay_100_ns
-.global   delay_sysclk_long
-.global   delay_sysclk
+.global   delay_coreclk
+.global   delay_coreclk_long
 
-.type     delay_s          , %function
-.type     delay_ms         , %function
-.type     delay_us         , %function
-.type     delay_100_ns     , %function
-.type     delay_sysclk_long, %function
-.type     delay_sysclk     , %function
+.type     delay_s            , %function
+.type     delay_ms           , %function
+.type     delay_us           , %function
+.type     delay_100_ns       , %function
+.type     delay_coreclk      , %function
+.type     delay_coreclk_long , %function
 
-@ void delay_s           (unsigned int)
-@ void delay_ms          (unsigned int)
-@ void delay_us          (unsigned int)
-@ void delay_100_ns      (unsigned int)
-@ void delay_sysclk_long (unsigned long long int)
-@ void delay_sysclk      (unsigned int)
+@ void delay_s            (unsigned int)
+@ void delay_ms           (unsigned int)
+@ void delay_us           (unsigned int)
+@ void delay_100_ns       (unsigned int)
+@ void delay_coreclk      (unsigned int)
+@ void delay_coreclk_long (unsigned long long int)
 
 .section  .text
 
@@ -143,7 +143,7 @@ delay_100_ns:
 
 .thumb_func
 
-delay_sysclk_long:
+delay_coreclk_long:
         ldr r3, =0xE000E010
         ldr r2, [r3, 8]
 .Llong_start:
@@ -163,7 +163,7 @@ delay_sysclk_long:
         pop {r4,lr}
         b .Lloop
 
-.size delay_sysclk_long, .-.Llong_loop_pre_start
+.size delay_coreclk_long, .-.Llong_loop_pre_start
 
 .thumb_func
 
@@ -174,7 +174,7 @@ delay_sysclk_long:
 
 .thumb_func
 
-delay_sysclk:
+delay_coreclk:
         ldr r3, =0xE000E010
         ldr r2, [r3, 8]
 .Lloop_start:
@@ -190,4 +190,4 @@ delay_sysclk:
         bhi .Lloop
         bx lr
 
-.size delay_sysclk, .-.Lloop_pre_start
+.size delay_coreclk, .-.Lloop_pre_start

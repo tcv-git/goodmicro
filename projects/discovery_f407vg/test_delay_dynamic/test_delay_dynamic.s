@@ -27,23 +27,22 @@
 .global   delay_ms
 .global   delay_us
 .global   delay_ns
-.global   delay_sysclk_long
-.global   delay_sysclk
+.global   delay_coreclk
+.global   delay_coreclk_long
 
-.type     delay_s          , %function
-.type     delay_ms         , %function
-.type     delay_us         , %function
-.type     delay_ns         , %function
-.type     delay_sysclk_long, %function
-.type     delay_sysclk     , %function
+.type     delay_s            , %function
+.type     delay_ms           , %function
+.type     delay_us           , %function
+.type     delay_ns           , %function
+.type     delay_coreclk      , %function
+.type     delay_coreclk_long , %function
 
-@ void delay_s           (unsigned int)
-@ void delay_ms          (unsigned int)
-@ void delay_us          (unsigned int)
-@ void delay_ns          (unsigned int)
-@ void delay_sysclk_long (unsigned long long int)
-@ void delay_sysclk      (unsigned int)
-
+@ void delay_s            (unsigned int)
+@ void delay_ms           (unsigned int)
+@ void delay_us           (unsigned int)
+@ void delay_ns           (unsigned int)
+@ void delay_coreclk      (unsigned int)
+@ void delay_coreclk_long (unsigned long long int)
 
 
 .section  .text.delay_s
@@ -55,7 +54,7 @@ delay_s:
         ldr r2, =SystemCoreClock
         ldr r2, [r2]
         umull r0, r12, r0, r2
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_s, .-delay_s
 
@@ -78,7 +77,7 @@ delay_ms:
         bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov   r12, r1
         pop  {r1, r3, lr}
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_ms, .-delay_ms
 
@@ -101,7 +100,7 @@ delay_us:
         bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov   r12, r1
         pop  {r1, r3, lr}
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_us, .-delay_us
 
@@ -124,14 +123,14 @@ delay_ns:
         bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov   r12, r1
         pop  {r1, r3, lr}
-        b.n delay_sysclk_long_inner
+        b.n delay_coreclk_long_inner
 
 .size delay_ns, .-delay_ns
 
 
-.section  .text.delay_sysclk_long
+.section  .text.delay_coreclk_long
 .thumb_func
 
-delay_sysclk_long_inner:
+delay_coreclk_long_inner:
         mov r1, r12
         bx lr

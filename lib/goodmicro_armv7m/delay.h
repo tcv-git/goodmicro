@@ -47,11 +47,11 @@ time, but the time taken to perform the conversion will happen after counting
 has begun.
 
 These functions never delay less than the requested period.  The cycle count
-for a call and return to delay_sysclk or delay_sysclk_long exceeds the argument
-given by 11-21 SYSTEM_CORE_CLOCK periods or ~100ns at 180MHz.  The calls with
-arguments in milliseconds or microseconds etc convert their argument to cycles
-rounding fractions up, and then exceed the resulting cycle count in the same
-way.
+for a call and return to delay_coreclk or delay_coreclk_long exceeds the
+argument given by 11-21 SYSTEM_CORE_CLOCK periods or ~100ns at 180MHz.  The
+calls with arguments in milliseconds or microseconds etc convert their argument
+to cycles rounding fractions up, and then exceed the resulting cycle count in
+the same way.
 
 These functions are fully re-entrant: they can be called from interrupt handlers
 or multi-threaded applications even if the interrupted code might itself be
@@ -71,13 +71,13 @@ to run for longer than a whole period of the underlying clock.  Eg: using the
 
 */
 
-void delay_s           (unsigned int);
-void delay_ms          (unsigned int);
-void delay_us          (unsigned int);
-void delay_ns          (unsigned int);
-void delay_ns          (unsigned int);
-void delay_sysclk_long (unsigned long long int);
-void delay_sysclk      (unsigned int);
+void delay_s            (unsigned int);
+void delay_ms           (unsigned int);
+void delay_us           (unsigned int);
+void delay_ns           (unsigned int);
+void delay_ns           (unsigned int);
+void delay_coreclk      (unsigned int);
+void delay_coreclk_long (unsigned long long int);
 
 #if defined(__GNUC__) && defined(SYSTEM_CORE_CLOCK) && (SYSTEM_CORE_CLOCK != 0)
 
@@ -89,11 +89,11 @@ static inline void __attribute__((always_inline)) DELAY_S(unsigned int seconds)
   {
     if (cycles < (1uLL << 32))
     {
-      delay_sysclk(cycles);
+      delay_coreclk(cycles);
     }
     else
     {
-      delay_sysclk_long(cycles);
+      delay_coreclk_long(cycles);
     }
   }
   else
@@ -110,11 +110,11 @@ static inline void __attribute__((always_inline)) DELAY_MS(unsigned int millisec
   {
     if (cycles < (1uLL << 32))
     {
-      delay_sysclk(cycles);
+      delay_coreclk(cycles);
     }
     else
     {
-      delay_sysclk_long(cycles);
+      delay_coreclk_long(cycles);
     }
   }
   else
@@ -131,11 +131,11 @@ static inline void __attribute__((always_inline)) DELAY_US(unsigned int microsec
   {
     if (cycles < (1uLL << 32))
     {
-      delay_sysclk(cycles);
+      delay_coreclk(cycles);
     }
     else
     {
-      delay_sysclk_long(cycles);
+      delay_coreclk_long(cycles);
     }
   }
   else
@@ -152,11 +152,11 @@ static inline void __attribute__((always_inline)) DELAY_NS(unsigned int nanoseco
   {
     if (cycles < (1uLL << 32))
     {
-      delay_sysclk(cycles);
+      delay_coreclk(cycles);
     }
     else
     {
-      delay_sysclk_long(cycles);
+      delay_coreclk_long(cycles);
     }
   }
   else
