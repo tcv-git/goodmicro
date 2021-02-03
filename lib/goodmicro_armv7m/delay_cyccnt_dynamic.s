@@ -18,8 +18,9 @@
 @; through you.
 
 
+@;##############################################################################
 @; delay functions using the SystemCoreClock variable and the debug cycle counter
-
+@;##############################################################################
 
 .syntax unified
 .cpu    cortex-m3
@@ -47,23 +48,27 @@
 @ void delay_coreclk_long (unsigned long long int)
 
 
+@;##############################################################################
 .section  .text.delay_s
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_s:
-        ldr r3, =0xE0001004
-        ldr r1, [r3]
-        ldr r2, =SystemCoreClock
-        ldr r2, [r2]
+        ldr   r3, =0xE0001004
+        ldr   r1, [r3]
+        ldr   r2, =SystemCoreClock
+        ldr   r2, [r2]
         umull r0, r12, r0, r2
         b.n delay_coreclk_long_inner
 
 .size delay_s, .-delay_s
 
 
+@;##############################################################################
 .section  .text.delay_ms
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_ms:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
@@ -84,9 +89,11 @@ delay_ms:
 .size delay_ms, .-delay_ms
 
 
+@;##############################################################################
 .section  .text.delay_us
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_us:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
@@ -94,8 +101,8 @@ delay_us:
         ldr   r3, =SystemCoreClock
         ldr   r2, =999999
         ldr   r1, [r3]
-        movw  r3, 4294 @; ((1 << 32) / 1000000)
         umull r0, r1, r0, r1
+        movw  r3, 4294 @; ((1 << 32) / 1000000)
         adds  r0, r2
         adcs  r1, 0
         adds  r2, 1
@@ -107,9 +114,11 @@ delay_us:
 .size delay_us, .-delay_us
 
 
+@;##############################################################################
 .section  .text.delay_ns
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_ns:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
@@ -130,9 +139,11 @@ delay_ns:
 .size delay_ns, .-delay_ns
 
 
+@;##############################################################################
 .section  .text.delay_coreclk_long
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_coreclk_long:
         ldr r3, =0xE0001004
         ldr r2, [r3]
@@ -150,9 +161,11 @@ delay_coreclk_long_inner:
 .size delay_coreclk_long, .-delay_coreclk_long
 
 
+@;##############################################################################
 .section  .text.delay_coreclk
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_coreclk:
         ldr r3, =0xE0001004
         ldr r2, [r3]
