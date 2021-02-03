@@ -16,8 +16,9 @@
 @; problems encountered by those who obtain the software through you.
 
 
+@;##############################################################################
 @; delay functions using the SystemCoreClock variable and the SysTick timer
-
+@;##############################################################################
 
 .syntax unified
 .cpu    cortex-m3
@@ -26,168 +27,162 @@
 .global   delay_s
 .global   delay_ms
 .global   delay_us
-.global   delay_100_ns
+.global   delay_ns
 .global   delay_coreclk
 .global   delay_coreclk_long
 
 .type     delay_s            , %function
 .type     delay_ms           , %function
 .type     delay_us           , %function
-.type     delay_100_ns       , %function
+.type     delay_ns           , %function
 .type     delay_coreclk      , %function
 .type     delay_coreclk_long , %function
 
 @ void delay_s            (unsigned int)
 @ void delay_ms           (unsigned int)
 @ void delay_us           (unsigned int)
-@ void delay_100_ns       (unsigned int)
+@ void delay_ns           (unsigned int)
 @ void delay_coreclk      (unsigned int)
 @ void delay_coreclk_long (unsigned long long int)
 
-.section  .text
+
+@;##############################################################################
+.section  .text.delay_s
+@;##############################################################################
 
 .thumb_func
-
 delay_s:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        cbnz r0, .Lnonzero_s
-        bx lr
-.Lnonzero_s:
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        ldr   r1, =SystemCoreClock
+        ldr   r1, [r1]
         umull r0, r1, r0, r1
-        b .Llong_start
+        b.n   delay_coreclk_long_push
 
 .size delay_s, .-delay_s
 
-.thumb_func
 
+@;##############################################################################
+.section  .text.delay_ms
+@;##############################################################################
+
+.thumb_func
 delay_ms:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        cbnz r0, .Lnonzero_ms
-        bx lr
-.Lnonzero_ms:
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
-        movw r12, 999
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        push {r2, r3, lr}
+        ldr   r1, =SystemCoreClock
+        ldr   r3, =4294967 @; ((1 << 32) / 1000)
+        ldr   r1, [r1]
         umull r0, r1, r0, r1
-        adds r0, r12
-        adcs r1, 0
-        beq .Lloop_pre_start
-        push {r4,lr}
-        mov r4, r2
-        add r2, r12, 1
-        ldr r3, =4294967
-        adr lr, .Llong_loop_pre_start + 1 @; +1 for interworking address
-        b udiv64i
+        movw  r2, 999
+        adds  r0, r2
+        adcs  r1, 0
+        adds  r2, 1
+        bl    udiv64i @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        pop  {r2, r3}
+        b.n   delay_coreclk_long_start
 
 .size delay_ms, .-delay_ms
 
-.thumb_func
 
+@;##############################################################################
+.section  .text.delay_us
+@;##############################################################################
+
+.thumb_func
 delay_us:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        cbnz r0, .Lnonzero_us
-        bx lr
-.Lnonzero_us:
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
-        ldr r12, =999999
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        push {r2, r3, lr}
+        ldr   r1, =SystemCoreClock
+        ldr   r2, =999999
+        ldr   r1, [r1]
         umull r0, r1, r0, r1
-        adds r0, r12
-        adcs r1, 0
-        beq .Lloop_pre_start
-        push {r4,lr}
-        mov r4, r2
-        add r2, r12, 1
-        movw r3, 4294
-        adr lr, .Llong_loop_pre_start + 1 @; +1 for interworking address
-        b udiv64i
+        movw  r3, 4294 @; ((1 << 32) / 1000000)
+        adds  r0, r2
+        adcs  r1, 0
+        adds  r2, 1
+        bl    udiv64i @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        pop  {r2, r3}
+        b.n   delay_coreclk_long_start
 
 .size delay_us, .-delay_us
 
-.thumb_func
 
-delay_100_ns:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        cbnz r0, .Lnonzero_100_ns
-        bx lr
-.Lnonzero_100_ns:
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
-        ldr r12, =9999999
+@;##############################################################################
+.section  .text.delay_ns
+@;##############################################################################
+
+.thumb_func
+delay_ns:
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        push {r2, r3, lr}
+        ldr   r1, =SystemCoreClock
+        ldr   r2, =999999999
+        ldr   r1, [r1]
         umull r0, r1, r0, r1
-        adds r0, r12
-        adcs r1, 0
-        beq .Lloop_pre_start
-        push {r4,lr}
-        mov r4, r2
-        add r2, r12, 1
-        movw r3, 429
-        adr lr, .Llong_loop_pre_start + 1 @; +1 for interworking address
-        b udiv64i
+        movs  r3, 4 @; ((1 << 32) / 1000000000)
+        adds  r0, r2
+        adcs  r1, 0
+        adds  r2, 1
+        bl    udiv64i @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        pop  {r2, r3}
+        b.n   delay_coreclk_long_start
 
-.size delay_100_ns, .-delay_100_ns
+.size delay_ns, .-delay_ns
 
-.thumb_func
 
-.Llong_loop_pre_start:
-        ldr r3, =0xE000E010
-        ldr r12, [r3, 4]
-        add r12, 1
-        b .Llong_loop_start
+@;##############################################################################
+.section  .text.delay_coreclk_long
+@;##############################################################################
 
 .thumb_func
-
 delay_coreclk_long:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-.Llong_start:
-        ldr r12, [r3, 4]
-        add r12, 1
-        push {r4,lr}
-.Llong_loop:
-        mov r4, r2
-.Llong_loop_start:
-        ldr r2, [r3, 8]
-        subs r4, r2
-        it lo
-        addlo r4, r12
-        subs r0, r4
-        sbcs r1, 0
-        bhi .Llong_loop
-        pop {r4,lr}
-        b .Lloop
-
-.size delay_coreclk_long, .-.Llong_loop_pre_start
-
-.thumb_func
-
-.Lloop_pre_start:
-        add r12, 1
-        udiv r0, r12
-        b .Lloop_start
-
-.thumb_func
-
-delay_coreclk:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-.Lloop_start:
-        ldr r12, [r3, 4]
-        add r12, 1
-.Lloop:
-        mov r1, r2
-        ldr r2, [r3, 8]
-        subs r1, r2
-        it lo
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+delay_coreclk_long_push:
+        push {lr}
+delay_coreclk_long_start:
+        mov   lr, r1
+        ldr   r12, [r3, 4]
+        add   r12, 1
+1:      mov   r1, r2
+        ldr   r2, [r3, 8]
+        subs  r1, r2
+        it    lo
         addlo r1, r12
-        subs r0, r1
-        bhi .Lloop
-        bx lr
+        subs  r0, r1
+        sbcs  lr, 0
+        bhi   1b
+        pop  {lr}
+        b.n   delay_coreclk_loop
 
-.size delay_coreclk, .-.Lloop_pre_start
+.size delay_coreclk_long, . - delay_coreclk_long
+
+
+@;##############################################################################
+.section  .text.delay_coreclk
+@;##############################################################################
+
+.thumb_func
+delay_coreclk:
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+delay_coreclk_start:
+        ldr   r12, [r3, 4]
+        add   r12, 1
+delay_coreclk_loop:
+        mov   r1, r2
+        ldr   r2, [r3, 8]
+        subs  r1, r2
+        it    lo
+        addlo r1, r12
+        subs  r0, r1
+        bhi   delay_coreclk_loop
+        bx    lr
+
+.size delay_coreclk, . - delay_coreclk
+
+@;##############################################################################
