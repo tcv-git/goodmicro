@@ -16,7 +16,10 @@ ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_f4/startup/startup_stm32f4xx.s
 ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f407xx.s
-ASFILES += test_delay_84MHz.s
+#ASFILES += test_delay_84MHz.s
+#ASFILES += test_delay_168MHz.s
+#ASFILES += test_delay_176947200Hz.s
+ASFILES += test_delay_180MHz.s
 
 # input for C compiler
 CFILES :=
