@@ -19,7 +19,7 @@
 
 
 @;##############################################################################
-@; delay functions using the SystemCoreClock variable and the SysTick timer
+@; delay functions using the SysTick timer and the SystemCoreClock variable
 @;##############################################################################
 
 .syntax unified
@@ -61,7 +61,7 @@ delay_s:
         umull r0, r1, r0, r1
         b.n   delay_coreclk_long_push
 
-.size delay_s, .-delay_s
+.size delay_s, . - delay_s
 
 
 @;##############################################################################
@@ -85,7 +85,7 @@ delay_ms:
         pop  {r2, r3}
         b.n   delay_coreclk_long_start
 
-.size delay_ms, .-delay_ms
+.size delay_ms, . - delay_ms
 
 
 @;##############################################################################
@@ -109,7 +109,7 @@ delay_us:
         pop  {r2, r3}
         b.n   delay_coreclk_long_start
 
-.size delay_us, .-delay_us
+.size delay_us, . - delay_us
 
 
 @;##############################################################################
@@ -133,7 +133,7 @@ delay_ns:
         pop  {r2, r3}
         b.n   delay_coreclk_long_start
 
-.size delay_ns, .-delay_ns
+.size delay_ns, . - delay_ns
 
 
 @;##############################################################################
