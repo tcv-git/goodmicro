@@ -6,15 +6,15 @@
 #define VDD_mV         3000
 
 #define HSE_VALUE   8000000u
-#define SYSCLK     60000000u
+#define SYSCLK     30000000u
 
 #define PLL_M             4
 #define PLL_N            60
-#define PLL_P             2
+#define PLL_P             4
 
 #define SSCGEN            0
 
-#define HPRE              2
+#define HPRE              1
 #define PPRE1             1
 #define PPRE2             1
 
