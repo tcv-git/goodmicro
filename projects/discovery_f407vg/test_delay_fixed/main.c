@@ -22,7 +22,10 @@
 #include "debug_printf.h"
 #include "hwrand.h"
 
-#define CLK 176947200uLL
+//#define CLK  84000000uLL
+//#define CLK 168000000uLL
+//#define CLK 176947200uLL
+#define CLK 180000000uLL
 
 unsigned long long int delay_s (unsigned int);
 unsigned long long int delay_ms(unsigned int);
