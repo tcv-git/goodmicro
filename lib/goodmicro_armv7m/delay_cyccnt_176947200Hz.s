@@ -153,7 +153,7 @@ delay_coreclk_long_inner:
         adds r0, r1
         adcs r12, -1
         bhi 1b
-        bcs delay_coreclk_inner
+        bcs delay_coreclk_loop
         bx lr
 
 .size delay_coreclk_long, . - delay_coreclk_long
@@ -167,12 +167,12 @@ delay_coreclk_long_inner:
 delay_coreclk:
         ldr r3, =0xE0001004
         ldr r2, [r3]
-delay_coreclk_inner:
+delay_coreclk_loop:
         mov r1, r2
         ldr r2, [r3]
         subs r1, r2
         adds r0, r1
-        bhi delay_coreclk_inner
+        bhi delay_coreclk_loop
         bx lr
 
 .size delay_coreclk, . - delay_coreclk
