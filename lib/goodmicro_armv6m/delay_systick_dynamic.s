@@ -52,16 +52,16 @@
 
 .thumb_func
 delay_s:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        push {r2,lr}
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
-        bl mul_u32_u32
-        pop {r2,r3}
-        mov lr, r3
-        ldr r3, =0xE000E010
-        b.n delay_coreclk_long_start
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        ldr   r1, =SystemCoreClock
+        ldr   r1, [r1]
+        push  {r2, lr}
+        bl    mul_u32_u32
+        pop   {r2, r3}
+        mov   lr, r3
+        ldr   r3, =0xE000E010
+        b.n   delay_coreclk_long_start
 
 .size delay_s, . - delay_s
 
@@ -71,22 +71,22 @@ delay_s:
 
 .thumb_func
 delay_ms:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        push {r2,lr}
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
-        bl mul_u32_u32
-        ldr r2, =999
-        movs r3, 0
-        adds r0, r2
-        adcs r1, r3
-        adds r2, 1
-        bl __aeabi_uldivmod
-        pop {r2,r3}
-        mov lr, r3
-        ldr r3, =0xE000E010
-        b.n delay_coreclk_long_start
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        ldr   r1, =SystemCoreClock
+        ldr   r1, [r1]
+        push  {r2, lr}
+        bl    mul_u32_u32
+        ldr   r2, =999
+        movs  r3, 0
+        adds  r0, r2
+        adcs  r1, r3
+        adds  r2, 1
+        bl    __aeabi_uldivmod
+        pop   {r2, r3}
+        mov   lr, r3
+        ldr   r3, =0xE000E010
+        b.n   delay_coreclk_long_start
 
 .size delay_ms, . - delay_ms
 
@@ -97,22 +97,22 @@ delay_ms:
 
 .thumb_func
 delay_us:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        push {r2,lr}
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
-        bl mul_u32_u32
-        ldr r2, =999999
-        movs r3, 0
-        adds r0, r2
-        adcs r1, r3
-        adds r2, 1
-        bl __aeabi_uldivmod
-        pop {r2,r3}
-        mov lr, r3
-        ldr r3, =0xE000E010
-        b.n delay_coreclk_long_start
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        ldr   r1, =SystemCoreClock
+        ldr   r1, [r1]
+        push  {r2, lr}
+        bl    mul_u32_u32
+        ldr   r2, =999999
+        movs  r3, 0
+        adds  r0, r2
+        adcs  r1, r3
+        adds  r2, 1
+        bl    __aeabi_uldivmod
+        pop   {r2, r3}
+        mov   lr, r3
+        ldr   r3, =0xE000E010
+        b.n   delay_coreclk_long_start
 
 .size delay_us, . - delay_us
 
@@ -123,22 +123,22 @@ delay_us:
 
 .thumb_func
 delay_ns:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-        push {r2,lr}
-        ldr r1, =SystemCoreClock
-        ldr r1, [r1]
-        bl mul_u32_u32
-        ldr r2, =999999999
-        movs r3, 0
-        adds r0, r2
-        adcs r1, r3
-        adds r2, 1
-        bl __aeabi_uldivmod
-        pop {r2,r3}
-        mov lr, r3
-        ldr r3, =0xE000E010
-        b.n delay_coreclk_long_start
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        ldr   r1, =SystemCoreClock
+        ldr   r1, [r1]
+        push  {r2, lr}
+        bl    mul_u32_u32
+        ldr   r2, =999999999
+        movs  r3, 0
+        adds  r0, r2
+        adcs  r1, r3
+        adds  r2, 1
+        bl    __aeabi_uldivmod
+        pop   {r2, r3}
+        mov   lr, r3
+        ldr   r3, =0xE000E010
+        b.n   delay_coreclk_long_start
 
 
 .size delay_ns, . - delay_ns
@@ -150,27 +150,25 @@ delay_ns:
 
 .thumb_func
 delay_coreclk_long:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
 delay_coreclk_long_start:
-        tst r1, r1
-        beq.n delay_coreclk_start
-        push {r4}
-        ldr r4, [r3, 4]
-        adds r4, 1
-        mov r12, r4
-1:      mov r4, r2
-        ldr r2, [r3, 8]
-        subs r4, r2
-        bhs 2f
-        add r4, r12
-2:      subs r0, r4
-        movs r4, 0
-        sbcs r1, r4
-        bhi 1b
-        pop {r4}
+        push  {r4}
+        ldr   r4, [r3, 4]
+        adds  r4, 1
+        mov   r12, r4
+1:      mov   r4, r2
+        ldr   r2, [r3, 8]
+        subs  r4, r2
+        bhs   2f
+        add   r4, r12
+2:      subs  r0, r4
+        movs  r4, 0
+        sbcs  r1, r4
+        bhi   1b
+        pop   {r4}
         bcs.n delay_coreclk_loop
-        bx lr
+        bx    lr
 
 .size delay_coreclk_long, . - delay_coreclk_long
 
@@ -181,22 +179,22 @@ delay_coreclk_long_start:
 
 .thumb_func
 delay_coreclk:
-        ldr r3, =0xE000E010
-        ldr r2, [r3, 8]
-delay_coreclk_start:
-        ldr r1, [r3, 4]
-        adds r1, 1
-        mov r12, r1
+        ldr   r3, =0xE000E010
+        ldr   r2, [r3, 8]
+        ldr   r1, [r3, 4]
+        adds  r1, 1
+        mov   r12, r1
 delay_coreclk_loop:
-        mov r1, r2
-        ldr r2, [r3, 8]
-        subs r1, r2
-        bhs 2f
-        add r1, r12
-2:      subs r0, r1
-        bhi delay_coreclk_loop
-        bx lr
+        mov   r1, r2
+        ldr   r2, [r3, 8]
+        subs  r1, r2
+        bhs   2f
+        add   r1, r12
+2:      subs  r0, r1
+        bhi   delay_coreclk_loop
+        bx    lr
 
 .size delay_coreclk, . - delay_coreclk
+
 
 @;##############################################################################

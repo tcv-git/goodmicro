@@ -54,11 +54,11 @@
 
 .thumb_func
 delay_s:
-        ldr r3, =0xE0001004
-        ldr r1, [r3]
-        ldr r2, =176947200
+        ldr   r3, =0xE0001004
+        ldr   r1, [r3]
+        ldr   r2, =176947200
         umull r0, r12, r0, r2
-        b.n delay_coreclk_long_inner
+        b.n   delay_coreclk_long_inner
 
 .size delay_s, . - delay_s
 
@@ -73,16 +73,16 @@ delay_s:
 delay_ms:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
-        push {r1, r3, lr}
-        ldr   r1, =884736    @; 176947.2 * 5
+        push  {r1, r3, lr}
+        ldr   r1, =884736  @; 176947.2 * 5
         umull r0, r1, r0, r1
-        ldr   r3, =858993459 @; 2^32     / 5
-        adds  r0, 4   @; no need to adc r1 because carry must be zero
+        ldr   r3, =858993459  @; 2^32     / 5
+        adds  r0, 4  @; no need to adc r1 because carry must be zero
         mov   r2, 5
-        bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        bl    udiv64i  @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov   r12, r1
-        pop  {r1, r3, lr}
-        b.n delay_coreclk_long_inner
+        pop   {r1, r3, lr}
+        b.n   delay_coreclk_long_inner
 
 .size delay_ms, . - delay_ms
 
@@ -97,16 +97,16 @@ delay_ms:
 delay_us:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
-        push {r1, r3, lr}
-        ldr   r3, =6871947   @; 2^32     / 625
-        mov.w r1, 110592     @; 176.9472 * 625
+        push  {r1, r3, lr}
+        ldr   r3, =6871947  @; 2^32     / 625
+        mov.w r1, 110592    @; 176.9472 * 625
         umull r0, r1, r0, r1
-        add.w r0, 624   @; no need to adc r1 because carry must be zero
+        add.w r0, 624  @; no need to adc r1 because carry must be zero
         movw  r2, 625
-        bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        bl    udiv64i  @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
         mov   r12, r1
-        pop  {r1, r3, lr}
-        b.n delay_coreclk_long_inner
+        pop   {r1, r3, lr}
+        b.n   delay_coreclk_long_inner
 
 .size delay_us, . - delay_us
 
@@ -121,7 +121,7 @@ delay_us:
 delay_ns:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
-        push {r1, r3, lr}
+        push  {r1, r3, lr}
         ldr   r2, =78124
         movw  r1, 13824
         umull r0, r1, r0, r1
@@ -129,10 +129,10 @@ delay_ns:
         adds  r0, r2
         adcs  r1, 0
         adds  r2, 1
-        bl udiv64i    @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
-        mov  r12, r1
-        pop  {r1, r3, lr}
-        b.n delay_coreclk_long_inner
+        bl    udiv64i  @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        mov   r12, r1
+        pop   {r1, r3, lr}
+        b.n   delay_coreclk_long_inner
 
 .size delay_ns, . - delay_ns
 
@@ -143,18 +143,18 @@ delay_ns:
 
 .thumb_func
 delay_coreclk_long:
-        ldr r3, =0xE0001004
-        ldr r2, [r3]
-        mov r12, r1
-1:      mov r1, r2
+        ldr   r3, =0xE0001004
+        ldr   r2, [r3]
+        mov   r12, r1
+1:      mov   r1, r2
 delay_coreclk_long_inner:
-        ldr r2, [r3]
-        subs r1, r2
-        adds r0, r1
-        adcs r12, -1
-        bhi 1b
-        bcs delay_coreclk_loop
-        bx lr
+        ldr   r2, [r3]
+        subs  r1, r2
+        adds  r0, r1
+        adcs  r12, -1
+        bhi   1b
+        bcs   delay_coreclk_loop
+        bx    lr
 
 .size delay_coreclk_long, . - delay_coreclk_long
 
@@ -165,16 +165,17 @@ delay_coreclk_long_inner:
 
 .thumb_func
 delay_coreclk:
-        ldr r3, =0xE0001004
-        ldr r2, [r3]
+        ldr   r3, =0xE0001004
+        ldr   r2, [r3]
 delay_coreclk_loop:
-        mov r1, r2
-        ldr r2, [r3]
-        subs r1, r2
-        adds r0, r1
-        bhi delay_coreclk_loop
-        bx lr
+        mov   r1, r2
+        ldr   r2, [r3]
+        subs  r1, r2
+        adds  r0, r1
+        bhi   delay_coreclk_loop
+        bx    lr
 
 .size delay_coreclk, . - delay_coreclk
+
 
 @;##############################################################################
