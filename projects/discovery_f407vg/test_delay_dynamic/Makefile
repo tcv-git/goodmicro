@@ -12,11 +12,14 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 
 # input for assembler
 ASFILES :=
+ASFILES += ../../../lib/goodmicro_armv6m/imath.s
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_f4/startup/startup_stm32f4xx.s
 ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f407xx.s
-ASFILES += test_delay_dynamic.s
+#ASFILES += test_delay_systick_dynamic_armv6m.s
+#ASFILES += test_delay_systick_dynamic_armv7m.s
+ASFILES += test_delay_cyccnt_dynamic_armv7m.s
 
 # input for C compiler
 CFILES :=
