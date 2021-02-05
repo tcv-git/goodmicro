@@ -58,8 +58,9 @@ delay_s:
         ldr   r2, [r3, 8]
         ldr   r1, =SystemCoreClock
         ldr   r1, [r1]
-        umull r0, r1, r0, r1
-        b.n   delay_coreclk_long_push
+        push  {lr}
+        umull r0, lr, r0, r1
+        b.n   delay_coreclk_long_start2
 
 .size delay_s, . - delay_s
 
@@ -72,18 +73,18 @@ delay_s:
 delay_ms:
         ldr   r3, =0xE000E010
         ldr   r2, [r3, 8]
-        push {r2, r3, lr}
+        push  {r2, r3, lr}
         ldr   r1, =SystemCoreClock
-        ldr   r3, =4294967 @; ((1 << 32) / 1000)
+        ldr   r3, =4294967  @; ((1 << 32) / 1000)
         ldr   r1, [r1]
         umull r0, r1, r0, r1
         movw  r2, 999
         adds  r0, r2
         adcs  r1, 0
         adds  r2, 1
-        bl    udiv64i @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
-        pop  {r2, r3}
-        b.n   delay_coreclk_long_start
+        bl    udiv64i  @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        pop   {r2, r3}
+        b.n   delay_coreclk_long_start1
 
 .size delay_ms, . - delay_ms
 
@@ -96,18 +97,18 @@ delay_ms:
 delay_us:
         ldr   r3, =0xE000E010
         ldr   r2, [r3, 8]
-        push {r2, r3, lr}
+        push  {r2, r3, lr}
         ldr   r1, =SystemCoreClock
         ldr   r2, =999999
         ldr   r1, [r1]
         umull r0, r1, r0, r1
-        movw  r3, 4294 @; ((1 << 32) / 1000000)
+        movw  r3, 4294  @; ((1 << 32) / 1000000)
         adds  r0, r2
         adcs  r1, 0
         adds  r2, 1
-        bl    udiv64i @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
-        pop  {r2, r3}
-        b.n   delay_coreclk_long_start
+        bl    udiv64i  @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        pop   {r2, r3}
+        b.n   delay_coreclk_long_start1
 
 .size delay_us, . - delay_us
 
@@ -120,18 +121,18 @@ delay_us:
 delay_ns:
         ldr   r3, =0xE000E010
         ldr   r2, [r3, 8]
-        push {r2, r3, lr}
+        push  {r2, r3, lr}
         ldr   r1, =SystemCoreClock
         ldr   r2, =999999999
         ldr   r1, [r1]
         umull r0, r1, r0, r1
-        movs  r3, 4 @; ((1 << 32) / 1000000000)
+        movs  r3, 4  @; ((1 << 32) / 1000000000)
         adds  r0, r2
         adcs  r1, 0
         adds  r2, 1
-        bl    udiv64i @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
-        pop  {r2, r3}
-        b.n   delay_coreclk_long_start
+        bl    udiv64i  @; call not aeabi compliant beacuse stack not aligned here (I know udiv64i doesn't mind)
+        pop   {r2, r3}
+        b.n   delay_coreclk_long_start1
 
 .size delay_ns, . - delay_ns
 
@@ -144,10 +145,10 @@ delay_ns:
 delay_coreclk_long:
         ldr   r3, =0xE000E010
         ldr   r2, [r3, 8]
-delay_coreclk_long_push:
-        push {lr}
-delay_coreclk_long_start:
+        push  {lr}
+delay_coreclk_long_start1:
         mov   lr, r1
+delay_coreclk_long_start2:
         ldr   r12, [r3, 4]
         add   r12, 1
 1:      mov   r1, r2
@@ -158,7 +159,9 @@ delay_coreclk_long_start:
         subs  r0, r1
         sbcs  lr, 0
         bhi   1b
-        pop  {lr}
+        it    cc
+        popcc {pc}
+        pop   {lr}
         b.n   delay_coreclk_loop
 
 .size delay_coreclk_long, . - delay_coreclk_long
@@ -172,7 +175,6 @@ delay_coreclk_long_start:
 delay_coreclk:
         ldr   r3, =0xE000E010
         ldr   r2, [r3, 8]
-delay_coreclk_start:
         ldr   r12, [r3, 4]
         add   r12, 1
 delay_coreclk_loop:
@@ -186,5 +188,6 @@ delay_coreclk_loop:
         bx    lr
 
 .size delay_coreclk, . - delay_coreclk
+
 
 @;##############################################################################
