@@ -17,7 +17,7 @@
 
 
 @;##############################################################################
-@; delay functions using the SystemCoreClock variable and the debug cycle counter
+@; delay functions using the debug cycle counter and the SystemCoreClock variable
 @;##############################################################################
 
 .syntax unified
@@ -59,7 +59,7 @@ delay_s:
         umull r0, r12, r0, r2
         b.n delay_coreclk_long_inner
 
-.size delay_s, .-delay_s
+.size delay_s, . - delay_s
 
 
 @;##############################################################################
@@ -84,7 +84,7 @@ delay_ms:
         pop  {r1, r3, lr}
         b.n delay_coreclk_long_inner
 
-.size delay_ms, .-delay_ms
+.size delay_ms, . - delay_ms
 
 
 @;##############################################################################
@@ -109,7 +109,7 @@ delay_us:
         pop  {r1, r3, lr}
         b.n delay_coreclk_long_inner
 
-.size delay_us, .-delay_us
+.size delay_us, . - delay_us
 
 
 @;##############################################################################
@@ -134,7 +134,7 @@ delay_ns:
         pop  {r1, r3, lr}
         b.n delay_coreclk_long_inner
 
-.size delay_ns, .-delay_ns
+.size delay_ns, . - delay_ns
 
 
 @;##############################################################################
@@ -156,7 +156,7 @@ delay_coreclk_long_inner:
         bcs delay_coreclk_inner
         bx lr
 
-.size delay_coreclk_long, .-delay_coreclk_long
+.size delay_coreclk_long, . - delay_coreclk_long
 
 
 @;##############################################################################
@@ -175,4 +175,6 @@ delay_coreclk_inner:
         bhi delay_coreclk_inner
         bx lr
 
-.size delay_coreclk, .-delay_coreclk
+.size delay_coreclk, . - delay_coreclk
+
+@;##############################################################################

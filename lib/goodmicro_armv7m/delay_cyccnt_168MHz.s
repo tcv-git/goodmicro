@@ -16,9 +16,10 @@
 @; problems encountered by those who obtain the software through you.
 
 
+@;##############################################################################
 @; delay functions using the debug cycle counter
 @; assuming fixed system core clock of 168 MHz
-
+@;##############################################################################
 
 .syntax unified
 .cpu    cortex-m3
@@ -46,9 +47,11 @@
 @ void delay_coreclk_long (unsigned long long int)
 
 
+@;##############################################################################
 .section  .text.delay_s
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_s:
         ldr r3, =0xE0001004
         ldr r1, [r3]
@@ -56,12 +59,14 @@ delay_s:
         umull r0, r12, r0, r2
         b.n delay_coreclk_long_inner
 
-.size delay_s, .-delay_s
+.size delay_s, . - delay_s
 
 
+@;##############################################################################
 .section  .text.delay_ms
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_ms:
         ldr r3, =0xE0001004
         ldr r1, [r3]
@@ -69,12 +74,14 @@ delay_ms:
         umull r0, r12, r0, r2
         b.n delay_coreclk_long_inner
 
-.size delay_ms, .-delay_ms
+.size delay_ms, . - delay_ms
 
 
+@;##############################################################################
 .section  .text.delay_us
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_us:
         ldr r3, =0xE0001004
         ldr r1, [r3]
@@ -82,13 +89,16 @@ delay_us:
         umull r0, r12, r0, r2
         b.n delay_coreclk_long_inner
 
-.size delay_us, .-delay_us
+.size delay_us, . - delay_us
 
 
+@;##############################################################################
 .section  .text.delay_ns
-.thumb_func
+@;##############################################################################
+
 @; delay_ns: := delay_coreclk_long (      r0 * 0.168    )
 @;           := delay_coreclk_long (ceil (r0 * 21 / 125))
+.thumb_func
 delay_ns:
         ldr   r3, =0xE0001004
         ldr   r1, [r3]
@@ -104,12 +114,14 @@ delay_ns:
         pop  {r1, r3, lr}
         b.n delay_coreclk_long_inner
 
-.size delay_ns, .-delay_ns
+.size delay_ns, . - delay_ns
 
 
+@;##############################################################################
 .section  .text.delay_coreclk_long
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_coreclk_long:
         ldr r3, =0xE0001004
         ldr r2, [r3]
@@ -124,12 +136,14 @@ delay_coreclk_long_inner:
         bcs delay_coreclk_inner
         bx lr
 
-.size delay_coreclk_long, .-delay_coreclk_long
+.size delay_coreclk_long, . - delay_coreclk_long
 
 
+@;##############################################################################
 .section  .text.delay_coreclk
-.thumb_func
+@;##############################################################################
 
+.thumb_func
 delay_coreclk:
         ldr r3, =0xE0001004
         ldr r2, [r3]
@@ -141,4 +155,6 @@ delay_coreclk_inner:
         bhi delay_coreclk_inner
         bx lr
 
-.size delay_coreclk, .-delay_coreclk
+.size delay_coreclk, . - delay_coreclk
+
+@;##############################################################################

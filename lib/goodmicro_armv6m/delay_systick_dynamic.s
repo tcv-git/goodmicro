@@ -17,7 +17,7 @@
 
 
 @;##############################################################################
-@; delay functions using the SysTick timer
+@; delay functions using the SysTick timer and the SystemCoreClock variable
 @;##############################################################################
 
 .syntax unified
@@ -198,3 +198,5 @@ delay_coreclk_loop:
         bx lr
 
 .size delay_coreclk, . - delay_coreclk
+
+@;##############################################################################
