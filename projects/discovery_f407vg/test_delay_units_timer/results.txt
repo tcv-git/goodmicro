@@ -1,0 +1,43 @@
+
+results-armv6m-delay_systick_dynamic.txt
+
+  The difference between the argument converted to cycles and the last column is 16 - 24.1 cycles.
+
+  Two cycles of this are for re-reading the cycle counter after the call, and the fractional part is from rounding up.
+
+  This means that the time taken for the call is 14-22 cycles longer than the requested period rounded up.
+
+  For very short delays the minimum recorded clock difference is 177 cycles, which makes 175 cycles for call and return.
+
+
+results-armv7m-delay_systick_dynamic.txt
+
+  The difference between the argument converted to cycles and the last column is 15.1 - 22.9 cycles.
+
+  Two cycles of this are for re-reading the cycle counter after the call, and the fractional part is from rounding up.
+
+  This means that the time taken for the call is 13-20 cycles longer than the requested period rounded up.
+
+  For very short delays the minimum recorded clock difference is 79 cycles, which makes 77 cycles for call and return.
+
+
+results-armv7m-delay_cyccnt_dynamic.txt
+
+  The difference between the argument converted to cycles and the last column is 14 - 20.7 cycles.
+
+  Two cycles of this are for re-reading the cycle counter after the call, and the fractional part is from rounding up.
+
+  This means that the time taken for the call is 12-18 cycles longer than the requested period rounded up.
+
+  For very short delays the minimum recorded clock difference is 72 cycles, which makes 70 cycles for call and return.
+
+
+results-armv7m-delay_cyccnt_168MHz.txt
+
+  The difference between the argument converted to cycles and the last column is 14.3 - 20.9 cycles.
+
+  Two cycles of this are for re-reading the cycle counter after the call, and the fractional part is from rounding up.
+
+  This means that the time taken for the call is 12-18 cycles longer than the requested period rounded up.
+
+  For very short delays the minimum recorded clock difference is 70 cycles, which makes 68 cycles for call and return.
