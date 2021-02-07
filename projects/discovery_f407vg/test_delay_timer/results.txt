@@ -1,21 +1,81 @@
 
-results-short-delay_sysclk_long.txt is the output from setting the requested
-delay to use 16 bits, results-long-delay_sysclk_long.txt uses delay of 35 bits.
+results-armv6m-delay_systick_dynamic-full_period-delay_coreclk.txt
+  output of testing delay_coreclk
+  from lib/goodmicro_armv6m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 0xFFFFFF
+  abs min 22
+  excess above argument 16-24
+
+results-armv6m-delay_systick_dynamic-short_period-delay_coreclk.txt
+  output of testing delay_coreclk
+  from lib/goodmicro_armv6m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 299
+  abs min 22
+  excess above argument 16-24
+
+results-armv7m-delay_systick_dynamic-full_period-delay_coreclk.txt
+  output of testing delay_coreclk
+  from lib/goodmicro_armv7m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 0xFFFFFF
+  abs min 20
+  excess above argument 15-22
+
+results-armv7m-delay_systick_dynamic-short_period-delay_coreclk.txt
+  output of testing delay_coreclk
+  from lib/goodmicro_armv7m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 299
+  abs min 20
+  excess above argument 15-22
+
+results-delay_cyccnt_168MHz-delay_coreclk.txt
+  output of testing delay_coreclk
+  from lib/goodmicro_armv7m/delay_cyccnt_168MHz.s
+  abs min 17
+  excess above argument 14-20
+
+results-armv6m-delay_systick_dynamic-full_period-delay_coreclk_long.txt
+  output of testing delay_coreclk_long
+  from lib/goodmicro_armv6m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 0xFFFFFF
+  abs min 30
+  excess above argument 16-24 except on short delays, up to 30
+
+results-armv6m-delay_systick_dynamic-short_period-delay_coreclk_long.txt
+  output of testing delay_coreclk_long
+  from lib/goodmicro_armv6m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 450
+  abs min 30
+  excess above argument 16-24 except on short delays, up to 30
+
+results-armv7m-delay_systick_dynamic-full_period-delay_coreclk_long.txt
+  output of testing delay_coreclk_long
+  from lib/goodmicro_armv7m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 0xFFFFFF
+  abs min 29
+  excess above argument 15-22 except on short delays, up to 29
+
+results-armv7m-delay_systick_dynamic-short_period-delay_coreclk_long.txt
+  output of testing delay_coreclk_long
+  from lib/goodmicro_armv7m/delay_systick_dynamic.s
+  with SysTick->LOAD set to 450
+  abs min 29
+  excess above argument 15-22 except on short delays, up to 29
+
+results-delay_cyccnt_168MHz-delay_coreclk_long.txt
+  output of testing delay_coreclk_long
+  from lib/goodmicro_armv7m/delay_cyccnt_168MHz.s
+  abs min 20
+  excess above argument 14-20 except on short delays, up to 23
 
 The difference between the first and last columns (delay and absolute_fine_time)
-is between 14 and 20 cycles.
+is between 14 and 30 cycles.
 
 Two cycles of this is accounted for by the second ldr instruction of the cycle
 counter.  This means that cycle count for the call and return to
-delay_sysclk_long exceeds its argument by 12-18 cycles.
+the delay function exceeds its argument by 12-28 cycles.
 
-This is one more than found in the test_delay_sysclk unit tests.  According to
-the Cortex M3 and M4 TRMs the cycle count of call and return instructions is
-variable between 2 and 4 cycles each depending on context (so calling a
-completely empty function takes between 4 and 8 cycles).  In the context of this
-unit test it takes one more cycle than in the other.
-
-To verify that this is the case and that delay_sysclk_long is not behaving
-differently from delay_sysclk, the call in test_delay_sysclk_long was replaced
-with one to delay_sysclk.  The results in results-short-delay_sysclk.txt show
-the same column difference as results-short-delay_sysclk_long.txt.
+This is one more than found in the GPIO based tests.  According to the Cortex M3
+and M4 TRMs the cycle count of call and return instructions is variable between
+2 and 4 cycles each depending on context (so calling a completely empty function
+takes between 4 and 8 cycles).  In the context of this unit test it takes one
+more cycle than in the other.
