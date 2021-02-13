@@ -131,13 +131,15 @@ SECTIONS
 
   .eh_frame_hdr :
   {
-    *(.eh_frame_hdr) *(.eh_frame_entry .eh_frame_entry.*)
+    *(.eh_frame_hdr)
+    *(.eh_frame_entry .eh_frame_entry.*)
   }
   >ROM
 
   .eh_frame :
   {
-    KEEP (*(.eh_frame)) *(.eh_frame.*)
+    KEEP (*(.eh_frame))
+    *(.eh_frame.*)
   }
   >ROM
 
@@ -378,16 +380,6 @@ _etext = LOADADDR(.data);
  */
 _sidata = LOADADDR(.data);
 
-/* Traditional symbols for start of heap:
- */
-_end = ADDR(.heap);
-PROVIDE(end = _end);
-
-/* CMSIS symbols for size and end of heap:
- */
-__HEAP_SIZE = SIZEOF(.heap);
-__HeapLimit = (ADDR(.heap) + SIZEOF(.heap));
-
 /* CMSIS symbols for stack:
  */
 __StackLimit = ADDR(.stack);
@@ -398,3 +390,14 @@ __STACK_SIZE = (__StackTop - __StackLimit);
  */
 _stack  = __StackLimit;
 _estack = __StackTop;
+
+/* CMSIS symbols for heap:
+ */
+__HeapBase  = ADDR(.heap);
+__HeapLimit = (ADDR(.heap) + SIZEOF(.heap));
+__HEAP_SIZE = (__HeapLimit - __HeapBase);
+
+/* Traditional symbols for heap:
+ */
+_end = __HeapBase;
+PROVIDE(end = _end);
