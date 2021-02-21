@@ -1,6 +1,6 @@
-/* hwrand.c PUBLIC DOMAIN 2019 t.cortexm@purposeful.co.uk */
-
-/* http:///www.purposeful.co.uk/software/cortexm */
+// hwrand.c
+// PUBLIC DOMAIN
+// http:///www.purposeful.co.uk/software/goodmicro
 
 /*
   I, Tom Vajzovic, am the author of this software and its documentation.
