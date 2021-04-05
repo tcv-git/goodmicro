@@ -1,6 +1,6 @@
 /* stm32f427xGxx_ccm_noexit.ld */
 /* PUBLIC DOMAIN */
-/* http:///www.purposeful.co.uk/software/goodmicro */
+/* https://www.purposeful.co.uk/software/goodmicro */
 
 /*
   I, Tom Vajzovic, am the author of this software and its documentation.
