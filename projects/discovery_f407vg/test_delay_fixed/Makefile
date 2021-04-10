@@ -1,5 +1,7 @@
 #
 #  Goodmicro embedded project Makefile
+#  PUBLIC DOMAIN
+#  https://www.purposeful.co.uk/goodmicro/
 #
 
 MAKEFLAGS := --no-builtin-rules --no-builtin-variables
