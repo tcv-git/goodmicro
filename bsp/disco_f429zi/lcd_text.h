@@ -1,4 +1,4 @@
-// display_text.h
+// lcd_text.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/software/goodmicro
 
@@ -16,26 +16,26 @@
   problems encountered by those who obtain the software through you.
 */
 
-#ifndef DISPLAY_TEXT_H_INCLUDED
-#define DISPLAY_TEXT_H_INCLUDED
+#ifndef LCD_TEXT_H_INCLUDED
+#define LCD_TEXT_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void text_mask (unsigned int set_first_row,  // limit range of text printing functions
-                unsigned int set_first_col,
-                unsigned int set_num_rows,
-                unsigned int set_num_cols);
+void lcd_text_mask (unsigned int set_first_row,  // limit range of text printing functions
+                    unsigned int set_first_col,
+                    unsigned int set_num_rows,
+                    unsigned int set_num_cols);
 
-void text_cursor (unsigned int row, unsigned int col);  // set the position of the next character written (relative to mask)
-
-void text_write (const unsigned char *str, unsigned int len);
+void lcd_cursor (unsigned int row, unsigned int col);  // set the position of the next character written (relative to mask)
 
 void lcd_putc (unsigned char c);
+
+void lcd_printf (const char *fmt, ...) __attribute__ ((format (__printf__, 1, 2)));
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // DISPLAY_TEXT_H_INCLUDED
+#endif // LCD_TEXT_H_INCLUDED

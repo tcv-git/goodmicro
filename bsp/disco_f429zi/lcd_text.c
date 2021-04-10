@@ -1,4 +1,4 @@
-// display_text.c
+// lcd_text.c
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/software/goodmicro
 
@@ -17,9 +17,10 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include "lcd.h"
-#include "display_text.h"
+#include "lcd_text.h"
 
 #define  COLS        40
 #define  ROWS        40
@@ -97,11 +98,10 @@ static void text_write_at (unsigned int y, unsigned int x, unsigned char c)
   }
 }
 
-
-void text_mask (unsigned int set_first_row,  // limit range of text printing functions
-                unsigned int set_first_col,
-                unsigned int set_num_rows,
-                unsigned int set_num_cols)
+void lcd_text_mask (unsigned int set_first_row,  // limit range of text printing functions
+                    unsigned int set_first_col,
+                    unsigned int set_num_rows,
+                    unsigned int set_num_cols)
 {
   if ((set_first_row >= ROWS)
    || (set_first_col >= COLS)
@@ -131,7 +131,7 @@ void text_mask (unsigned int set_first_row,  // limit range of text printing fun
   }
 }
 
-void text_cursor (unsigned int row, unsigned int col)  // set the position of the next character written (relative to mask)
+void lcd_cursor (unsigned int row, unsigned int col)  // set the position of the next character written (relative to mask)
 {
   cursor_row = (first_row + row);
   cursor_col = (first_col + col);
@@ -218,12 +218,29 @@ void lcd_putc (unsigned char c)
   cursor_col += 1;
 }
 
-void text_write (const unsigned char *str, unsigned int len)
+void lcd_printf (const char *fmt, ...)
 {
-  unsigned int i;
+  char buffer[128];
+  va_list ap;
+
+  va_start(ap, fmt);
+  int len = vsnprintf (buffer, sizeof buffer, fmt, ap);
+  va_end(ap);
+
+  if (len < 0)
+  {
+    len = 0;
+  }
+
+  if ((size_t)len >= sizeof buffer)
+  {
+    len = (sizeof buffer - 1);
+  }
+
+  int i;
 
   for (i = 0; i < len; i++)
   {
-    lcd_putc (str[i]);
+    lcd_putc (buffer[i]);
   }
 }

@@ -16,43 +16,14 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include <stdarg.h>
-#include <stdio.h>
 #include "lcd.h"
-#include "display_text.h"
+#include "lcd_text.h"
 #include "delay.h"
-
-static void lcd_printf(const char *fmt, ...) __attribute__ ((format (__printf__, 1, 2)));
-
-static void lcd_printf(const char *fmt, ...)
-{
-  char buffer[128];
-  va_list ap;
-
-  va_start(ap, fmt);
-  int len = vsnprintf(buffer, sizeof buffer, fmt, ap);
-  va_end(ap);
-
-  if (len < 0)
-  {
-    len = 0;
-  }
-
-  if ((size_t)len >= sizeof buffer)
-  {
-    len = (sizeof buffer - 1);
-  }
-
-  if (len > 0)
-  {
-    text_write ((const unsigned char *)buffer, len);
-  }
-}
 
 int main(void)
 {
   lcd_init();
-  text_mask(0, 0, 40, 40);
+  lcd_text_mask(0, 0, 40, 40);
 
   unsigned int i;
 
