@@ -39,4 +39,4 @@ void debug_putc(unsigned char c);
 }
 #endif
 
-#endif /* DEBUG_PRINTF_H_INCLUDED */
+#endif // DEBUG_PRINTF_H_INCLUDED
