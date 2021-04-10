@@ -17,12 +17,13 @@ ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_180MHz.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
-ASFILES += ../../../lib/goodmicro_f4/startup/startup_stm32f4xx.s
+ASFILES += ../../../lib/goodmicro_f4/startup/startup_stm32f4xx_extram.s
 ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f429xx.s
 
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/disco_f429zi/debug_printf.c
+CFILES += ../../../bsp/disco_f429zi/disco_f429zi_sdram.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
 CFILES += main.c
 
@@ -46,7 +47,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../../../lib/goodmicro_f4/linker/stm32f429xIxx_ccm.ld
+LINK_SCRIPT := ../../../bsp/disco_f429zi/disco_f429zi_ccm.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
