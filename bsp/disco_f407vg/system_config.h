@@ -27,4 +27,4 @@
 
 #define PLLI2SON          0
 
-#endif /* SYSTEM_CONFIG_H_INCLUDED */
+#endif // SYSTEM_CONFIG_H_INCLUDED
