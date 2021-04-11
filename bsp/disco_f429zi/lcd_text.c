@@ -1,6 +1,6 @@
 // lcd_text.c
 // PUBLIC DOMAIN
-// https://www.purposeful.co.uk/software/goodmicro
+// https://www.purposeful.co.uk/goodmicro/
 
 /*
   Except as noted below,
