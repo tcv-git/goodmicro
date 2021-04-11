@@ -1,6 +1,6 @@
 // stm32l0xx_it.h
 // PUBLIC DOMAIN
-// https://www.purposeful.co.uk/software/goodmicro
+// https://www.purposeful.co.uk/goodmicro/
 
 /*
   I, Tom Vajzovic, am the author of this software and its documentation.

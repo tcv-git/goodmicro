@@ -1,6 +1,6 @@
 @; delay_176947200Hz.s
 @; PUBLIC DOMAIN
-@; https://www.purposeful.co.uk/software/goodmicro
+@; https://www.purposeful.co.uk/goodmicro/
 
 
 @; I, Tom Vajzovic, am the author of this software and its documentation.
