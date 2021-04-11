@@ -29,7 +29,7 @@
 #define BUFFER_SIZE  64 // any size up to UINT16_MAX
 #define BUFFER_COUNT  8 // can be up to 16, but only 8 can be queued at once
 
-static char buffers[BUFFER_COUNT][BUFFER_SIZE];
+static char buffers[BUFFER_COUNT][BUFFER_SIZE] __attribute__((section(".sram_uninit.printf_queue_buffers")));
 
 static volatile unsigned int buffers_available = ((1uLL << BUFFER_COUNT) - 1);
 static volatile unsigned int buffer_queue      = BITQUEUE_EMPTY_INIT;
