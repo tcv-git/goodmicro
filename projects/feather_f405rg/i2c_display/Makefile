@@ -23,10 +23,10 @@ ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f405xx.s
 
 # input for C compiler
 CFILES :=
+CFILES += ../../../bsp/feather_f405rg/alnum.c
 CFILES += ../../../lib/goodmicro_armv7m/uptime.c
 CFILES += ../../../lib/goodmicro_f4/i2c_master.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
-CFILES += alnum.c
 CFILES += main.c
 
 # input for C++ compiler
