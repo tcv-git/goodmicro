@@ -65,8 +65,8 @@ copyto lib/STM32F1xx_HAL_Driver/Src        STM32CubeF1/Drivers/STM32F1xx_HAL_Dri
 copyto lib/STM32F1xx_HAL_Driver/Src/Legacy STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Src/Legacy/*.c
 copyto bsp/STM32VL-Discovery               STM32CubeF1/Drivers/BSP/STM32VL-Discovery/*.c
 copyto bsp/STM32VL-Discovery               STM32CubeF1/Drivers/BSP/STM32VL-Discovery/*.h
-copyto projects/discovery_f100rb/.template STM32CubeF1/Projects/STM32VL-Discovery/Templates/Inc/*.h
-copyto projects/discovery_f100rb/.template STM32CubeF1/Projects/STM32VL-Discovery/Templates/Src/*.c
+copyto projects/disco_f100rb/.template     STM32CubeF1/Projects/STM32VL-Discovery/Templates/Inc/*.h
+copyto projects/disco_f100rb/.template     STM32CubeF1/Projects/STM32VL-Discovery/Templates/Src/*.c
 
 copyto lib/Device_STM32F2xx/Include        STM32CubeF2/Drivers/CMSIS/Device/ST/STM32F2xx/Include/*.h
 copyto lib/Device_STM32F2xx/Source         STM32CubeF2/Drivers/CMSIS/Device/ST/STM32F2xx/Source/Templates/*.c
@@ -105,18 +105,18 @@ copyto projects/nucleo_f401re/.template    STM32CubeF4/Projects/STM32F401RE-Nucl
 copyto projects/nucleo_f401re/.template    STM32CubeF4/Projects/STM32F401RE-Nucleo/Templates/SW4STM32/STM32F4xx-Nucleo/*.ld
 copyto projects/nucleo_f401re/.template    STM32CubeF4/Projects/STM32F401RE-Nucleo/Templates/SW4STM32/STM32F4xx-Nucleo/.project
 copyto projects/nucleo_f401re/.template    STM32CubeF4/Projects/STM32F401RE-Nucleo/Templates/SW4STM32/STM32F4xx-Nucleo/.cproject
-copyto projects/discovery_f407vg/.template STM32CubeF4/Projects/STM32F4-Discovery/Templates/Inc/*.h
-copyto projects/discovery_f407vg/.template STM32CubeF4/Projects/STM32F4-Discovery/Templates/Src/*.c
-copyto projects/discovery_f407vg/.template STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/*.s
-copyto projects/discovery_f407vg/.template STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/STM32F4-Discovery/*.ld
-copyto projects/discovery_f407vg/.template STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/STM32F4-Discovery/.project
-copyto projects/discovery_f407vg/.template STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/STM32F4-Discovery/.cproject
-copyto projects/discovery_f429zi/.template STM32CubeF4/Projects/STM32F429I-Discovery/Templates/Inc/*.h
-copyto projects/discovery_f429zi/.template STM32CubeF4/Projects/STM32F429I-Discovery/Templates/Src/*.c
-copyto projects/discovery_f429zi/.template STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/*.s
-copyto projects/discovery_f429zi/.template STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/STM32F429I_DISCO/*.ld
-copyto projects/discovery_f429zi/.template STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/STM32F429I_DISCO/.project
-copyto projects/discovery_f429zi/.template STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/STM32F429I_DISCO/.cproject
+copyto projects/disco_f407vg/.template     STM32CubeF4/Projects/STM32F4-Discovery/Templates/Inc/*.h
+copyto projects/disco_f407vg/.template     STM32CubeF4/Projects/STM32F4-Discovery/Templates/Src/*.c
+copyto projects/disco_f407vg/.template     STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/*.s
+copyto projects/disco_f407vg/.template     STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/STM32F4-Discovery/*.ld
+copyto projects/disco_f407vg/.template     STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/STM32F4-Discovery/.project
+copyto projects/disco_f407vg/.template     STM32CubeF4/Projects/STM32F4-Discovery/Templates/SW4STM32/STM32F4-Discovery/.cproject
+copyto projects/disco_f429zi/.template     STM32CubeF4/Projects/STM32F429I-Discovery/Templates/Inc/*.h
+copyto projects/disco_f429zi/.template     STM32CubeF4/Projects/STM32F429I-Discovery/Templates/Src/*.c
+copyto projects/disco_f429zi/.template     STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/*.s
+copyto projects/disco_f429zi/.template     STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/STM32F429I_DISCO/*.ld
+copyto projects/disco_f429zi/.template     STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/STM32F429I_DISCO/.project
+copyto projects/disco_f429zi/.template     STM32CubeF4/Projects/STM32F429I-Discovery/Templates/SW4STM32/STM32F429I_DISCO/.cproject
 copyto projects/eval_f429ni/.template      STM32CubeF4/Projects/STM324x9I_EVAL/Templates/Inc/*.h
 copyto projects/eval_f429ni/.template      STM32CubeF4/Projects/STM324x9I_EVAL/Templates/Src/*.c
 copyto projects/eval_f429ni/.template      STM32CubeF4/Projects/STM324x9I_EVAL/Templates/SW4STM32/*.s
@@ -133,12 +133,12 @@ copyto lib/STM32F7xx_HAL_Driver/Src        STM32CubeF7/Drivers/STM32F7xx_HAL_Dri
 copyto lib/STM32F7xx_HAL_Driver/Src/Legacy STM32CubeF7/Drivers/STM32F7xx_HAL_Driver/Src/Legacy/*.c
 copyto bsp/STM32746G-Discovery             STM32CubeF7/Drivers/BSP/STM32746G-Discovery/*.c
 copyto bsp/STM32746G-Discovery             STM32CubeF7/Drivers/BSP/STM32746G-Discovery/*.h
-copyto projects/discovery_f746ng/.template STM32CubeF7/Projects/STM32746G-Discovery/Templates/Inc/*.h
-copyto projects/discovery_f746ng/.template STM32CubeF7/Projects/STM32746G-Discovery/Templates/Src/*.c
-copyto projects/discovery_f746ng/.template STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/*.s
-copyto projects/discovery_f746ng/.template STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/STM32746G_Discovery_ITCM-FLASH/*.ld
-copyto projects/discovery_f746ng/.template STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/STM32746G_Discovery_ITCM-FLASH/.project
-copyto projects/discovery_f746ng/.template STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/STM32746G_Discovery_ITCM-FLASH/.cproject
+copyto projects/disco_f746ng/.template     STM32CubeF7/Projects/STM32746G-Discovery/Templates/Inc/*.h
+copyto projects/disco_f746ng/.template     STM32CubeF7/Projects/STM32746G-Discovery/Templates/Src/*.c
+copyto projects/disco_f746ng/.template     STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/*.s
+copyto projects/disco_f746ng/.template     STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/STM32746G_Discovery_ITCM-FLASH/*.ld
+copyto projects/disco_f746ng/.template     STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/STM32746G_Discovery_ITCM-FLASH/.project
+copyto projects/disco_f746ng/.template     STM32CubeF7/Projects/STM32746G-Discovery/Templates/SW4STM32/STM32746G_Discovery_ITCM-FLASH/.cproject
 
 copyto lib/Device_STM32H7xx/Include        STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Include/*.h
 copyto lib/Device_STM32H7xx/Source         STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates/*.c
@@ -171,3 +171,5 @@ copyto projects/nucleo_l073rz/.template    STM32CubeL0/Projects/NUCLEO-L073RZ/Te
 copyto projects/nucleo_l073rz/.template    STM32CubeL0/Projects/NUCLEO-L073RZ/Templates/SW4STM32/STM32L073RZ_NUCLEO/*.ld
 copyto projects/nucleo_l073rz/.template    STM32CubeL0/Projects/NUCLEO-L073RZ/Templates/SW4STM32/STM32L073RZ_NUCLEO/.project
 copyto projects/nucleo_l073rz/.template    STM32CubeL0/Projects/NUCLEO-L073RZ/Templates/SW4STM32/STM32L073RZ_NUCLEO/.cproject
+
+rm tmp
