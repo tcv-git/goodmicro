@@ -47,9 +47,11 @@ then
   exec "$winprog" -c JTAG FREQ=2250 -P "$hex" -V -Rst
 fi
 
-if [ -x /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI ]
+stcp_dir='/opt/st/stm32cubeide_1.6.1/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.linux64_1.6.0.202101291314/tools'
+
+if [ -x $stcp_dir/bin/STM32_Programmer_CLI ]
 then
-  LD_LIBRARY_PATH=/usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-} exec /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI --connect port=JTAG freq=2000 reset=SWrst mode=NORMAL --write "$hex" --verify -rst -run
+  LD_LIBRARY_PATH=$stcp_dir/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-} exec $stcp_dir/bin/STM32_Programmer_CLI --connect port=JTAG freq=2000 reset=SWrst mode=NORMAL --write "$hex" --verify -rst -run
 fi
 
 if ! which openocd >/dev/null
