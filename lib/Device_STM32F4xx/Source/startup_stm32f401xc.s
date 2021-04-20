@@ -62,32 +62,35 @@ Reset_Handler:
   ldr   sp, =_estack      /* set stack pointer */
 
 /* Copy the data segment initializers from flash to SRAM */
-  movs  r1, #0
-  b  LoopCopyDataInit
+  ldr r0, =_sdata
+  ldr r1, =_edata
+  ldr r2, =_sidata
+  movs r3, #0
+  b LoopCopyDataInit
 
 CopyDataInit:
-  ldr  r3, =_sidata
-  ldr  r3, [r3, r1]
-  str  r3, [r0, r1]
-  adds  r1, r1, #4
+  ldr r4, [r2, r3]
+  str r4, [r0, r3]
+  adds r3, r3, #4
 
 LoopCopyDataInit:
-  ldr  r0, =_sdata
-  ldr  r3, =_edata
-  adds  r2, r0, r1
-  cmp  r2, r3
-  bcc  CopyDataInit
-  ldr  r2, =_sbss
-  b  LoopFillZerobss
+  adds r4, r0, r3
+  cmp r4, r1
+  bcc CopyDataInit
+
 /* Zero fill the bss segment. */
+  ldr r2, =_sbss
+  ldr r4, =_ebss
+  movs r3, #0
+  b LoopFillZerobss
+
 FillZerobss:
-  movs  r3, #0
-  str  r3, [r2], #4
+  str  r3, [r2]
+  adds r2, r2, #4
 
 LoopFillZerobss:
-  ldr  r3, = _ebss
-  cmp  r2, r3
-  bcc  FillZerobss
+  cmp r2, r4
+  bcc FillZerobss
 
 /* Call the clock system intitialization function.*/
   bl  SystemInit
@@ -159,8 +162,8 @@ g_pfnVectors:
   .word     DMA1_Stream5_IRQHandler           /* DMA1 Stream 5                */
   .word     DMA1_Stream6_IRQHandler           /* DMA1 Stream 6                */
   .word     ADC_IRQHandler                    /* ADC1                         */
-  .word     0                         /* Reserved                     */
-  .word     0                         /* Reserved                     */
+  .word     0                                 /* Reserved                     */
+  .word     0                                 /* Reserved                     */
   .word     0                                 /* Reserved                     */
   .word     0                                 /* Reserved                     */
   .word     EXTI9_5_IRQHandler                /* External Line[9:5]s          */
@@ -179,13 +182,13 @@ g_pfnVectors:
   .word     SPI2_IRQHandler                   /* SPI2                         */
   .word     USART1_IRQHandler                 /* USART1                       */
   .word     USART2_IRQHandler                 /* USART2                       */
-  .word     0                         /* Reserved                     */
+  .word     0                                 /* Reserved                     */
   .word     EXTI15_10_IRQHandler              /* External Line[15:10]s        */
   .word     RTC_Alarm_IRQHandler              /* RTC Alarm (A and B) through EXTI Line */
   .word     OTG_FS_WKUP_IRQHandler            /* USB OTG FS Wakeup through EXTI line */
-  .word     0                                 /* Reserved                     */
-  .word     0                                 /* Reserved                     */
-  .word     0                                 /* Reserved                     */
+  .word     0                                 /* Reserved                           */
+  .word     0                                 /* Reserved                           */
+  .word     0                                 /* Reserved                             */
   .word     0                                 /* Reserved                     */
   .word     DMA1_Stream7_IRQHandler           /* DMA1 Stream7                 */
   .word     0                                 /* Reserved                     */
@@ -201,12 +204,12 @@ g_pfnVectors:
   .word     DMA2_Stream2_IRQHandler           /* DMA2 Stream 2                */
   .word     DMA2_Stream3_IRQHandler           /* DMA2 Stream 3                */
   .word     DMA2_Stream4_IRQHandler           /* DMA2 Stream 4                */
-  .word     0                                 /* Reserved                     */
-  .word     0                                 /* Reserved                     */
-  .word     0                                 /* Reserved                     */
-  .word     0                                 /* Reserved                     */
-  .word     0                                 /* Reserved                     */
-  .word     0                                 /* Reserved                     */
+  .word     0                                       /* Reserved                     */
+  .word     0                                         /* Reserved                     */
+  .word     0                                         /* Reserved                     */
+  .word     0                                         /* Reserved                     */
+  .word     0                                         /* Reserved                     */
+  .word     0                                         /* Reserved                     */
   .word     OTG_FS_IRQHandler                 /* USB OTG FS                   */
   .word     DMA2_Stream5_IRQHandler           /* DMA2 Stream 5                */
   .word     DMA2_Stream6_IRQHandler           /* DMA2 Stream 6                */
