@@ -25,15 +25,15 @@ int main(void)
   debug_uart_init();
   gps_uart_init();
 
-  for (;;);
-}
+  for (;;)
+  {
+    char * line = gps_uart_get_line();
 
-void gps_protocol_flush(void)
-{
-  debug_putc('\f');
-}
+    if (line)
+    {
+      debug_printf("%s\n", line);
 
-void gps_protocol_rx(char c)
-{
-  debug_putc(c);
+      gps_uart_release_line();
+    }
+  }
 }

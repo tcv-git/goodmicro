@@ -16,24 +16,33 @@
   problems encountered by those who obtain the software through you.
 */
 
+#include <stddef.h>
 #include "stm32f4xx.h"
 #include "stm32f4xx_it.h"
 #include "stm32f4xx_simple_gpio.h"
 #include "system_stm32f405-439.h"
 #include "delay.h"
 #include "gps_uart.h"
-#include "gps_protocol.h"
 
 /*
 PB10 AF7 USART3 TX  (GPS RX)
 PB11 AF7 USART3 RX  (GPS TX)
 */
 
-#define INITIAL_BAUD   9600
-#define FINAL_BAUD   115200
+#define INITIAL_BAUD    9600u
+#define FINAL_BAUD    115200u
 
-#define BAUD_MESSAGE  "\r\n\r\n$PMTK251,115200*1F\r\n"
+#define BAUD_MESSAGE   "\r\n\r\n$PMTK251,115200*1F\r\n"
 #define SETUP_MESSAGE  "\r\n$PMTK314,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n$PMTK220,100*2F\r\n"
+
+#define BUFFER_SIZE      256u
+#define BUFFER_COUNT       4u
+
+static          char         buffers[BUFFER_COUNT][BUFFER_SIZE];
+static volatile uint32_t     buffer_control = 0;
+static          unsigned int line_length    = 0;
+
+static void gps_uart_rx(int c);
 
 static void send_message(const char *message, unsigned int length)
 {
@@ -62,7 +71,7 @@ void gps_uart_init(void)
   USART3->SR  = 0;
   USART3->CR1 = (USART_CR1_UE | USART_CR1_TE);
 
-  send_message(BAUD_MESSAGE, (sizeof BAUD_MESSAGE) - 1);
+  send_message(BAUD_MESSAGE, ((sizeof BAUD_MESSAGE) - 1));
 
   DELAY_MS(20);
 
@@ -71,7 +80,7 @@ void gps_uart_init(void)
   USART3->SR  = 0;
   USART3->CR1 = (USART_CR1_UE | USART_CR1_TE);
 
-  send_message(SETUP_MESSAGE, (sizeof SETUP_MESSAGE) - 1);
+  send_message(SETUP_MESSAGE, ((sizeof SETUP_MESSAGE) - 1));
 
   USART3->CR1 = 0;
   USART3->SR  = 0;
@@ -90,13 +99,13 @@ void USART3_IRQHandler(void)
     {
       (void)USART3->DR;
       (void)USART3->DR;
-      gps_protocol_flush();
+      gps_uart_rx(-1);
       return;
     }
 
     else if ((sr & USART_SR_RXNE) == USART_SR_RXNE)
     {
-      gps_protocol_rx(USART3->DR);
+      gps_uart_rx((unsigned char)USART3->DR);
     }
 
     else
@@ -104,4 +113,104 @@ void USART3_IRQHandler(void)
       return;
     }
   }
+}
+
+void gps_uart_rx(int c)
+{
+  if ((c == '\r') || (c == '\n') || (c == '\f') || (c == '\v') || (c == '\0'))
+  {
+    c = '\n';
+  }
+  else if (c == '\t')
+  {
+    c = ' ';
+  }
+  else if ((c < 0x20) || (c > 0x7E))
+  {
+    c = -1;
+  }
+  else
+  {
+    // printable
+  }
+
+  if (c < 0)
+  {
+    if (line_length > 0)
+    {
+      // debug discarding partial line
+
+      line_length = 0;
+    }
+
+    return;
+  }
+
+  if (line_length >= BUFFER_SIZE)
+  {
+    if (c == '\n')
+    {
+      // debug discarding overlength line
+
+      line_length = 0;
+    }
+
+    return;
+  }
+
+  unsigned int filling_buffer = *(volatile uint16_t*)&buffer_control;
+
+  if (c != '\n')
+  {
+    buffers[filling_buffer][line_length] = c;
+
+    line_length++;
+
+    return;
+  }
+
+  if (line_length == 0)
+  {
+    return;
+  }
+
+  buffers[filling_buffer][line_length] = '\0';
+
+  unsigned int next_buffer = ((filling_buffer + 1) % BUFFER_COUNT);
+
+  if (next_buffer != (buffer_control >> 16))
+  {
+    (*(volatile uint16_t*)&buffer_control) = next_buffer;
+  }
+  else
+  {
+    // debug discarding complete line because queue full
+  }
+
+  line_length = 0;
+}
+
+char *gps_uart_get_line(void)
+{
+  uint32_t get_control = buffer_control;
+
+  unsigned int filling_buffer = (get_control & 0xFFFF);
+
+  unsigned int ready_buffer = (get_control >> 16);
+
+  if (ready_buffer == filling_buffer)
+  {
+    return NULL;
+  }
+  else
+  {
+    return buffers[ready_buffer];
+  }
+}
+
+void gps_uart_release_line(void)
+{
+  volatile uint16_t *controls = ((volatile uint16_t*)&buffer_control);
+
+  controls[1] = ((controls[1] + 1) % BUFFER_COUNT);
 }

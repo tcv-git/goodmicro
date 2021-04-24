@@ -25,6 +25,10 @@ extern "C" {
 
 void gps_uart_init(void);
 
+char *gps_uart_get_line(void);
+
+void gps_uart_release_line(void);
+
 #ifdef __cplusplus
 }
 #endif
