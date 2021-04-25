@@ -25,7 +25,7 @@ ASFILES += test_delay_cyccnt_dynamic_armv7m.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/disco_f407vg/debug_printf.c
+CFILES += ../../../lib/goodmicro_f4/debug_printf_blocking.c
 CFILES += ../../../lib/goodmicro_f4/hwrand.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
 CFILES += main.c

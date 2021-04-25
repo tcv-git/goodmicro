@@ -23,8 +23,8 @@ ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f429xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/disco_f429zi/debug_printf.c
 CFILES += ../../../bsp/disco_f429zi/disco_f429zi_sdram.c
+CFILES += ../../../lib/goodmicro_f4/debug_printf_blocking.c
 CFILES += ../../../lib/goodmicro_f4/hwrand.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
 CFILES += main.c

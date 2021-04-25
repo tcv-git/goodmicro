@@ -23,9 +23,9 @@ ASFILES += test_delay_coreclk_long.s
 
 # input for C compiler
 CFILES :=
+CFILES += ../../../lib/goodmicro_f4/debug_printf_blocking.c
 CFILES += ../../../lib/goodmicro_f4/hwrand.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
-CFILES += debug_printf.c
 CFILES += main.c
 
 # input for C++ compiler
