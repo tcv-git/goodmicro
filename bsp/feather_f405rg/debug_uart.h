@@ -34,7 +34,7 @@
 #define DEBUG_UART_IRQHandler           UART4_IRQHandler
 
 #define DEBUG_UART_APBx_CLK             APB1_CLK
-#define DEBUG_BAUD                      115200u
+#define DEBUG_BAUD                      525000u
 
 #define DEBUG_DMA_AHBxENR                 AHB1ENR
 #define DEBUG_DMA_AHBxENR_DMAxEN          RCC_AHB1ENR_DMA1EN
