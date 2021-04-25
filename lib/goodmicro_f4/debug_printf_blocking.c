@@ -21,51 +21,36 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_simple_gpio.h"
 #include "system_stm32f405-439.h"
+#include "debug_uart.h"
 #include "debug_printf.h"
-
-#define GPIOx                   GPIOC
-#define PINx                    PIN10
-#define AFx                     AF8
-#define AHBxENR                 AHB1ENR
-#define RCC_AHBxENR_GPIOxEN     RCC_AHB1ENR_GPIOCEN
-
-#define UARTx                   UART4
-#define APBxENR                 APB1ENR
-#define APBxRSTR                APB1RSTR
-#define RCC_APBxENR_UARTxEN     RCC_APB1ENR_UART4EN
-#define RCC_APBxRSTR_UARTxRST   RCC_APB1RSTR_UART4RST
-
-#define APBx_CLK                APB1_CLK
-#define DEBUG_BAUD              115200u
-
 
 void debug_uart_init(void)
 {
-  RCC->APBxRSTR |=  RCC_APBxRSTR_UARTxRST;
-  RCC->APBxENR  |=  RCC_APBxENR_UARTxEN;
-  (void)RCC->APBxENR;
-  RCC->APBxRSTR &= ~RCC_APBxRSTR_UARTxRST;
-  (void)RCC->APBxRSTR;
+  RCC->DEBUG_UART_APBx_RSTR |=  DEBUG_UART_APBx_RSTR_UARTxRST;
+  RCC->DEBUG_UART_APBx_ENR  |=  DEBUG_UART_APBx_ENR_UARTxEN;
+  (void)RCC->DEBUG_UART_APBx_ENR;
+  RCC->DEBUG_UART_APBx_RSTR &= ~DEBUG_UART_APBx_RSTR_UARTxRST;
+  (void)RCC->DEBUG_UART_APBx_RSTR;
 
-  RCC->AHBxENR  |=  RCC_AHBxENR_GPIOxEN;
-  (void)RCC->AHBxENR;
+  RCC->DEBUG_TX_AHBxENR  |=  DEBUG_TX_AHBxENR_GPIOxEN;
+  (void)RCC->DEBUG_TX_AHBxENR;
 
-  GPIO_alternate_push_pull_slow(GPIOx, PINx, AFx);
+  GPIO_alternate_push_pull_slow(DEBUG_TX_GPIOx, DEBUG_TX_PINx, DEBUG_TX_AFx);
 
-  UARTx->CR1 = 0;
-  UARTx->CR2 = 0;
-  UARTx->CR3 = 0;
-  UARTx->BRR = ((APBx_CLK + (DEBUG_BAUD / 2)) / DEBUG_BAUD);
-  UARTx->CR1 = (USART_CR1_TE | USART_CR1_UE);
+  DEBUG_UARTx->CR1 = 0;
+  DEBUG_UARTx->CR2 = 0;
+  DEBUG_UARTx->CR3 = 0;
+  DEBUG_UARTx->BRR = ((DEBUG_UART_APBx_CLK + (DEBUG_BAUD / 2)) / DEBUG_BAUD);
+  DEBUG_UARTx->CR1 = (USART_CR1_TE | USART_CR1_UE);
 }
 
 static void internal_putc(unsigned char c)
 {
-  if ((UARTx->CR1 & USART_CR1_UE) == USART_CR1_UE)
+  if ((DEBUG_UARTx->CR1 & USART_CR1_UE) == USART_CR1_UE)
   {
-    while ((UARTx->SR & USART_SR_TXE) != USART_SR_TXE);
+    while ((DEBUG_UARTx->SR & USART_SR_TXE) != USART_SR_TXE);
 
-    UARTx->DR = c;
+    DEBUG_UARTx->DR = c;
   }
 }
 

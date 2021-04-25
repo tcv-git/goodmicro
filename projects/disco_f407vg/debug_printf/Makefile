@@ -22,7 +22,7 @@ ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f407xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/disco_f407vg/debug_printf.c
+CFILES += ../../../lib/goodmicro_f4/debug_printf_blocking.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
 CFILES += main.c
 
