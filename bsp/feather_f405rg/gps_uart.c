@@ -37,7 +37,7 @@ PB11 AF7 USART3 RX  (GPS TX)
 #define SETUP_MESSAGE  "\r\n$PMTK314,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n$PMTK220,100*2F\r\n"
 
 #define BUFFER_SIZE      256u
-#define BUFFER_COUNT       4u
+#define BUFFER_COUNT       8u
 
 static          char         buffers[BUFFER_COUNT][BUFFER_SIZE];
 static volatile uint32_t     buffer_control = 0;
