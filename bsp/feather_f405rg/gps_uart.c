@@ -22,6 +22,7 @@
 #include "stm32f4xx_simple_gpio.h"
 #include "system_stm32f405-439.h"
 #include "delay.h"
+#include "debug_printf.h"
 #include "gps_uart.h"
 
 /*
@@ -138,7 +139,7 @@ void gps_uart_rx(int c)
   {
     if (line_length > 0)
     {
-      // debug discarding partial line
+      debug_printf("gps_uart discarding corrupted partial line");
 
       line_length = 0;
     }
@@ -150,7 +151,7 @@ void gps_uart_rx(int c)
   {
     if (c == '\n')
     {
-      // debug discarding overlength line
+      debug_printf("gps_uart discarding too long line");
 
       line_length = 0;
     }
@@ -184,7 +185,7 @@ void gps_uart_rx(int c)
   }
   else
   {
-    // debug discarding complete line because queue full
+    debug_printf("gps_uart discarding line because queue full");
   }
 
   line_length = 0;
