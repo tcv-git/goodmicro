@@ -23,8 +23,7 @@
 extern "C" {
 #endif
 
-void gps_protocol_flush(void);
-void gps_protocol_rx(char c);
+void gps_protocol_parse(char *line);
 
 #ifdef __cplusplus
 }

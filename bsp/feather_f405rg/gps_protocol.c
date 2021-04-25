@@ -16,65 +16,28 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include <ctype.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <ctype.h>
 #include <string.h>
+#include "debug_printf.h"
 #include "gps_protocol.h"
 
-
-#define BUFFER_SIZE  256u
-#define VECTOR_SIZE   32u
+#define FIELD_COUNT_MAX  32u
 
 
-static char  buffer[BUFFER_SIZE];
-static char *vector[VECTOR_SIZE];
-static unsigned int buffer_len = 0;
-
-static void gps_protocol_parse(char *line, unsigned int length);
-
-static void gps_parse_gpgll(char ** fields);
-static void gps_parse_gprmc(char ** fields);
-static void gps_parse_gpvtg(char ** fields);
-static void gps_parse_gpgga(char ** fields);
-static void gps_parse_gpgsa(char ** fields);
-static void gps_parse_gpgsv(char ** fields);
+static void gps_parse_gpgll(char **fields);
+static void gps_parse_gprmc(char **fields);
+static void gps_parse_gpvtg(char **fields);
+static void gps_parse_gpgga(char **fields);
+static void gps_parse_gpgsa(char **fields);
+static void gps_parse_gpgsv(char **fields);
 
 
-void gps_protocol_flush(void)
+void gps_protocol_parse(char *line)
 {{{
-  buffer_len = 0;
-}}}
+  size_t length = strlen(line);
 
-void gps_protocol_rx(char c)
-{{{
-  if (buffer_len < BUFFER_SIZE)
-  {
-    if (c == '\n')
-    {
-      buffer[buffer_len] = '\0';
-
-      gps_protocol_parse(buffer, buffer_len);
-
-      buffer_len = 0;
-    }
-    else
-    {
-      buffer[buffer_len] = c;
-
-      buffer_len++;
-    }
-  }
-  else
-  {
-    if (c == '\n')
-    {
-      buffer_len = 0;
-    }
-  }
-}}}
-
-static void gps_protocol_parse(char *line, unsigned int length)
-{{{
   while ((length > 0) && isspace(line[length - 1]))
   {
     length--;
@@ -82,6 +45,7 @@ static void gps_protocol_parse(char *line, unsigned int length)
 
   if ((length < 4) || (line[0] != '$') || (line[length - 3] != '*'))
   {
+    debug_printf("invalid format\n");
     return;
   }
 
@@ -96,18 +60,20 @@ static void gps_protocol_parse(char *line, unsigned int length)
   if ((toupper(line[length - 2]) != "0123456789ABCDEF"[checksum >> 4])
    || (toupper(line[length - 1]) != "0123456789ABCDEF"[checksum & 0xF]))
   {
+    debug_printf("invalid checksum\n");
     return;
   }
 
   line[length - 3] = '\0';
 
-  unsigned int count;
-
   char *next = &line[1];
 
-  for (count = 0; count < (VECTOR_SIZE - 1); count++)
+  char        *fields[FIELD_COUNT_MAX + 1];
+  unsigned int field_count;
+
+  for (field_count = 0; field_count < FIELD_COUNT_MAX; field_count++)
   {
-    vector[count] = next;
+    fields[field_count] = next;
 
     char *end = strchr(next, ',');
 
@@ -122,26 +88,193 @@ static void gps_protocol_parse(char *line, unsigned int length)
     }
   }
 
-  if (count == (VECTOR_SIZE - 1))
+  if (field_count == FIELD_COUNT_MAX)
   {
+    debug_printf("too many fields\n");
     return;
   }
 
-  count++;
+  field_count++;
 
-  vector[count] = NULL;
+  fields[field_count] = NULL;
 
-  if      (!strcasecmp(vector[0], "GPGLL") && (count ==  7)){  gps_parse_gpgll(vector);  }
-  else if (!strcasecmp(vector[0], "GPRMC") && (count == 12)){  gps_parse_gprmc(vector);  }
-  else if (!strcasecmp(vector[0], "GPVTG") && (count ==  9)){  gps_parse_gpvtg(vector);  }
-  else if (!strcasecmp(vector[0], "GPGGA") && (count == 15)){  gps_parse_gpgga(vector);  }
-  else if (!strcasecmp(vector[0], "GPGSA") && (count == 18)){  gps_parse_gpgsa(vector);  }
-  else if (!strcasecmp(vector[0], "GPGSV") && (count == 20)){  gps_parse_gpgsv(vector);  }
+  if      (!strcasecmp(fields[0], "GPGLL") && (field_count ==  7)){  gps_parse_gpgll(fields);  }
+  else if (!strcasecmp(fields[0], "GPRMC") && (field_count == 13)){  gps_parse_gprmc(fields);  }
+  else if (!strcasecmp(fields[0], "GPVTG") && (field_count ==  9)){  gps_parse_gpvtg(fields);  }
+  else if (!strcasecmp(fields[0], "GPGGA") && (field_count == 15)){  gps_parse_gpgga(fields);  }
+  else if (!strcasecmp(fields[0], "GPGSA") && (field_count == 18)){  gps_parse_gpgsa(fields);  }
+  else if (!strcasecmp(fields[0], "GPGSV") && (field_count == 20)){  gps_parse_gpgsv(fields);  }
   else
   {
+    debug_printf("unknown type '%s'[%u]\n", fields[0], field_count);
     return;
   }
 }}}
+
+static bool parse_latitude(const char *string_latitude, const char *string_latitude_dir, int32_t *p_latitude_decimilliminutes)
+{{{
+  while (isspace(*string_latitude))
+  {
+    string_latitude++;
+  }
+
+  if ((string_latitude[0] < '0') || (string_latitude[0] > '9')
+   || (string_latitude[1] < '0') || (string_latitude[1] > '9')
+   || (string_latitude[2] < '0') || (string_latitude[2] > '9')
+   || (string_latitude[3] < '0') || (string_latitude[3] > '9')
+   || (string_latitude[4] != '.')
+   || (string_latitude[5] < '0') || (string_latitude[5] > '9'))
+  {
+    //debug_printf("invalid latitude\n");
+    return false;
+  }
+
+  int32_t decimilliminutes = 0;
+
+  decimilliminutes += ((string_latitude[0] - '0') * 10 * 60 * 10000);
+  decimilliminutes += ((string_latitude[1] - '0')      * 60 * 10000);
+  decimilliminutes += ((string_latitude[2] - '0')      * 10 * 10000);
+  decimilliminutes += ((string_latitude[3] - '0')           * 10000);
+  decimilliminutes += ((string_latitude[5] - '0')            * 1000);
+
+  if ((string_latitude[6] >= '0') && (string_latitude[6] <= '9'))
+  {
+    decimilliminutes += ((string_latitude[6] - '0') * 100);
+
+    if ((string_latitude[7] >= '0') && (string_latitude[7] <= '9'))
+    {
+      decimilliminutes += ((string_latitude[7] - '0') * 10);
+
+      if ((string_latitude[8] >= '0') && (string_latitude[8] <= '9'))
+      {
+        decimilliminutes += (string_latitude[8] - '0');
+      }
+    }
+  }
+
+  if (!strcasecmp(string_latitude_dir, "N"))
+  {
+    *p_latitude_decimilliminutes = decimilliminutes;
+    return true;
+  }
+  else if (!strcasecmp(string_latitude_dir, "S"))
+  {
+    *p_latitude_decimilliminutes = -decimilliminutes;
+    return true;
+  }
+  else
+  {
+    //debug_printf("invalid latitude direction\n");
+    return false;
+  }
+}}}
+
+static bool parse_longitude(const char *string_longitude, const char *string_longitude_dir, int32_t *p_longitude_decimilliminutes)
+{{{
+  while (isspace(*string_longitude))
+  {
+    string_longitude++;
+  }
+
+  if ((string_longitude[0] < '0') || (string_longitude[0] > '9')
+   || (string_longitude[1] < '0') || (string_longitude[1] > '9')
+   || (string_longitude[2] < '0') || (string_longitude[2] > '9')
+   || (string_longitude[3] < '0') || (string_longitude[3] > '9')
+   || (string_longitude[4] < '0') || (string_longitude[4] > '9')
+   || (string_longitude[5] != '.')
+   || (string_longitude[6] < '0') || (string_longitude[6] > '9'))
+  {
+    //debug_printf("invalid longitude\n");
+    return false;
+  }
+
+  int32_t decimilliminutes = 0;
+
+  decimilliminutes += ((string_longitude[0] - '0') * 100 * 60 * 10000);
+  decimilliminutes += ((string_longitude[1] - '0') *  10 * 60 * 10000);
+  decimilliminutes += ((string_longitude[2] - '0')       * 60 * 10000);
+  decimilliminutes += ((string_longitude[3] - '0')       * 10 * 10000);
+  decimilliminutes += ((string_longitude[4] - '0')            * 10000);
+  decimilliminutes += ((string_longitude[6] - '0')             * 1000);
+
+  if ((string_longitude[7] >= '0') && (string_longitude[7] <= '9'))
+  {
+    decimilliminutes += ((string_longitude[7] - '0') * 100);
+
+    if ((string_longitude[8] >= '0') && (string_longitude[8] <= '9'))
+    {
+      decimilliminutes += ((string_longitude[8] - '0') * 10);
+
+      if ((string_longitude[9] >= '0') && (string_longitude[9] <= '9'))
+      {
+        decimilliminutes += (string_longitude[9] - '0');
+      }
+    }
+  }
+
+  if (!strcasecmp(string_longitude_dir, "E"))
+  {
+    *p_longitude_decimilliminutes = decimilliminutes;
+    return true;
+  }
+  else if (!strcasecmp(string_longitude_dir, "W"))
+  {
+    *p_longitude_decimilliminutes = -decimilliminutes;
+    return true;
+  }
+  else
+  {
+    //debug_printf("invalid longitude direction\n");
+    return false;
+  }
+}}}
+
+static bool parse_time(char *string_time, uint32_t *p_millisecond_of_day)
+{{{
+  while (isspace(*string_time))
+  {
+    string_time++;
+  }
+
+  if ((string_time[0] < '0') || (string_time[0] > '9')
+   || (string_time[1] < '0') || (string_time[1] > '9')
+   || (string_time[2] < '0') || (string_time[2] > '9')
+   || (string_time[3] < '0') || (string_time[3] > '9')
+   || (string_time[4] < '0') || (string_time[4] > '9')
+   || (string_time[5] < '0') || (string_time[5] > '9'))
+  {
+    //debug_printf("invalid time\n");
+    return false;
+  }
+
+  int32_t millisecond_of_day = 0;
+
+  millisecond_of_day += ((string_time[0] - '0') * 10 * 60 * 60 * 1000);
+  millisecond_of_day += ((string_time[1] - '0')      * 60 * 60 * 1000);
+  millisecond_of_day += ((string_time[2] - '0')      * 10 * 60 * 1000);
+  millisecond_of_day += ((string_time[3] - '0')           * 60 * 1000);
+  millisecond_of_day += ((string_time[4] - '0')           * 10 * 1000);
+  millisecond_of_day += ((string_time[5] - '0')                * 1000);
+
+  if ((string_time[6] == '.') && (string_time[7] >= '0') && (string_time[7] <= '9'))
+  {
+    millisecond_of_day += ((string_time[7] - '0') * 100);
+
+    if ((string_time[8] >= '0') && (string_time[8] <= '9'))
+    {
+      millisecond_of_day += ((string_time[8] - '0') * 10);
+
+      if ((string_time[9] >= '0') && (string_time[9] <= '9'))
+      {
+        millisecond_of_day += (string_time[9] - '0');
+      }
+    }
+  }
+
+  *p_millisecond_of_day = millisecond_of_day;
+  return true;
+}}}
+
 
 static void gps_parse_gpgll(char ** fields)
 {{{
@@ -152,12 +285,31 @@ static void gps_parse_gpgll(char ** fields)
   char *string_time          = fields[5];
   char *string_valid         = fields[6];
 
-  (void)string_latitude;
-  (void)string_latitude_dir;
-  (void)string_longitude;
-  (void)string_longitude_dir;
-  (void)string_time;
-  (void)string_valid;
+  int32_t  latitude_decimilliminutes;
+  int32_t  longitude_decimilliminutes;
+  uint32_t millisecond_of_day;
+
+  bool status = !strcasecmp(string_valid, "A");
+
+  if (status)
+  {
+    status = parse_latitude(string_latitude, string_latitude_dir, &latitude_decimilliminutes);
+  }
+
+  if (status)
+  {
+    status = parse_longitude(string_longitude, string_longitude_dir, &longitude_decimilliminutes);
+  }
+
+  if (status)
+  {
+    status = parse_time(string_time, &millisecond_of_day);
+  }
+
+  if (status)
+  {
+    debug_printf("GLL %i %i %u\n", (int)latitude_decimilliminutes, (int)longitude_decimilliminutes, (unsigned int)millisecond_of_day);
+  }
 }}}
 
 static void gps_parse_gprmc(char ** fields)
@@ -173,18 +325,40 @@ static void gps_parse_gprmc(char ** fields)
   char *string_date          = fields[ 9];
   char *string_variation     = fields[10];
   char *string_variation_dir = fields[11];
+  char *string_mode          = fields[12]; // optional
 
-  (void)string_time;
-  (void)string_valid;
-  (void)string_latitude;
-  (void)string_latitude_dir;
-  (void)string_longitude;
-  (void)string_longitude_dir;
+  int32_t  latitude_decimilliminutes;
+  int32_t  longitude_decimilliminutes;
+  uint32_t millisecond_of_day;
+
+  bool status = !strcasecmp(string_valid, "A");
+
+  if (status)
+  {
+    status = parse_latitude(string_latitude, string_latitude_dir, &latitude_decimilliminutes);
+  }
+
+  if (status)
+  {
+    status = parse_longitude(string_longitude, string_longitude_dir, &longitude_decimilliminutes);
+  }
+
+  if (status)
+  {
+    status = parse_time(string_time, &millisecond_of_day);
+  }
+
+  if (status)
+  {
+    debug_printf("RMC %i %i %u\n", (int)latitude_decimilliminutes, (int)longitude_decimilliminutes, (unsigned int)millisecond_of_day);
+  }
+
   (void)string_ground_speed;
   (void)string_bearing;
   (void)string_date;
   (void)string_variation;
   (void)string_variation_dir;
+  (void)string_mode;
 }}}
 
 static void gps_parse_gpvtg(char ** fields)
@@ -197,6 +371,7 @@ static void gps_parse_gpvtg(char ** fields)
   char *string_ground_speed_knots_unit = fields[6];
   char *string_ground_speed_kph        = fields[7];
   char *string_ground_speed_kph_unit   = fields[8];
+  char *string_mode                    = fields[12]; // optional
 
   (void)string_bearing_true;
   (void)string_bearing_true_true;
@@ -206,6 +381,7 @@ static void gps_parse_gpvtg(char ** fields)
   (void)string_ground_speed_knots_unit;
   (void)string_ground_speed_kph;
   (void)string_ground_speed_kph_unit;
+  (void)string_mode;
 }}}
 
 static void gps_parse_gpgga(char ** fields)
