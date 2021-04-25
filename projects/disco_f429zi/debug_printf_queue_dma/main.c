@@ -17,13 +17,13 @@
 */
 
 #include "delay.h"
-#include "usart1_printf_queue.h"
+#include "debug_printf.h"
 #include "lcd.h"
 #include "lcd_text.h"
 
 int main(void)
 {
-  usart1_printf_init(115200);
+  debug_uart_init();
 
   lcd_init();
   lcd_text_mask(0, 0, 40, 40);
@@ -32,8 +32,8 @@ int main(void)
 
   for (;; i++)
   {
-    lcd_printf    ("%u\n", i);
-    usart1_printf ("%u\n", i);
+    lcd_printf   ("%u\n", i);
+    debug_printf ("%u\n", i);
 
     DELAY_MS (100);
   }
