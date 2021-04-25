@@ -47,7 +47,7 @@ void gps_protocol_parse(char *line)
 
   if ((length < 4) || (line[0] != '$') || (line[length - 3] != '*'))
   {
-    debug_printf("invalid format\n");
+    debug_printf("gps_protocol invalid format\n");
     return;
   }
 
@@ -62,7 +62,7 @@ void gps_protocol_parse(char *line)
   if ((toupper(line[length - 2]) != "0123456789ABCDEF"[checksum >> 4])
    || (toupper(line[length - 1]) != "0123456789ABCDEF"[checksum & 0xF]))
   {
-    debug_printf("invalid checksum\n");
+    debug_printf("gps_protocol invalid checksum\n");
     return;
   }
 
@@ -92,7 +92,7 @@ void gps_protocol_parse(char *line)
 
   if (field_count == FIELD_COUNT_MAX)
   {
-    debug_printf("too many fields\n");
+    debug_printf("gps_protocol too many fields\n");
     return;
   }
 
@@ -108,7 +108,7 @@ void gps_protocol_parse(char *line)
   else if (!strcasecmp(fields[0], "GPGSV") && (field_count == 20)){  gps_parse_gpgsv(fields);  }
   else
   {
-    debug_printf("unknown type '%s'[%u]\n", fields[0], field_count);
+    debug_printf("gps_protocol unknown type '%s'[%u]\n", fields[0], field_count);
     return;
   }
 }}}
@@ -127,7 +127,7 @@ static bool parse_latitude(const char *string_latitude, const char *string_latit
    || (string_latitude[4] != '.')
    || (string_latitude[5] < '0') || (string_latitude[5] > '9'))
   {
-    //debug_printf("invalid latitude\n");
+    debug_printf("gps_protocol invalid latitude\n");
     return false;
   }
 
@@ -166,7 +166,7 @@ static bool parse_latitude(const char *string_latitude, const char *string_latit
   }
   else
   {
-    //debug_printf("invalid latitude direction\n");
+    debug_printf("gps_protocol invalid latitude direction\n");
     return false;
   }
 }}}
@@ -186,7 +186,7 @@ static bool parse_longitude(const char *string_longitude, const char *string_lon
    || (string_longitude[5] != '.')
    || (string_longitude[6] < '0') || (string_longitude[6] > '9'))
   {
-    //debug_printf("invalid longitude\n");
+    debug_printf("gps_protocol invalid longitude\n");
     return false;
   }
 
@@ -226,7 +226,7 @@ static bool parse_longitude(const char *string_longitude, const char *string_lon
   }
   else
   {
-    //debug_printf("invalid longitude direction\n");
+    debug_printf("gps_protocol invalid longitude direction\n");
     return false;
   }
 }}}
@@ -245,7 +245,7 @@ static bool parse_time(char *string_time, uint32_t *p_millisecond_of_day)
    || (string_time[4] < '0') || (string_time[4] > '9')
    || (string_time[5] < '0') || (string_time[5] > '9'))
   {
-    //debug_printf("invalid time\n");
+    debug_printf("gps_protocol invalid time\n");
     return false;
   }
 
