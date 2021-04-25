@@ -27,69 +27,72 @@
 #include "debug_uart.h"
 #include "debug_printf.h"
 
+#define DEBUG_TX_DMA_xISR_ALLIFx    (DEBUG_TX_DMA_xISR_TCIFx   | DEBUG_TX_DMA_xISR_HTIFx   | DEBUG_TX_DMA_xISR_TEIFx   | DEBUG_TX_DMA_xISR_DMEIFx   | DEBUG_TX_DMA_xISR_FEIFx  )
+#define DEBUG_TX_DMA_xIFCR_CALLIFx  (DEBUG_TX_DMA_xIFCR_CTCIFx | DEBUG_TX_DMA_xIFCR_CHTIFx | DEBUG_TX_DMA_xIFCR_CTEIFx | DEBUG_TX_DMA_xIFCR_CDMEIFx | DEBUG_TX_DMA_xIFCR_CFEIFx)
+
 void debug_uart_init(void)
 {
-  NVIC_DisableIRQ(USART1_IRQn);
-  NVIC_DisableIRQ(DMA2_Stream7_IRQn);
+  NVIC_DisableIRQ(DEBUG_UART_IRQn);
+  NVIC_DisableIRQ(DEBUG_TX_DMAx_Streamx_IRQn);
 
-  RCC->APB2RSTR |=  RCC_APB2RSTR_USART1RST;
-  RCC->APB2ENR  |=  RCC_APB2ENR_USART1EN;
-  RCC->AHB1ENR  |=  RCC_AHB1ENR_GPIOAEN;
-  RCC->AHB1ENR  |=  RCC_AHB1ENR_DMA2EN;
-  RCC->APB2RSTR &= ~RCC_APB2RSTR_USART1RST;
+  RCC->DEBUG_UART_APBx_RSTR |=  DEBUG_UART_APBx_RSTR_UARTxRST;
+  RCC->DEBUG_UART_APBx_ENR  |=  DEBUG_UART_APBx_ENR_UARTxEN;
+  RCC->DEBUG_TX_AHBxENR     |=  DEBUG_TX_AHBxENR_GPIOxEN;
+  RCC->DEBUG_DMA_AHBxENR    |=  DEBUG_DMA_AHBxENR_DMAxEN;
+  RCC->DEBUG_UART_APBx_RSTR &= ~DEBUG_UART_APBx_RSTR_UARTxRST;
 
-  while (DMA2_Stream7->CR != 0)
+  while (DEBUG_TX_DMAx_Streamx->CR != 0)
   {
-    DMA2_Stream7->CR = 0;
+    DEBUG_TX_DMAx_Streamx->CR = 0;
   }
 
-  DMA2->HIFCR = DMA_HIFCR_ALL7;
+  DEBUG_DMAx->DEBUG_TX_DMA_xIFCR = DEBUG_TX_DMA_xIFCR_CALLIFx;
 
-  NVIC_ClearPendingIRQ(DMA2_Stream7_IRQn);
-  NVIC_EnableIRQ      (DMA2_Stream7_IRQn);
+  NVIC_ClearPendingIRQ(DEBUG_TX_DMAx_Streamx_IRQn);
+  NVIC_EnableIRQ      (DEBUG_TX_DMAx_Streamx_IRQn);
 
-  USART1->CR1 = 0;
-  USART1->CR2 = 0;
-  USART1->CR3 = USART_CR3_DMAT;
-  USART1->BRR = ((APB2_CLK + (DEBUG_BAUD / 2)) / DEBUG_BAUD);
-  USART1->CR1 = (USART_CR1_UE | USART_CR1_TE);
+  DEBUG_UARTx->CR1 = 0;
+  DEBUG_UARTx->CR2 = 0;
+  DEBUG_UARTx->CR3 = USART_CR3_DMAT;
+  DEBUG_UARTx->BRR = ((DEBUG_UART_APBx_CLK + (DEBUG_BAUD / 2)) / DEBUG_BAUD);
+  DEBUG_UARTx->CR1 = (USART_CR1_UE | USART_CR1_TE);
 
-  GPIO_alternate_push_pull_slow(GPIOA, PIN9, AF7);
+  GPIO_alternate_push_pull_slow(DEBUG_TX_GPIOx, DEBUG_TX_PINx, DEBUG_TX_AFx);
 }
 
-void DMA2_Stream7_IRQHandler(void)
+void DEBUG_TX_DMAx_Streamx_IRQHandler(void)
 {
-  if ((DMA2->HISR & DMA_HISR_TEIF7) != 0)
+  if ((DEBUG_DMAx->DEBUG_TX_DMA_xISR & DEBUG_TX_DMA_xISR_TEIFx) != 0)
   {
     // set permanent break condition
-    GPIO_set_reset             (GPIOA, PIN9_LO);
-    GPIO_output_push_pull_slow (GPIOA, PIN9);
+    GPIO_set_reset             (DEBUG_TX_GPIOx, LO(DEBUG_TX_PINx));
+    GPIO_output_push_pull_slow (DEBUG_TX_GPIOx, DEBUG_TX_PINx);
 
-    RCC->APB2RSTR |=  RCC_APB2RSTR_USART1RST;
-    RCC->APB2ENR  &= ~RCC_APB2ENR_USART1EN;
+    RCC->DEBUG_UART_APBx_RSTR |=  DEBUG_UART_APBx_RSTR_UARTxRST;
+    RCC->DEBUG_UART_APBx_ENR  &= ~DEBUG_UART_APBx_ENR_UARTxEN;
 
-    while (DMA2_Stream7->CR != 0)
+    while (DEBUG_TX_DMAx_Streamx->CR != 0)
     {
-      DMA2_Stream7->CR = 0;
+      DEBUG_TX_DMAx_Streamx->CR = 0;
     }
 
-    DMA2->HIFCR = DMA_HIFCR_ALL7;
+    DEBUG_DMAx->DEBUG_TX_DMA_xIFCR = DEBUG_TX_DMA_xIFCR_CALLIFx;
 
-    NVIC_DisableIRQ      (DMA2_Stream7_IRQn);
-    NVIC_ClearPendingIRQ (DMA2_Stream7_IRQn);
+    NVIC_DisableIRQ      (DEBUG_TX_DMAx_Streamx_IRQn);
+    NVIC_ClearPendingIRQ (DEBUG_TX_DMAx_Streamx_IRQn);
     return;
   }
 
-  if ((DMA2_Stream7->CR & DMA_SxCR_EN) == DMA_SxCR_EN)
+  if ((DEBUG_TX_DMAx_Streamx->CR & DMA_SxCR_EN) == DMA_SxCR_EN)
   {
     return;
   }
 
-  const char *old_buffer = (const char*)DMA2_Stream7->M0AR;
+  const char *old_buffer = (const char*)DEBUG_TX_DMAx_Streamx->M0AR;
 
   if (old_buffer)
   {
-    DMA2_Stream7->M0AR = 0;
+    DEBUG_TX_DMAx_Streamx->M0AR = 0;
     printf_queue_free(old_buffer);
   }
 
@@ -98,7 +101,7 @@ void DMA2_Stream7_IRQHandler(void)
 
   if (!buffer)
   {
-    DMA2->HIFCR = DMA_HIFCR_ALL7;
+    DEBUG_DMAx->DEBUG_TX_DMA_xIFCR = DEBUG_TX_DMA_xIFCR_CALLIFx;
     return;
   }
 
@@ -113,32 +116,32 @@ void DMA2_Stream7_IRQHandler(void)
     default: msize = DMA_SxCR_MSIZE_8BIT;
   }
 
-  DMA2_Stream7->NDTR = byte_count;
-  DMA2_Stream7->PAR  = (uint32_t)&(USART1->DR);
-  DMA2_Stream7->M0AR = buffer_address;
-  DMA2_Stream7->FCR  = DMA_SxFCR_DMDIS;
-  DMA2->HIFCR        = DMA_HIFCR_ALL7;
+  DEBUG_TX_DMAx_Streamx->NDTR    = byte_count;
+  DEBUG_TX_DMAx_Streamx->PAR     = (uint32_t)&(DEBUG_UARTx->DR);
+  DEBUG_TX_DMAx_Streamx->M0AR    = buffer_address;
+  DEBUG_TX_DMAx_Streamx->FCR     = DMA_SxFCR_DMDIS;
+  DEBUG_DMAx->DEBUG_TX_DMA_xIFCR = DEBUG_TX_DMA_xIFCR_CALLIFx;
 
-  NVIC_ClearPendingIRQ(DMA2_Stream7_IRQn);
+  NVIC_ClearPendingIRQ(DEBUG_TX_DMAx_Streamx_IRQn);
 
-  DMA2_Stream7->CR = (DMA2_S7CR_CHSEL_USART1_TX
-                    | DMA_SxCR_PL_LOW
-                    | msize
-                    | DMA_SxCR_PSIZE_8BIT
-                    | DMA_SxCR_MINC
-                    | DMA_SxCR_DIR_M2P
-                    | DMA_SxCR_TCIE
-                    | DMA_SxCR_TEIE
-                    | DMA_SxCR_EN);
+  DEBUG_TX_DMAx_Streamx->CR = (DEBUG_TX_DMAx_SxCR_CHSELx
+                             | DMA_SxCR_PL_LOW
+                             | msize
+                             | DMA_SxCR_PSIZE_8BIT
+                             | DMA_SxCR_MINC
+                             | DMA_SxCR_DIR_M2P
+                             | DMA_SxCR_TCIE
+                             | DMA_SxCR_TEIE
+                             | DMA_SxCR_EN);
 }
 
-static void usart1_vprintf(const char *format, va_list args)
+static void debug_vprintf(const char *format, va_list args)
 {
   printf_queue_put(format, args);
 
-  if ((DMA2_Stream7->CR & DMA_SxCR_EN) != DMA_SxCR_EN)
+  if ((DEBUG_TX_DMAx_Streamx->CR & DMA_SxCR_EN) != DMA_SxCR_EN)
   {
-    NVIC_SetPendingIRQ(DMA2_Stream7_IRQn);
+    NVIC_SetPendingIRQ(DEBUG_TX_DMAx_Streamx_IRQn);
   }
 }
 
@@ -147,7 +150,7 @@ void debug_printf(const char *format, ...)
   va_list args;
 
   va_start(args, format);
-  usart1_vprintf(format, args);
+  debug_vprintf(format, args);
   va_end(args);
 }
 
