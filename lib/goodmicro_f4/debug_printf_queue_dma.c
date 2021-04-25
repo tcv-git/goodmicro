@@ -26,16 +26,18 @@
 #include "stm32f4xx_simple_gpio.h"
 #include "system_stm32f405-439.h"
 #include "printf_queue.h"
-#include "usart1_printf_queue.h"
+#include "debug_uart.h"
+#include "debug_printf.h"
 
-void usart1_printf_init(unsigned int baud)
+void debug_uart_init(void)
 {
   NVIC_DisableIRQ(USART1_IRQn);
   NVIC_DisableIRQ(DMA2_Stream7_IRQn);
 
   RCC->APB2RSTR |=  RCC_APB2RSTR_USART1RST;
   RCC->APB2ENR  |=  RCC_APB2ENR_USART1EN;
-  RCC->AHB1ENR  |= (RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_DMA2EN);
+  RCC->AHB1ENR  |=  RCC_AHB1ENR_GPIOAEN;
+  RCC->AHB1ENR  |=  RCC_AHB1ENR_DMA2EN;
   RCC->APB2RSTR &= ~RCC_APB2RSTR_USART1RST;
 
   while (DMA2_Stream7->CR != 0)
@@ -51,7 +53,7 @@ void usart1_printf_init(unsigned int baud)
   USART1->CR1 = 0;
   USART1->CR2 = 0;
   USART1->CR3 = USART_CR3_DMAT;
-  USART1->BRR = ((APB2_CLK + (baud / 2)) / baud);
+  USART1->BRR = ((APB2_CLK + (DEBUG_BAUD / 2)) / DEBUG_BAUD);
   USART1->CR1 = (USART_CR1_UE | USART_CR1_TE);
 
   GPIO_alternate_push_pull_slow(GPIOA, PIN9, AF7);
@@ -132,7 +134,7 @@ void DMA2_Stream7_IRQHandler(void)
                     | DMA_SxCR_EN);
 }
 
-void usart1_vprintf(const char *format, va_list args)
+static void usart1_vprintf(const char *format, va_list args)
 {
   printf_queue_put(format, args);
 
@@ -142,11 +144,16 @@ void usart1_vprintf(const char *format, va_list args)
   }
 }
 
-void usart1_printf(const char *format, ...)
+void debug_printf(const char *format, ...)
 {
   va_list args;
 
   va_start(args, format);
   usart1_vprintf(format, args);
   va_end(args);
+}
+
+void debug_putc(unsigned char c)
+{
+  debug_printf("%c", c);
 }

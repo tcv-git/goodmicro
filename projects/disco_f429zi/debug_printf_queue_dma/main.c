@@ -1,4 +1,4 @@
-// usart1_printf_queue.h
+// main.c
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -18,27 +18,25 @@
   through you.
 */
 
-#ifndef USART1_PRINTF_QUEUE_H_INCLUDED
-#define USART1_PRINTF_QUEUE_H_INCLUDED
+#include "delay.h"
+#include "debug_printf.h"
+#include "lcd.h"
+#include "lcd_text.h"
 
-#include <stdarg.h>
+int main(void)
+{
+  debug_uart_init();
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+  lcd_init();
+  lcd_text_mask(0, 0, 40, 40);
 
-void usart1_printf_init(unsigned int baud);
+  unsigned int i = 0;
 
-#ifdef __GNUC__
-void usart1_vprintf (const char *format, va_list args) __attribute__((format(__printf__, 1, 0)));
-void usart1_printf  (const char *format, ...)          __attribute__((format(__printf__, 1, 2)));
-#else
-void usart1_vprintf (const char *format, va_list args);
-void usart1_printf  (const char *format, ...);
-#endif
+  for (;; i++)
+  {
+    lcd_printf   ("%u\n", i);
+    debug_printf ("%u\n", i);
 
-#ifdef __cplusplus
+    DELAY_MS (100);
+  }
 }
-#endif
-
-#endif // USART1_PRINTF_QUEUE_H_INCLUDED

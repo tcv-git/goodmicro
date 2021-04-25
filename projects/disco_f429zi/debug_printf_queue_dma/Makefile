@@ -27,10 +27,9 @@ CFILES :=
 CFILES += ../../../bsp/disco_f429zi/disco_f429zi_sdram.c
 CFILES += ../../../bsp/disco_f429zi/lcd.c
 CFILES += ../../../bsp/disco_f429zi/lcd_text.c
-CFILES += ../../../lib/goodmicro_f4/debug_printf_blocking.c
+CFILES += ../../../lib/goodmicro_f4/debug_printf_queue_dma.c
 CFILES += ../../../lib/goodmicro_f4/printf_queue.c
 CFILES += ../../../lib/goodmicro_f4/system_stm32f405-439.c
-CFILES += ../../../lib/goodmicro_f4/usart1_printf_queue.c
 CFILES += main.c
 
 # input for C++ compiler
