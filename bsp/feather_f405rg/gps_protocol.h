@@ -69,6 +69,7 @@ struct gps_gprmc
 
 struct gps_gpvtg
 {
+  bool          coarse_magnetic_valid;
   int32_t       course_millidegrees_true;
   int32_t       course_millidegrees_magnetic;
   uint32_t      groundspeed_milliknots;

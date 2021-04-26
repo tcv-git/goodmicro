@@ -295,14 +295,26 @@ static bool parse_gpvtg(char **fields, struct gps_gpvtg *gpvtg)
   char *string_ground_speed_kph_unit   = fields[8];
   char *string_mode                    = fields[9];
 
+  if (strcasecmp(string_bearing_true_true, "T")
+   || strcasecmp(string_ground_speed_knots_unit, "N")
+   || strcasecmp(string_ground_speed_kph_unit, "K"))
+  {
+    return false;
+  }
+
+  if (strcasecmp(string_bearing_mag_mag, "M"))
+  {
+    gpvtg->coarse_magnetic_valid = false;
+  }
+  else
+  {
+    gpvtg->coarse_magnetic_valid = true;
+  }
+
   (void)string_bearing_true;
-  (void)string_bearing_true_true;
   (void)string_bearing_mag;
-  (void)string_bearing_mag_mag;
   (void)string_ground_speed_knots;
-  (void)string_ground_speed_knots_unit;
   (void)string_ground_speed_kph;
-  (void)string_ground_speed_kph_unit;
   (void)string_mode;
 
   return true;
@@ -325,13 +337,11 @@ static bool parse_gpgga(char **fields, struct gps_gpgga *gpgga)
   char *string_time_since_reference  = fields[13];
   char *string_reference_station_id  = fields[14];
 
-  bool status = parse_fix(string_fix_type, &gpgga->fix);
+  bool status = parse_fix(string_fix_type, &gpgga->fix)
+             && parse_time(string_time, &gpgga->millisecond_of_day)
+             && parse_latitude(string_latitude, string_latitude_dir, &gpgga->latitude_decimilliminutes)
+             && parse_longitude(string_longitude, string_longitude_dir, &gpgga->longitude_decimilliminutes);
 
-  (void)string_time;
-  (void)string_latitude;
-  (void)string_latitude_dir;
-  (void)string_longitude;
-  (void)string_longitude_dir;
   (void)string_satellite_count;
   (void)string_horizontal_dilution;
   (void)string_altitude;
