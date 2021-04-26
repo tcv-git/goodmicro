@@ -72,7 +72,7 @@ struct gps_gpvtg
   int32_t       course_millidegrees_true;
   int32_t       course_millidegrees_magnetic;
   uint32_t      groundspeed_milliknots;
-  uint32_t      groundspeed_metres_pre_hour;
+  uint32_t      groundspeed_metres_per_hour;
   enum gps_mode mode;
 };
 

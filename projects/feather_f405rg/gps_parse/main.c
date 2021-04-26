@@ -16,9 +16,58 @@
   problems encountered by those who obtain the software through you.
 */
 
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "debug_printf.h"
 #include "gps_uart.h"
 #include "gps_protocol.h"
+
+
+static const char *format_decimilliminutes(char *buffer, size_t buffer_size, int32_t decimilliminutes)
+{
+  unsigned int microdegrees = (((llabs(decimilliminutes) * 5) + 1) / 3);
+
+  unsigned int degrees = (microdegrees / 1000000u);
+
+  unsigned int remainder = (microdegrees - (degrees * 1000000u));
+
+  snprintf(buffer, buffer_size, "%c%u.%06u", ((decimilliminutes < 0) ? '-' : '+'), degrees, remainder);
+
+  return buffer;
+}
+
+static const char *format_millisecond_of_day(char *buffer, size_t buffer_size, uint32_t millisecond_of_day)
+{
+  unsigned int second_of_day = (millisecond_of_day / 1000u);
+
+  unsigned int millisecond = (millisecond_of_day - (second_of_day * 1000));
+
+  unsigned int minute_of_day = (second_of_day / 60);
+
+  unsigned int second = (second_of_day - (minute_of_day * 60));
+
+  unsigned int hour_of_day = (minute_of_day / 60);
+
+  unsigned int minute = (minute_of_day - (hour_of_day * 60));
+
+  if (hour_of_day > 99)
+  {
+    hour_of_day = 99;
+  }
+
+  if ((hour_of_day == 24) && (minute_of_day == 0) && (second_of_day == 0))
+  {
+    hour_of_day = 23;
+    minute      = 59;
+    second      = 60;
+  }
+
+  snprintf(buffer, buffer_size, "%02u:%02u:%02u.%03u", hour_of_day, minute, second, millisecond);
+
+  return buffer;
+}
+
 
 int main(void)
 {
@@ -64,10 +113,14 @@ int main(void)
 
           if (message.data.gprmc.data_valid)
           {
-            debug_printf("RMC %u %u %i %i\n", (unsigned int)message.data.gprmc.data_valid,
-                                              (unsigned int)message.data.gprmc.millisecond_of_day,
-                                              (int)message.data.gprmc.latitude_decimilliminutes,
-                                              (int)message.data.gprmc.longitude_decimilliminutes);
+            char time_of_day[16];
+            char latitude[16];
+            char longitude[16];
+
+            debug_printf("RMC %s %s %s\n",
+                         format_millisecond_of_day(time_of_day, sizeof time_of_day, message.data.gprmc.millisecond_of_day),
+                         format_decimilliminutes(latitude, sizeof latitude, message.data.gprmc.latitude_decimilliminutes),
+                         format_decimilliminutes(longitude, sizeof longitude, message.data.gprmc.longitude_decimilliminutes));
           }
           else
           {
@@ -79,7 +132,7 @@ int main(void)
           (void)message.data.gpvtg.course_millidegrees_true;
           (void)message.data.gpvtg.course_millidegrees_magnetic;
           (void)message.data.gpvtg.groundspeed_milliknots;
-          (void)message.data.gpvtg.groundspeed_metres_pre_hour;
+          (void)message.data.gpvtg.groundspeed_metres_per_hour;
 
           debug_printf("VTG\n");
           break;
