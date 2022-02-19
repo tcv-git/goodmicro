@@ -24,24 +24,8 @@
 #include "system_stm32f405-439.h"
 #include "delay.h"
 #include "uptime.h"
+#include "i2c_pinout.h"
 #include "i2c_master.h"
-
-#define I2CM_SCL_PORT           GPIOB
-#define I2CM_SCL_PORT_ENR       RCC->AHB1ENR
-#define I2CM_SCL_PORT_ENR_BIT   RCC_AHB1ENR_GPIOBEN
-#define I2CM_SCL_PINMASK        PIN6
-#define I2CM_SCL_AFn            AF4
-#define I2CM_SDA_PORT           GPIOB
-#define I2CM_SDA_PORT_ENR       RCC->AHB1ENR
-#define I2CM_SDA_PORT_ENR_BIT   RCC_AHB1ENR_GPIOBEN
-#define I2CM_SDA_PINMASK        PIN7
-#define I2CM_SDA_AFn            AF4
-#define I2CM_ENR                RCC->APB1ENR
-#define I2CM_ENR_BIT            RCC_APB1ENR_I2C1EN
-#define I2CM_RSTR               RCC->APB1RSTR
-#define I2CM_RSTR_BIT           RCC_APB1RSTR_I2C1RST
-#define I2CM                    I2C1
-#define I2CM_APB_CLK            APB1_CLK
 
 #define I2CM_CLK   100000u  // required I2C clock speed: 100kHz
 
