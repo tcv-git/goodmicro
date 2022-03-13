@@ -15,4 +15,3 @@ nucleo_l073rz   STM32L0xx_Nucleo
 round_adc       Round board ADC processor
 round           Round board main processor
 smallclub       Small club board
-worrab          Worrab board
