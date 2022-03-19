@@ -93,18 +93,26 @@ char *printf_queue_get_crlf(uint16_t *p_length)
 {
   char *buffer = printf_queue_get();
 
-  uint16_t length = strlen(buffer);
+  uint16_t length = 0;
 
-  if ((length > 0) && (buffer[length - 1] == '\n'))
+  if (buffer)
   {
-    if ((length <= 1) || (buffer[length - 2] != '\r'))
+    length = strlen(buffer);
+
+    if ((length > 0) && (buffer[length - 1] == '\n'))
     {
-      buffer[length - 1] = '\r';
-      buffer[length++  ] = '\n';
+      if ((length <= 1) || (buffer[length - 2] != '\r'))
+      {
+        buffer[length - 1] = '\r';
+        buffer[length++  ] = '\n';
+      }
     }
   }
 
-  *p_length = length;
+  if (p_length)
+  {
+    *p_length = length;
+  }
 
   return buffer;
 }
