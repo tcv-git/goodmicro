@@ -18,9 +18,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "stm32f4xx.h"
-#include "stm32f4xx_simple_gpio.h"
-#include "system_stm32f405-439.h"
 #include "debug_uart.h"
 #include "debug_printf.h"
 

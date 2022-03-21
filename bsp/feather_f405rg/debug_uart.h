@@ -19,6 +19,11 @@
 #ifndef DEBUG_UART_H_INCLUDED
 #define DEBUG_UART_H_INCLUDED
 
+#include "stm32f4xx.h"
+#include "stm32f4xx_it.h"
+#include "stm32f4xx_simple_gpio.h"
+#include "system_stm32f405-439.h"
+
 #define DEBUG_TX_AHBxENR                AHB1ENR
 #define DEBUG_TX_AHBxENR_GPIOxEN        RCC_AHB1ENR_GPIOCEN
 #define DEBUG_TX_GPIOx                  GPIOC
