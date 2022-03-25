@@ -17,8 +17,8 @@ ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv6m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv6m/delay_systick_dynamic.s
 ASFILES += ../../../lib/goodmicro_armv6m/imath.s
-ASFILES += ../../../lib/goodmicro_cm/startup.s
-ASFILES += ../../../lib/goodmicro_f0/vectors/vectors_stm32f051x8.s
+ASFILES += ../../../lib/goodmicro_cortexm/startup.s
+ASFILES += ../../../lib/goodmicro_stm32f0/vectors/vectors_stm32f051x8.s
 
 # input for C compiler
 CFILES :=
@@ -30,9 +30,9 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
-INCLUDE_PATH += ../../../lib/goodmicro_f0
+INCLUDE_PATH += ../../../lib/goodmicro_stm32f0
 INCLUDE_PATH += ../../../lib/goodmicro_armv6m
-INCLUDE_PATH += ../../../lib/goodmicro_cm
+INCLUDE_PATH += ../../../lib/goodmicro_cortexm
 INCLUDE_PATH += ../../../lib/Device_STM32F0xx/Include
 INCLUDE_PATH += ../../../lib/CMSIS/Include
 
@@ -44,7 +44,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../../../lib/goodmicro_f0/stm32f05xx8xx.ld
+LINK_SCRIPT := ../../../lib/goodmicro_stm32f0/stm32f05xx8xx.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
