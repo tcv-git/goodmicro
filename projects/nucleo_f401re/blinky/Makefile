@@ -17,8 +17,8 @@ ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_84MHz.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
-ASFILES += ../../../lib/goodmicro_cm/startup.s
-ASFILES += ../../../lib/goodmicro_f4/vectors/vectors_stm32f401xe.s
+ASFILES += ../../../lib/goodmicro_cortexm/startup.s
+ASFILES += ../../../lib/goodmicro_stm32f4/vectors/vectors_stm32f401xe.s
 
 # input for C compiler
 CFILES :=
@@ -31,9 +31,9 @@ CXXFILES :=
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
 INCLUDE_PATH += ../../../bsp/nucleo_f401re
-INCLUDE_PATH += ../../../lib/goodmicro_f4
+INCLUDE_PATH += ../../../lib/goodmicro_stm32f4
 INCLUDE_PATH += ../../../lib/goodmicro_armv7m
-INCLUDE_PATH += ../../../lib/goodmicro_cm
+INCLUDE_PATH += ../../../lib/goodmicro_cortexm
 INCLUDE_PATH += ../../../lib/Device_STM32F4xx/Include
 INCLUDE_PATH += ../../../lib/CMSIS/Include
 
@@ -45,7 +45,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../../../lib/goodmicro_f4/linker/stm32f401xExx.ld
+LINK_SCRIPT := ../../../lib/goodmicro_stm32f4/linker/stm32f401xExx.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
