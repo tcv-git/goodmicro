@@ -21,7 +21,7 @@ ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_dynamic.s
 #ASFILES += ../../../lib/goodmicro_armv7m/delay_systick_dynamic.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
-ASFILES += ../../../lib/goodmicro_stm32f4/startup/startup_stm32f4xx.s
+ASFILES += ../../../lib/goodmicro_stm32f4/startup/startup_stm32f405-439.s
 ASFILES += ../../../lib/goodmicro_stm32f4/vectors/vectors_stm32f407xx.s
 ASFILES += test_delay_units.s
 
