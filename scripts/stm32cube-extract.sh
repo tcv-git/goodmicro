@@ -172,4 +172,20 @@ copyto projects/nucleo_l073rz/.template    STM32CubeL0/Projects/NUCLEO-L073RZ/Te
 copyto projects/nucleo_l073rz/.template    STM32CubeL0/Projects/NUCLEO-L073RZ/Templates/SW4STM32/STM32L073RZ_NUCLEO/.project
 copyto projects/nucleo_l073rz/.template    STM32CubeL0/Projects/NUCLEO-L073RZ/Templates/SW4STM32/STM32L073RZ_NUCLEO/.cproject
 
+copyto lib/Device_STM32L4xx/Include        STM32CubeL4/Drivers/CMSIS/Device/ST/STM32L4xx/Include/*.h
+copyto lib/Device_STM32L4xx/Source         STM32CubeL4/Drivers/CMSIS/Device/ST/STM32L4xx/Source/Templates/*.c
+copyto lib/Device_STM32L4xx/Source         STM32CubeL4/Drivers/CMSIS/Device/ST/STM32L4xx/Source/Templates/gcc/*.s
+copyto lib/STM32L4xx_HAL_Driver/Inc        STM32CubeL4/Drivers/STM32L4xx_HAL_Driver/Inc/*.h
+copyto lib/STM32L4xx_HAL_Driver/Inc/Legacy STM32CubeL4/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy/*.h
+copyto lib/STM32L4xx_HAL_Driver/Src        STM32CubeL4/Drivers/STM32L4xx_HAL_Driver/Src/*.c
+copyto lib/STM32L4xx_HAL_Driver/Src/Legacy STM32CubeL4/Drivers/STM32L4xx_HAL_Driver/Src/Legacy/*.c
+copyto bsp/STM32L4xx-Nucleo                STM32CubeL4/Drivers/BSP/STM32L4xx_Nucleo/*.c
+copyto bsp/STM32L4xx-Nucleo                STM32CubeL4/Drivers/BSP/STM32L4xx_Nucleo/*.h
+copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/Inc/*.h
+copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/Src/*.c
+copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/SW4STM32/*.s
+copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/SW4STM32/STM32L452RE_NUCLEO/*.ld
+copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/SW4STM32/STM32L452RE_NUCLEO/.project
+copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/SW4STM32/STM32L452RE_NUCLEO/.cproject
+
 rm tmp

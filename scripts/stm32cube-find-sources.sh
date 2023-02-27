@@ -62,3 +62,8 @@ lf STM32CubeL0/Drivers/CMSIS/Device/ST/STM32L0xx
 lf STM32CubeL0/Drivers/STM32L0xx_HAL_Driver
 lf STM32CubeL0/Drivers/BSP/STM32L0xx_Nucleo
 lf STM32CubeL0/Projects/NUCLEO-L073RZ/Templates
+
+lf STM32CubeL4/Drivers/CMSIS/Device/ST/STM32L4xx
+lf STM32CubeL4/Drivers/STM32L4xx_HAL_Driver
+lf STM32CubeL4/Drivers/BSP/STM32L4xx_Nucleo
+lf STM32CubeL4/Projects/NUCLEO-L452RE/Templates
