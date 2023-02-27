@@ -22,7 +22,7 @@ ASFILES += ../../../lib/goodmicro_stm32l0/vectors/vectors_stm32l073xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../lib/goodmicro_stm32l0/system_stm32l0xx_msi_2mhz.c
+CFILES += ../../../bsp/nucleo_l073rz/system_nucleo_l073rz_32mhz.c
 CFILES += ../../../lib/goodmicro_stm32l0/debug_printf_blocking.c
 CFILES += main.c
 
@@ -77,7 +77,7 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
 CPPFLAGS += -DSTM32L073xx
-CPPFLAGS += -DSYSTEM_CORE_CLOCK=0
+CPPFLAGS += -DSYSTEM_CORE_CLOCK=32000000
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
 
