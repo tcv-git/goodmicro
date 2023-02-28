@@ -21,10 +21,12 @@
 #include "stm32l0xx.h"
 #include "stm32l0xx_simple_gpio.h"
 #include "delay.h"
-#include "uart_dma_write.h"
+#include "write_buffer.h"
 
 int main(void)
 {
+  uint8_t buffer[123];
+  struct write_buffer wb;
   /*
   Pinout:
   PA2  AF4 USART2_TX
@@ -35,13 +37,14 @@ int main(void)
   PA5  LED LD2 (green) active high
   */
 
-  uart_write_init();
+  write_buffer_init(&wb, buffer, sizeof buffer);
 
   for (;;)
   {
     const uint8_t d[] = "wesdrftghjklhgfdcvbnm\r\n";
-    uart_write_start(d, (sizeof d) - 1);
 
-    while(!uart_write_complete());
+    write_buffer_write(&wb, d, (sizeof d) - 1);
+
+    write_buffer_poll(&wb);
   }
 }
