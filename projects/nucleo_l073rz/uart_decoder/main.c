@@ -21,6 +21,7 @@
 #include "stm32l0xx.h"
 #include "stm32l0xx_simple_gpio.h"
 #include "delay.h"
+#include "uart_dma_write.h"
 
 int main(void)
 {
@@ -34,5 +35,13 @@ int main(void)
   PA5  LED LD2 (green) active high
   */
 
-  for (;;);
+  uart_write_init();
+
+  for (;;)
+  {
+    const uint8_t d[] = "wesdrftghjklhgfdcvbnm\r\n";
+    uart_write_start(d, (sizeof d) - 1);
+
+    while(!uart_write_complete());
+  }
 }
