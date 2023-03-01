@@ -18,15 +18,16 @@
   through you.
 */
 
-#include "stm32l0xx.h"
-#include "stm32l0xx_simple_gpio.h"
 #include "delay.h"
-#include "write_buffer.h"
+#include "uart_dma_write.h"
+#include "wb_printf.h"
+
+#define N 1
+#define M 10
 
 int main(void)
 {
   uint8_t buffer[123];
-  struct write_buffer wb;
   /*
   Pinout:
   PA2  AF4 USART2_TX
@@ -37,14 +38,24 @@ int main(void)
   PA5  LED LD2 (green) active high
   */
 
-  write_buffer_init(&wb, buffer, sizeof buffer);
+  uart_write_init();
 
-  for (;;)
+  wb_init(buffer, sizeof buffer);
+
+  unsigned int i;
+
+  for (i = 0;; i++)
   {
-    const uint8_t d[] = "wesdrftghjklhgfdcvbnm\r\n";
+    if ((i % N) == 0)
+    {
+      wb_printf("%u\n", i);
+    }
 
-    write_buffer_write(&wb, d, (sizeof d) - 1);
+    if ((i % M) == 0)
+    {
+      wb_poll();
+    }
 
-    write_buffer_poll(&wb);
+    DELAY_MS(10);
   }
 }
