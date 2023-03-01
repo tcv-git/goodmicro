@@ -1,7 +1,7 @@
 // Poll UART receiver
 // Copyright Green Energy Options Ltd.
 
-#include "stm32l0xx.h"
+#include "stm32l4xx.h"
 #include "uart_poll.h"
 
 #define UART_APBx_CLK   SYSTEM_CORE_CLOCK

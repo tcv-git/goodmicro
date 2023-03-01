@@ -4,34 +4,34 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "stm32l0xx.h"
-#include "stm32l0xx_simple_gpio.h"
+#include "stm32l4xx.h"
+#include "stm32l4xx_simple_gpio.h"
 #include "uart_dma_write.h"
 
 // PA2 AF4 USART2_TX
 
-#define PIN_AHBxENR              IOPENR
-#define PIN_AHBxENR_GPIOxEN      RCC_IOPENR_IOPAEN
+#define PIN_AHBxENR              AHB2ENR
+#define PIN_AHBxENR_GPIOxEN      RCC_AHB2ENR_GPIOAEN
 #define PIN_GPIOx                GPIOA
 #define PIN_PINx                 PIN2
-#define PIN_AFx                  AF4
+#define PIN_AFx                  AF7
 
-#define UART_APBx_ENR            APB1ENR
-#define UART_APBx_ENR_UARTxEN    RCC_APB1ENR_USART2EN
-#define UART_APBx_RSTR           APB1RSTR
-#define UART_APBx_RSTR_UARTxRST  RCC_APB1RSTR_USART2RST
+#define UART_APBx_ENR            APB1ENR1
+#define UART_APBx_ENR_UARTxEN    RCC_APB1ENR1_USART2EN
+#define UART_APBx_RSTR           APB1RSTR1
+#define UART_APBx_RSTR_UARTxRST  RCC_APB1RSTR1_USART2RST
 #define UARTx                    USART2
 
 #define UART_APBx_CLK            SYSTEM_CORE_CLOCK
 #define BAUD_RATE                115200u
 
-#define DMA_AHBxENR              AHBENR
-#define DMA_AHBxENR_DMAxEN       RCC_AHBENR_DMAEN
+#define DMA_AHBxENR              AHB1ENR
+#define DMA_AHBxENR_DMAxEN       RCC_AHB1ENR_DMA1EN
 #define DMAx                     DMA1
 #define DMAx_Streamx             DMA1_Channel7
 
 #define DMAx_CSELR_CxS           DMA_CSELR_C7S
-#define DMAx_CSELR_CxS_VALUE     (4 << DMA_CSELR_C7S_Pos)
+#define DMAx_CSELR_CxS_VALUE     (2 << DMA_CSELR_C7S_Pos)
 
 #define DMAx_ISR_TCIFx           DMA_ISR_TCIF7
 #define DMAx_IFCR_CTCIFx         DMA_IFCR_CTCIF7

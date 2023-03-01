@@ -4,7 +4,7 @@
 #ifndef UART_POLL_H_INCLUDED
 #define UART_POLL_H_INCLUDED
 
-#include "stm32l0xx.h"
+#include "stm32l4xx.h"
 
 #ifdef __cplusplus
 extern "C" {
