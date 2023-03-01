@@ -24,6 +24,7 @@ ASFILES += ../../../lib/goodmicro_stm32l0/vectors/vectors_stm32l073xx.s
 CFILES :=
 CFILES += ../../../bsp/nucleo_l073rz/system_nucleo_l073rz_32mhz.c
 CFILES += uart_dma_write.c
+CFILES += uart_poll.c
 CFILES += wb_printf.c
 CFILES += write_buffer.c
 CFILES += main.c
