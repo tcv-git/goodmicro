@@ -23,7 +23,7 @@
 #define UARTx                    USART2
 
 #define UART_APBx_CLK            SYSTEM_CORE_CLOCK
-#define BAUD_RATE                115200u
+#define BAUD_RATE                (1000u * 1000)
 
 #define DMA_AHBxENR              AHB1ENR
 #define DMA_AHBxENR_DMAxEN       RCC_AHB1ENR_DMA1EN
