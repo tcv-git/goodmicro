@@ -20,14 +20,18 @@
 
 #include "stm32l4xx.h"
 #include "stm32l4xx_simple_gpio.h"
+#if 0
 #include "delay.h"
 #include "uart_dma_write.h"
 #include "uart_poll.h"
 #include "wb_printf.h"
+#endif
 
 int main(void)
 {
+#if 0
   uint8_t buffer[123];
+#endif
   /*
   Pinout:
   PA2  AF7 USART2_TX
@@ -55,6 +59,7 @@ int main(void)
   GPIO_alternate_push_pull_slow(GPIOC, PIN11, AF7);
   GPIO_alternate_push_pull_slow(GPIOA, PIN1,  AF8);
 
+#if 0
   uart_poll_init(USART1);
   uart_poll_init(USART3);
   uart_poll_init(UART4);
@@ -62,12 +67,15 @@ int main(void)
   uart_write_init();
 
   wb_init(buffer, sizeof buffer);
+#endif
 
   for (;;)
   {
+#if 0
     int b1 = uart_poll(USART1);  if (b1 != NO_DATA){ wb_printf("1: %i\n", b1); }
     int b3 = uart_poll(USART3);  if (b3 != NO_DATA){ wb_printf("3: %i\n", b3); }
     int b4 = uart_poll(UART4);   if (b4 != NO_DATA){ wb_printf("4: %i\n", b4); }
     wb_poll();
+#endif
   }
 }

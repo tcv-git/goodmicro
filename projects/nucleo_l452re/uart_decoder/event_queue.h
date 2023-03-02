@@ -1,4 +1,13 @@
 
+
+
+
+
+
+
+
+#if 0
+
 struct usart_receiver
 {
   uint8_t *buffer;
@@ -12,4 +21,4 @@ void usart_receiver_poll(struct usart_receiver *receiver);
 
 void read_buffer_add(int received_data, uint32_t timstamp);
 
-
+#endif

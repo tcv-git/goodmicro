@@ -23,11 +23,16 @@ ASFILES += ../../../lib/goodmicro_stm32l4/vectors/vectors_stm32l452xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_l452re/system_nucleo_l452re_80mhz.c
-CFILES += uart_dma_write.c
-CFILES += uart_poll.c
-CFILES += wb_printf.c
-CFILES += write_buffer.c
+#CFILES += clocks.c
+#CFILES += decoder.c
+#CFILES += event_queue.c
+#CFILES += linebuffer.c
 CFILES += main.c
+#CFILES += terminal.c
+#CFILES += uart_dma_write.c
+#CFILES += uart_interrupt_receive.c
+#CFILES += write_buffer.c
+
 
 # input for C++ compiler
 CXXFILES :=

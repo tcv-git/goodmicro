@@ -1,6 +1,13 @@
 
 
 
+
+
+
+
+
+#if 0
+
 void usart_receiver_init(
         struct usart_receiver *receiver,
         uint8_t *buffer,
@@ -86,3 +93,4 @@ enum event {
   new data,
   timeout,
 
+#endif
