@@ -25,6 +25,9 @@ struct write_buffer
 void write_buffer_init(struct write_buffer *wb, uint8_t *buffer, uint32_t buffer_size);
 void write_buffer_write(struct write_buffer *wb, const uint8_t *data, uint32_t data_count);
 void write_buffer_poll(struct write_buffer *wb);
+#if 0
+void write_buffer_flush(struct write_buffer *wb);
+#endif
 
 #ifdef __cplusplus
 }

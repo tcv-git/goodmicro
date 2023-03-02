@@ -10,6 +10,12 @@
 extern "C" {
 #endif
 
+#if 0
+void uart_rx_init(USART_Typedef *uart);
+void uart_rx_irq_handler(USART_Typedef *uart, unsigned int channel);
+// IRQHandler(); in main
+#endif
+
 enum uart_status
 {
   NO_DATA       = -1,
