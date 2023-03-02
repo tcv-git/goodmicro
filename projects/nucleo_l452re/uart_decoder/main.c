@@ -19,19 +19,20 @@
 */
 
 #include "stm32l4xx.h"
+#include "stm32l4xx_it.h"
 #include "stm32l4xx_simple_gpio.h"
-#if 0
-#include "delay.h"
+#include "uart_interrupt_receive.h"
+#include "event_queue.h"
+#include "write_buffer.h"
 #include "uart_dma_write.h"
-#include "uart_poll.h"
-#include "wb_printf.h"
-#endif
+
+#define COUNTOF(A) ((sizeof A)/sizeof(A[0]))
+
+static uint16_t event_queue_buffer[1024];
+static uint8_t  write_buffer[20 * 1024];
 
 int main(void)
 {
-#if 0
-  uint8_t buffer[123];
-#endif
   /*
   Pinout:
   PA2  AF7 USART2_TX
@@ -59,23 +60,82 @@ int main(void)
   GPIO_alternate_push_pull_slow(GPIOC, PIN11, AF7);
   GPIO_alternate_push_pull_slow(GPIOA, PIN1,  AF8);
 
-#if 0
-  uart_poll_init(USART1);
-  uart_poll_init(USART3);
-  uart_poll_init(UART4);
+  event_queue_init(event_queue_buffer, COUNTOF(event_queue_buffer));
+  uart_rx_init(USART1);
+  uart_rx_init(USART3);
+  uart_rx_init(UART4);
+  NVIC_EnableIRQ(USART1_IRQn);
+  NVIC_EnableIRQ(USART3_IRQn);
+  NVIC_EnableIRQ(UART4_IRQn);
 
   uart_write_init();
-
-  wb_init(buffer, sizeof buffer);
-#endif
+  write_buffer_init(write_buffer, sizeof write_buffer);
 
   for (;;)
   {
-#if 0
-    int b1 = uart_poll(USART1);  if (b1 != NO_DATA){ wb_printf("1: %i\n", b1); }
-    int b3 = uart_poll(USART3);  if (b3 != NO_DATA){ wb_printf("3: %i\n", b3); }
-    int b4 = uart_poll(UART4);   if (b4 != NO_DATA){ wb_printf("4: %i\n", b4); }
-    wb_poll();
-#endif
+    uint16_t event = event_queue_get();
+
+    enum event_type type = event_get_type(event);
+    uint_fast8_t channel = event_get_channel(event);
+    uint8_t data = event_get_data(event);
+
+    switch (type)
+    {
+      case EVENT_HW_TIMEOUT:
+        write_buffer_printf("hw timeout on %u\r\n", (unsigned int)channel);
+        break;
+
+      case EVENT_DATA:
+        if ((data >= 0x20) && (data <= 0x7E))
+        {
+          write_buffer_printf("data '%c' on %u\r\n", (int)data, (unsigned int)channel);
+        }
+        else
+        {
+          write_buffer_printf("data 0x%02X on %u\r\n", (unsigned int)data, (unsigned int)channel);
+        }
+        break;
+
+      case EVENT_MUX_OVERRUN:
+        write_buffer_printf("event queue overrun\r\n");
+        break;
+
+      case EVENT_HW_OVERRUN:
+        write_buffer_printf("hw overrun on %u\r\n", (unsigned int)channel);
+        break;
+
+      case EVENT_NOISE_ERROR:
+        write_buffer_printf("noise error on %u\r\n", (unsigned int)channel);
+        break;
+
+      case EVENT_FRAMING_ERROR:
+        write_buffer_printf("framing error on %u\r\n", (unsigned int)channel);
+        break;
+
+      case EVENT_PARITY_ERROR:
+        write_buffer_printf("parity error on %u\r\n", (unsigned int)channel);
+        break;
+
+      default: // must be EVENT_NO_DATA
+        break;
+    }
+
+    write_buffer_poll();
   }
+}
+
+
+void USART1_IRQHandler(void)
+{
+  uart_rx_irq_handler(USART1, 1);
+}
+
+void USART3_IRQHandler(void)
+{
+  uart_rx_irq_handler(USART3, 2);
+}
+
+void UART4_IRQHandler(void)
+{
+  uart_rx_irq_handler(UART4, 3);
 }
