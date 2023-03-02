@@ -122,3 +122,11 @@ void write_buffer_poll(struct write_buffer *wb)
     // it's empty
   }
 }
+
+void write_buffer_flush(struct write_buffer *wb)
+{
+  while ((wb->read_end != wb->read_start) || (wb->read_start != wb->next_write))
+  {
+    write_buffer_poll(wb);
+  }
+}

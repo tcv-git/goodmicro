@@ -31,9 +31,9 @@ CFILES += clocks.c
 #CFILES += linebuffer.c
 CFILES += main.c
 #CFILES += terminal.c
-#CFILES += uart_dma_write.c
+CFILES += uart_dma_write.c
 #CFILES += uart_interrupt_receive.c
-#CFILES += write_buffer.c
+CFILES += write_buffer.c
 
 # input for C++ compiler
 CXXFILES :=
