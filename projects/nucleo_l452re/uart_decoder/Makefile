@@ -17,13 +17,15 @@ ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_dynamic.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
+ASFILES += ../../../lib/goodmicro_armv7m/uptime_sysclk.s
 ASFILES += ../../../lib/goodmicro_cortexm/startup.s
 ASFILES += ../../../lib/goodmicro_stm32l4/vectors/vectors_stm32l452xx.s
 
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_l452re/system_nucleo_l452re_80mhz.c
-#CFILES += clocks.c
+CFILES += ../../../lib/goodmicro_armv7m/uptime.c
+CFILES += clocks.c
 #CFILES += decoder.c
 #CFILES += event_queue.c
 #CFILES += linebuffer.c
@@ -32,7 +34,6 @@ CFILES += main.c
 #CFILES += uart_dma_write.c
 #CFILES += uart_interrupt_receive.c
 #CFILES += write_buffer.c
-
 
 # input for C++ compiler
 CXXFILES :=
