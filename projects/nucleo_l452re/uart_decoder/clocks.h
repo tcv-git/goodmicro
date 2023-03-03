@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 // counts of monotime() per second
-const uint32_t MONOTIME_HZ;
+extern const uint32_t MONOTIME_HZ;
 
 // fast monotonic clock, system dependant units
 uint64_t monotime(void);
