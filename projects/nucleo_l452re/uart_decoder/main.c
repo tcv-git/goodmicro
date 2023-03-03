@@ -31,45 +31,14 @@
 static uint16_t event_queue_buffer[1024];
 static uint8_t  write_buffer[20 * 1024];
 
+static void uart_receivers_init(void);
+
 int main(void)
 {
-  /*
-  Pinout:
-  PA2  AF7 USART2_TX
-  PB7  AF7 USART1_RX
-  PC11 AF7 USART3_RX
-  PA1  AF8 UART4_RX
-  PC13 Button B1 active low
-  PA5  LED LD2 (green) active high
-  */
-
-  RCC->AHB2ENR   |=  RCC_AHB2ENR_GPIOAEN;
-  RCC->AHB2ENR   |=  RCC_AHB2ENR_GPIOBEN;
-  RCC->AHB2ENR   |=  RCC_AHB2ENR_GPIOCEN;
-  RCC->APB2RSTR  |=  RCC_APB2RSTR_USART1RST;
-  RCC->APB1RSTR1 |=  RCC_APB1RSTR1_USART3RST;
-  RCC->APB1RSTR1 |=  RCC_APB1RSTR1_UART4RST;
-  RCC->APB2ENR   |=  RCC_APB2ENR_USART1EN;
-  RCC->APB1ENR1  |=  RCC_APB1ENR1_UART4EN;
-  RCC->APB1ENR1  |=  RCC_APB1ENR1_USART3EN;
-  RCC->APB2RSTR  &= ~RCC_APB2RSTR_USART1RST;
-  RCC->APB1RSTR1 &= ~RCC_APB1RSTR1_USART3RST;
-  RCC->APB1RSTR1 &= ~RCC_APB1RSTR1_UART4RST;
-
-  GPIO_alternate_push_pull_slow(GPIOB, PIN7,  AF7);
-  GPIO_alternate_push_pull_slow(GPIOC, PIN11, AF7);
-  GPIO_alternate_push_pull_slow(GPIOA, PIN1,  AF8);
-
-  event_queue_init(event_queue_buffer, COUNTOF(event_queue_buffer));
-  uart_rx_init(USART1);
-  uart_rx_init(USART3);
-  uart_rx_init(UART4);
-  NVIC_EnableIRQ(USART1_IRQn);
-  NVIC_EnableIRQ(USART3_IRQn);
-  NVIC_EnableIRQ(UART4_IRQn);
-
   uart_write_init();
   write_buffer_init(write_buffer, sizeof write_buffer);
+
+  uart_receivers_init();
 
   for (;;)
   {
@@ -124,6 +93,43 @@ int main(void)
   }
 }
 
+static void uart_receivers_init(void)
+{
+  /*
+  Pinout:
+  PA2  AF7 USART2_TX
+  PB7  AF7 USART1_RX
+  PC11 AF7 USART3_RX
+  PA1  AF8 UART4_RX
+  PC13 Button B1 active low
+  PA5  LED LD2 (green) active high
+  */
+
+  RCC->AHB2ENR   |=  RCC_AHB2ENR_GPIOAEN;
+  RCC->AHB2ENR   |=  RCC_AHB2ENR_GPIOBEN;
+  RCC->AHB2ENR   |=  RCC_AHB2ENR_GPIOCEN;
+  RCC->APB2RSTR  |=  RCC_APB2RSTR_USART1RST;
+  RCC->APB1RSTR1 |=  RCC_APB1RSTR1_USART3RST;
+  RCC->APB1RSTR1 |=  RCC_APB1RSTR1_UART4RST;
+  RCC->APB2ENR   |=  RCC_APB2ENR_USART1EN;
+  RCC->APB1ENR1  |=  RCC_APB1ENR1_UART4EN;
+  RCC->APB1ENR1  |=  RCC_APB1ENR1_USART3EN;
+  RCC->APB2RSTR  &= ~RCC_APB2RSTR_USART1RST;
+  RCC->APB1RSTR1 &= ~RCC_APB1RSTR1_USART3RST;
+  RCC->APB1RSTR1 &= ~RCC_APB1RSTR1_UART4RST;
+
+  GPIO_alternate_push_pull_slow(GPIOB, PIN7,  AF7);
+  GPIO_alternate_push_pull_slow(GPIOC, PIN11, AF7);
+  GPIO_alternate_push_pull_slow(GPIOA, PIN1,  AF8);
+
+  event_queue_init(event_queue_buffer, COUNTOF(event_queue_buffer));
+  uart_rx_init(USART1);
+  uart_rx_init(USART3);
+  uart_rx_init(UART4);
+  NVIC_EnableIRQ(USART1_IRQn);
+  NVIC_EnableIRQ(USART3_IRQn);
+  NVIC_EnableIRQ(UART4_IRQn);
+}
 
 void USART1_IRQHandler(void)
 {
