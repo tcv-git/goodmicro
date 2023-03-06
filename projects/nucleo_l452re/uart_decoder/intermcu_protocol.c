@@ -9,6 +9,7 @@
 #include "event_queue.h"
 #include "terminal.h"
 #include "crc.h"
+#include "intermcu_packets.h"
 #include "intermcu_protocol.h"
 
 // function in string library but not in string header by default:
@@ -369,9 +370,9 @@ static void print_non_packet(struct intermcu_decoder *dec, const uint8_t *data, 
 // the count argument includes the header and payload but not the sync bytes or trailing CRC
 static void print_packet(struct intermcu_decoder *dec, const uint8_t *data, uint32_t count)
 {{{
-  linebuffer_printf(&dec->output_buffer, "packet type %02X length %u", data[0], (unsigned int)count);
+  uint8_t color = intermcu_packet(&dec->output_buffer, data, count, dec->normal_color, dec->bold_color);
 
-  output_linebuffer(dec, dec->normal_color);
+  output_linebuffer(dec, color);
 }}}
 
 // output the contents of the output line buffer to the terminal in the color specified

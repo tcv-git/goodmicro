@@ -28,6 +28,7 @@ CFILES += ../../../lib/goodmicro_armv7m/uptime.c
 CFILES += clocks.c
 CFILES += crc.c
 CFILES += event_queue.c
+CFILES += intermcu_packets.c
 CFILES += intermcu_protocol.c
 CFILES += linebuffer.c
 CFILES += main.c
