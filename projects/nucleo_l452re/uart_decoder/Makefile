@@ -33,6 +33,7 @@ CFILES += intermcu_protocol.c
 CFILES += linebuffer.c
 CFILES += main.c
 CFILES += terminal.c
+CFILES += toggle.c
 CFILES += uart_dma_write.c
 CFILES += uart_interrupt_receive.c
 CFILES += write_buffer.c

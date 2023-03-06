@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "clocks.h"
+#include "toggle.h"
 #include "linebuffer.h"
 #include "event_queue.h"
 #include "terminal.h"
@@ -355,7 +356,7 @@ static void output_linebuffer(struct intermcu_decoder *dec, uint8_t color)
     dec->output_buffer.buffer[dec->output_buffer.size - 1] = '\n';
   }
 
-  terminal_set_color(color);
+  terminal_set_color(toggle_get() ? color : (WHITE | ON_BLACK));
   terminal_write(dec->output_buffer.buffer, dec->output_buffer.length);
 
   // get ready for next time

@@ -21,6 +21,7 @@
 #include "stm32l4xx.h"
 #include "stm32l4xx_it.h"
 #include "stm32l4xx_simple_gpio.h"
+#include "toggle.h"
 #include "uart_interrupt_receive.h"
 #include "event_queue.h"
 #include "write_buffer.h"
@@ -41,6 +42,8 @@ static void uart_receivers_init(void);
 
 int main(void)
 {
+  crc_init();
+  toggle_init();
   uart_write_init();
   write_buffer_init(write_buffer, sizeof write_buffer);
 
@@ -61,13 +64,12 @@ int main(void)
     intermcu_decoder_poll(&decoders[2]);
 
     write_buffer_poll();
+    toggle_poll();
   }
 }
 
 static void uart_receivers_init(void)
 {
-  crc_init();
-
   /*
   Pinout:
   PA2  AF7 USART2_TX
