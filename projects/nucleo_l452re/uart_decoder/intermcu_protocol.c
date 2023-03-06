@@ -9,7 +9,7 @@
 #include "event_queue.h"
 #include "terminal.h"
 #include "crc.h"
-#include "decoder.h"
+#include "intermcu_protocol.h"
 
 // function in string library but not in string header by default:
 void *memmem(const void *haystack, size_t haystacklen, const void *needle, size_t needlelen);
@@ -29,18 +29,18 @@ void *memmem(const void *haystack, size_t haystacklen, const void *needle, size_
 #define BYTE_TIMEOUT_MS 150
 #define MIN_STRING_LENGTH 5
 
-static void check_buffer(struct decoder *dec);
-static void flush_buffer(struct decoder *dec);
+static void check_buffer(struct intermcu_decoder *dec);
+static void flush_buffer(struct intermcu_decoder *dec);
 static inline bool is_printable(uint8_t byte);
-static void print_non_packet(struct decoder *dec, const uint8_t *data, uint32_t count);
-static void print_packet(struct decoder *dec, const uint8_t *data, uint32_t count);
-static void output_linebuffer(struct decoder *dec, uint8_t color);
+static void print_non_packet(struct intermcu_decoder *dec, const uint8_t *data, uint32_t count);
+static void print_packet(struct intermcu_decoder *dec, const uint8_t *data, uint32_t count);
+static void output_linebuffer(struct intermcu_decoder *dec, uint8_t color);
 
 // set up an intermcu protocol decoder
 // prefix is a byte that is prepended to every line printed to the terminal
 // normal, bold and super colours are the terminal output modes for different message severities
 // a byte buffer must be provided which will be shared betweeb input and output buffers
-void decoder_init(struct decoder *dec,
+void intermcu_decoder_init(struct intermcu_decoder *dec,
                   char prefix,
                   uint8_t normal_color,
                   uint8_t bold_color,
@@ -69,7 +69,7 @@ void decoder_init(struct decoder *dec,
 
 // report an event to the decoder
 // the data argument is only meaningful if the event type is EVENT_DATA
-void decoder_event(struct decoder *dec, enum event_type type, uint8_t data)
+void intermcu_decoder_event(struct intermcu_decoder *dec, enum event_type type, uint8_t data)
 {{{
   switch (type)
   {
@@ -134,7 +134,7 @@ void decoder_event(struct decoder *dec, enum event_type type, uint8_t data)
 
 // this must be called every so often to allow the decoder to do its own timeouts
 // (in addition to hardware timeuot events received through the queue)
-void decoder_poll(struct decoder *dec)
+void intermcu_decoder_poll(struct intermcu_decoder *dec)
 {{{
   if (dec->input_count > 0)
   {
@@ -151,7 +151,7 @@ void decoder_poll(struct decoder *dec)
 // print any whole intermcu packets found
 // print any non-protocol bytes which are before an intermcu packet
 // but not ones at the end of the buffer (as there may be more to come)
-static void check_buffer(struct decoder *dec)
+static void check_buffer(struct intermcu_decoder *dec)
 {{{
   for (;;)
   {
@@ -294,7 +294,7 @@ static void check_buffer(struct decoder *dec)
 
 // print the whole contents of the buffer and empty it
 // (there definitely isn't a whole intermcu packet at the start of the buffer)
-static void flush_buffer(struct decoder *dec)
+static void flush_buffer(struct intermcu_decoder *dec)
 {{{
   dec->flush_needed   = true;
   dec->could_be_valid = false;
@@ -315,7 +315,7 @@ static inline bool is_ascii(uint8_t byte)
 }}}
 
 // output a line representing the non-packet bytes in the arguments
-static void print_non_packet(struct decoder *dec, const uint8_t *data, uint32_t count)
+static void print_non_packet(struct intermcu_decoder *dec, const uint8_t *data, uint32_t count)
 {{{
   uint8_t color = dec->normal_color;
 
@@ -367,7 +367,7 @@ static void print_non_packet(struct decoder *dec, const uint8_t *data, uint32_t 
 // output a line representing one whole packet
 // the data argument points to the packet header (excluding the sync bytes)
 // the count argument includes the header and payload but not the sync bytes or trailing CRC
-static void print_packet(struct decoder *dec, const uint8_t *data, uint32_t count)
+static void print_packet(struct intermcu_decoder *dec, const uint8_t *data, uint32_t count)
 {{{
   linebuffer_printf(&dec->output_buffer, "packet type %02X length %u", data[0], (unsigned int)count);
 
@@ -376,7 +376,7 @@ static void print_packet(struct decoder *dec, const uint8_t *data, uint32_t coun
 
 // output the contents of the output line buffer to the terminal in the color specified
 // reset the line buffer to contain just the prefix
-static void output_linebuffer(struct decoder *dec, uint8_t color)
+static void output_linebuffer(struct intermcu_decoder *dec, uint8_t color)
 {{{
   // FIXME insert walltime() timestamp
 

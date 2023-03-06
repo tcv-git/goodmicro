@@ -27,7 +27,7 @@
 #include "uart_dma_write.h"
 #include "terminal.h"
 #include "crc.h"
-#include "decoder.h"
+#include "intermcu_protocol.h"
 
 #define COUNTOF(A) ((sizeof A)/sizeof(A[0]))
 
@@ -35,7 +35,7 @@ static uint16_t event_queue_buffer[1024];
 static uint8_t  write_buffer[20 * 1024];
 static uint8_t  decoder_buffers[3][20 * 1024];
 
-struct decoder decoders[3];
+struct intermcu_decoder decoders[3];
 
 static void uart_receivers_init(void);
 
@@ -54,11 +54,11 @@ int main(void)
     uint_fast8_t channel = event_get_channel(event);
     uint8_t data = event_get_data(event);
 
-    decoder_event(&decoders[channel], type, data);
+    intermcu_decoder_event(&decoders[channel], type, data);
 
-    decoder_poll(&decoders[0]);
-    decoder_poll(&decoders[1]);
-    decoder_poll(&decoders[2]);
+    intermcu_decoder_poll(&decoders[0]);
+    intermcu_decoder_poll(&decoders[1]);
+    intermcu_decoder_poll(&decoders[2]);
 
     write_buffer_poll();
   }
@@ -95,9 +95,9 @@ static void uart_receivers_init(void)
   GPIO_alternate_push_pull_slow(GPIOC, PIN11, AF7);
   GPIO_alternate_push_pull_slow(GPIOA, PIN1,  AF8);
 
-  decoder_init(&decoders[0], '<', (GREEN  | ON_BLACK), (BOLD | GREEN  | ON_BLACK), (RED | ON_WHITE), decoder_buffers[0], sizeof(decoder_buffers[0]));
-  decoder_init(&decoders[1], '>', (BLUE   | ON_BLACK), (BOLD | BLUE   | ON_BLACK), (RED | ON_WHITE), decoder_buffers[1], sizeof(decoder_buffers[2]));
-  decoder_init(&decoders[2], '^', (YELLOW | ON_BLACK), (BOLD | YELLOW | ON_BLACK), (RED | ON_WHITE), decoder_buffers[2], sizeof(decoder_buffers[3]));
+  intermcu_decoder_init(&decoders[0], '<', (GREEN  | ON_BLACK), (BOLD | GREEN  | ON_BLACK), (RED | ON_WHITE), decoder_buffers[0], sizeof(decoder_buffers[0]));
+  intermcu_decoder_init(&decoders[1], '>', (BLUE   | ON_BLACK), (BOLD | BLUE   | ON_BLACK), (RED | ON_WHITE), decoder_buffers[1], sizeof(decoder_buffers[2]));
+  intermcu_decoder_init(&decoders[2], '^', (YELLOW | ON_BLACK), (BOLD | YELLOW | ON_BLACK), (RED | ON_WHITE), decoder_buffers[2], sizeof(decoder_buffers[3]));
 
   event_queue_init(event_queue_buffer, COUNTOF(event_queue_buffer));
   uart_rx_init(USART1);

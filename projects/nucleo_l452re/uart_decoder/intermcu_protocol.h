@@ -1,8 +1,8 @@
 // Intermcu protocol decoder
 // Copyright Green Energy Options Ltd.
 
-#ifndef DECODER_H_INCLUDED
-#define DECODER_H_INCLUDED
+#ifndef INTERMCU_PROTOCOL_H_INCLUDED
+#define INTERMCU_PROTOCOL_H_INCLUDED
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-struct decoder
+struct intermcu_decoder
 {
   struct linebuffer output_buffer;
   uint8_t          *input_buffer;
@@ -36,7 +36,7 @@ struct decoder
 // prefix is a byte that is prepended to every line printed to the terminal
 // normal, bold and super colours are the terminal output modes for different message severities
 // a byte buffer must be provided which will be shared betweeb input and output buffers
-void decoder_init(struct decoder *dec,
+void intermcu_decoder_init(struct intermcu_decoder *dec,
                   char prefix,
                   uint8_t normal_color,
                   uint8_t bold_color,
@@ -46,14 +46,14 @@ void decoder_init(struct decoder *dec,
 
 // report an event to the decoder
 // the data argument is only meaningful if the event type is EVENT_DATA
-void decoder_event(struct decoder *dec, enum event_type type, uint8_t data);
+void intermcu_decoder_event(struct intermcu_decoder *dec, enum event_type type, uint8_t data);
 
 // this must be called every so often to allow the decoder to do its own timeouts
 // (in addition to hardware timeuot events received through the queue)
-void decoder_poll(struct decoder *dec);
+void intermcu_decoder_poll(struct intermcu_decoder *dec);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // DECODER_H_INCLUDED
+#endif // INTERMCU_PROTOCOL_H_INCLUDED
