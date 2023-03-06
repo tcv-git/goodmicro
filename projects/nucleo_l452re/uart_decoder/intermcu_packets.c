@@ -611,37 +611,44 @@ uint8_t intermcu_packet(struct linebuffer *lb,
 
 static void handle_INFORM_PACKET(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UPDATE_PACKET(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UPDATE_TX_STATE(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_INFORM_SNIFFER_PACKET(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_READ_VERSION(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_REPLY_VERSION(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_INFORM_V2_PACKET(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_ACK(struct linebuffer *lb, const IntermcuAckPacket_t *packet)
@@ -666,10 +673,19 @@ static void handle_SCAN_DETAIL_REQ(struct linebuffer *lb, const IntermcuScanDeta
 
 static void handle_SCAN_DETAIL(struct linebuffer *lb, const IntermcuScanDetail_t *packet)
 {
-  linebuffer_printf(lb, "SCAN_DETAILS BSSID=%02X:%02X:%02X:%02X:%02X:%02X SSID=\"%.*s\" CH=%u RSSI=%i AUTHMODE=%u HID=%u Foffs=%i Fcalv=%i",
-    packet->bssid[0], packet->bssid[1], packet->bssid[2], packet->bssid[3], packet->bssid[4], packet->bssid[5],
-    (int)packet->ssid_len,
-    (const char*)packet->ssid, // FIXME check for binary/length
+  uint32_t ssid_length = sizeof(packet->ssid);
+
+  if (packet->ssid_len < ssid_length)
+  {
+    ssid_length = packet->ssid_len;
+  }
+
+  linebuffer_printf(lb, "SCAN_DETAILS BSSID=%02X:%02X:%02X:%02X:%02X:%02X SSID=",
+    packet->bssid[0], packet->bssid[1], packet->bssid[2], packet->bssid[3], packet->bssid[4], packet->bssid[5]);
+
+  linebuffer_print_string(lb, packet->ssid, ssid_length);
+
+  linebuffer_printf(lb, " CH=%u RSSI=%i AUTHMODE=%u HID=%u Foffs=%i Fcalv=%i",
     (unsigned int)packet->channel,
     (int)packet->rssi,
     (unsigned int)packet->authmode,
@@ -680,27 +696,32 @@ static void handle_SCAN_DETAIL(struct linebuffer *lb, const IntermcuScanDetail_t
 
 static void handle_GET_MAC(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_MAC_RESULTS(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_PAIRWITHHOST(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_AP_CONNECT(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_AP_DISCONNECT(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_AP_STATUS_REQUEST(struct linebuffer *lb, const IntermcuEmptyPacket_t *packet)
@@ -710,210 +731,253 @@ static void handle_AP_STATUS_REQUEST(struct linebuffer *lb, const IntermcuEmptyP
 
 static void handle_AP_DETAILS(struct linebuffer *lb, const IntermcuApDetailsPacket_t *packet)
 {
-  linebuffer_printf(lb, "AP_DETAILS=%u RSSI=%i SSID=\"%s\" BSSID=%02X:%02X:%02X:%02X:%02X:%02X IP=%u.%u.%u.%u",
+  linebuffer_printf(lb, "AP_DETAILS=%u RSSI=%i SSID=",
     (unsigned int)packet->conStatus, // FIXME enum to string
-    (int)packet->rssi,
-    (const char*)packet->ssid, // FIXME check for binary/length
+    (int)packet->rssi);
+
+  linebuffer_print_string(lb, packet->ssid, sizeof(packet->ssid));
+
+  linebuffer_printf(lb, " BSSID=%02X:%02X:%02X:%02X:%02X:%02X IP=%u.%u.%u.%u",
     packet->bssid[0], packet->bssid[1], packet->bssid[2], packet->bssid[3], packet->bssid[4], packet->bssid[5],
     (unsigned int)((packet->deviceIp >> 24) & 0xFF), (unsigned int)((packet->deviceIp >> 16) & 0xFF), (unsigned int)((packet->deviceIp >>  8) & 0xFF), (unsigned int)((packet->deviceIp >>  0) & 0xFF));
 }
 
 static void handle_AP_WPS_SCAN(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_AP_WPS_FINISHED(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RDP_CONFIGURE(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RDP_DISCONNECT(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RDP_SEND(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RDP_DNS_LOOKUP(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RDP_DNS_RESULTS(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_WELCOME_CHALLENGE(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_WELCOME_RESPONSE(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNCONFIGURE(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_FACTORY_RESET(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_ENTER_DEEP_SLEEP(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_ENTER_SETUP_MODE(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_ENTER_TEST_MODE(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_BOOT_RECORD(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_JN_PRINT(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "PRINT \"%s\"", packet->payload); // FIXME check termination/binary
+  linebuffer_printf(lb, "PRINT");
+  linebuffer_print_string(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_EMC_CONFIG(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_EMC_TXRX_COUNTER(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_EMC_WIFI_CONFIG(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RDP_TO_UNIHUB(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RDP_FROM_UNIHUB(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_CHECK_GOTO_SERVER(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNIHUB_GENERIC_U16(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNIHUB_PAIRING_LED(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNIHUB_NETWORK_LED(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNIHUB_VERSION_NUM(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNIHUB_FACTORY_RESET(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNIHUB_TO_TRIO_UI(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_UNIHUB_HTTP_CLOUD_ENV(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_SYSTEM_STATUS_REQUEST(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_ZB_NWK_INFO_REQUEST(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_DEVICE_INFO_REQUEST(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_LEAVE_WIFI_NWK(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_SYSTEM_STATUS_RESULT(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_ZB_NWK_INFO_RESULT(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_DEVICE_INFO_RESULT(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_RESET_REQUEST(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_ZB_NWK_ACTION_REQUEST(struct linebuffer *lb, const IntermcuGenericPacket_t *packet)
 {
-  linebuffer_printf(lb, "unimplemented packet type %02X payload length %u", packet->header.packetType, packet->header.dataSize);
+  linebuffer_printf(lb, "unimplemented packet type x%02X:", packet->header.packetType);
+  linebuffer_print_hex(lb, packet->payload, packet->header.dataSize);
 }
 
 static void handle_incorrect_length(struct linebuffer *lb, const uint8_t *data, uint32_t count)
 {
-  linebuffer_printf(lb, "packet type %02X incorrect length %u", data[0], (unsigned int)count);
+  linebuffer_printf(lb, "packet type x%02X incorrect length %u:", data[0], (unsigned int)count);
+  linebuffer_print_hex(lb, data, count);
 }
 
 static void handle_unknown_type(struct linebuffer *lb, const uint8_t *data, uint32_t count)
 {
-  linebuffer_printf(lb, "unknown packet type %02X length %u", data[0], (unsigned int)count);
+  linebuffer_printf(lb, "unknown packet type x%02X length %u:", data[0], (unsigned int)count);
+  linebuffer_print_hex(lb, data, count);
 }

@@ -28,7 +28,6 @@ void *memmem(const void *haystack, size_t haystacklen, const void *needle, size_
 */
 
 #define BYTE_TIMEOUT_MS 150
-#define MIN_STRING_LENGTH 5
 
 static void check_buffer(struct intermcu_decoder *dec);
 static void flush_buffer(struct intermcu_decoder *dec);
@@ -318,48 +317,12 @@ static inline bool is_ascii(uint8_t byte)
 // output a line representing the non-packet bytes in the arguments
 static void print_non_packet(struct intermcu_decoder *dec, const uint8_t *data, uint32_t count)
 {{{
-  uint8_t color = dec->normal_color;
+  uint8_t color   = dec->normal_color;
+  bool    is_text = linebuffer_print_string(&dec->output_buffer, data, count);
 
-  uint32_t count_done = 0;
-
-  while (count_done < count)
+  if (!is_text)
   {
-    if (!is_printable(data[count_done]))
-    {
-      linebuffer_printf(&dec->output_buffer, " %02X", data[count_done]);
-      count_done++;
-
-      if (!is_ascii(data[count_done]))
-      {
-        color = dec->bold_color; // non-text & non-protocol bytes are unexpected
-      }
-    }
-    else
-    {
-      uint32_t count_text = 0;
-
-      while (((count_done + count_text) < count) && is_printable(data[count_done + count_text]))
-      {
-        count_text++;
-      }
-
-      if ((count_text >= MIN_STRING_LENGTH) || ((count_done == 0) && (count_text == count)))
-      {
-        linebuffer_printf(&dec->output_buffer, " \"%.*s\"", (int)count_text, &data[count_done]);
-        count_done += count_text;
-      }
-      else
-      {
-        uint32_t i;
-
-        for (i = 0; i < count_text; i++)
-        {
-          linebuffer_printf(&dec->output_buffer, " %02X", data[count_done + i]);
-        }
-
-        count_done += count_text;
-      }
-    }
+    color = dec->bold_color; // non-text & non-protocol bytes are unexpected
   }
 
   output_linebuffer(dec, color);
@@ -381,7 +344,16 @@ static void output_linebuffer(struct intermcu_decoder *dec, uint8_t color)
 {{{
   // FIXME insert walltime() timestamp
 
-  linebuffer_write(&dec->output_buffer, (const uint8_t*)"\r\n", 2);
+  if ((dec->output_buffer.length + 2) <= dec->output_buffer.size)
+  {
+    linebuffer_write(&dec->output_buffer, (const uint8_t*)"\r\n", 2);
+  }
+  else
+  {
+    dec->output_buffer.buffer[dec->output_buffer.size - 3] = '-'; // hyphen to indicate truncation
+    dec->output_buffer.buffer[dec->output_buffer.size - 2] = '\r';
+    dec->output_buffer.buffer[dec->output_buffer.size - 1] = '\n';
+  }
 
   terminal_set_color(color);
   terminal_write(dec->output_buffer.buffer, dec->output_buffer.length);
