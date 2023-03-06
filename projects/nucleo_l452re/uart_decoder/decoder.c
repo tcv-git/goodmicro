@@ -8,7 +8,11 @@
 #include "linebuffer.h"
 #include "event_queue.h"
 #include "terminal.h"
+#include "crc.h"
 #include "decoder.h"
+
+// function in string library but not in string header by default:
+void *memmem(const void *haystack, size_t haystacklen, const void *needle, size_t needlelen);
 
 /* output something like:
     >WELCOME_CHALLENGE(seqno) 12 AB 12 AB 12 AB
@@ -21,11 +25,6 @@
     <FRAMING ERROR
     <PARITY ERROR
 */
-   void *memmem(const void *haystack, size_t haystacklen,
-                    const void *needle, size_t needlelen);
-
-
-static uint16_t crc(const uint8_t*p,uint32_t l){return 0;}
 
 #define BYTE_TIMEOUT_MS 150
 #define MIN_STRING_LENGTH 5
@@ -210,7 +209,7 @@ static void check_buffer(struct decoder *dec)
     {
       uint16_t received_crc = ((dec->input_buffer[2 + 4 + payload_length] << 8) | dec->input_buffer[2 + 4 + payload_length + 1]);
 
-      uint16_t calculated_crc = crc(&dec->input_buffer[2], (4 + payload_length));
+      uint16_t calculated_crc = crc_calc(&dec->input_buffer[2], (4 + payload_length));
 
       if (received_crc == calculated_crc)
       {

@@ -26,6 +26,7 @@
 #include "write_buffer.h"
 #include "uart_dma_write.h"
 #include "terminal.h"
+#include "crc.h"
 #include "decoder.h"
 
 #define COUNTOF(A) ((sizeof A)/sizeof(A[0]))
@@ -65,6 +66,8 @@ int main(void)
 
 static void uart_receivers_init(void)
 {
+  crc_init();
+
   /*
   Pinout:
   PA2  AF7 USART2_TX

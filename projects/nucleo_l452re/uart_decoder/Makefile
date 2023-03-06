@@ -26,6 +26,7 @@ CFILES :=
 CFILES += ../../../bsp/nucleo_l452re/system_nucleo_l452re_80mhz.c
 CFILES += ../../../lib/goodmicro_armv7m/uptime.c
 CFILES += clocks.c
+CFILES += crc.c
 CFILES += decoder.c
 CFILES += event_queue.c
 CFILES += linebuffer.c
