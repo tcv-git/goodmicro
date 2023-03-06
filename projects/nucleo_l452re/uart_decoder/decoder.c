@@ -49,23 +49,23 @@ void decoder_init(struct decoder *dec,
                   uint8_t *buffer,
                   uint32_t buffer_size)
 {{{
+  // 3 bytes in line buffer for each byte in input buffer (to print in hex with spaces)
+  dec->input_buffer      = buffer;
+  dec->input_buffer_size = (buffer_size / 4);
+
+  linebuffer_init(&dec->output_buffer, &buffer[dec->input_buffer_size], (buffer_size - dec->input_buffer_size));
+  linebuffer_write(&dec->output_buffer, (const uint8_t*)&prefix, sizeof prefix);
+
   dec->prefix       = prefix;
   dec->normal_color = normal_color;
   dec->bold_color   = bold_color;
   dec->super_color  = super_color;
 
-  dec->timeout_ticks = ((((uint64_t)BYTE_TIMEOUT_MS * MONOTIME_HZ) + 999) / 1000);
-
-  // 3 bytes in line buffer for each byte in input buffer (to print in hex with spaces)
-  dec->input_buffer      = buffer;
-  dec->input_buffer_size = (buffer_size / 4);
-
   dec->input_count    = 0;
   dec->could_be_valid = true;
   dec->flush_needed   = false;
 
-  linebuffer_init(&dec->output_buffer, &buffer[dec->input_buffer_size], (buffer_size - dec->input_buffer_size));
-  linebuffer_write(&dec->output_buffer, (const uint8_t*)&prefix, sizeof prefix);
+  dec->timeout_ticks = ((((uint64_t)BYTE_TIMEOUT_MS * MONOTIME_HZ) + 999) / 1000);
 }}}
 
 // report an event to the decoder
@@ -219,6 +219,7 @@ static void check_buffer(struct decoder *dec)
         if (dec->input_count == (2 + 4 + payload_length + 2))
         {
           dec->input_count = 0;
+          dec->flush_needed = false;
           // dec->could_be_valid stays true
           return;
         }
@@ -226,6 +227,7 @@ static void check_buffer(struct decoder *dec)
         {
           dec->input_count -= (2 + 4 + payload_length + 2);
           memmove(dec->input_buffer, &dec->input_buffer[2 + 4 + payload_length + 2], dec->input_count);
+          // dec->could_be_valid stays true
           continue;
         }
       }
@@ -238,35 +240,56 @@ static void check_buffer(struct decoder *dec)
     // by here, dec->could_be_valid must be false
 
     uint8_t *found = memmem(&dec->input_buffer[1], (dec->input_count - 1), (const uint8_t*)"\xAA\xAA", 2);
-    uint32_t skip;
+    uint32_t discard_size;
 
     if (found)
     {
-      skip = (found - dec->input_buffer);
-    }
-    else if (dec->input_buffer[dec->input_count - 1] == 0xAA)
-    {
-      skip = (dec->input_count - 1);
+      discard_size = (found - dec->input_buffer);
+
+      found = memchr(dec->input_buffer, '\n', discard_size);
+
+      if (found)
+      {
+        discard_size = ((found + 1) - dec->input_buffer);
+      }
     }
     else
     {
-      if (dec->flush_needed || ((dec->input_count > 10) && is_printable(dec->input_buffer[dec->input_count - 5])
-                                                        && is_printable(dec->input_buffer[dec->input_count - 4])
-                                                        && is_printable(dec->input_buffer[dec->input_count - 3])
-                                                        && (is_printable(dec->input_buffer[dec->input_count - 2]) || (dec->input_buffer[dec->input_count - 2] == '\r'))
-                                                        && (dec->input_buffer[dec->input_count - 1] == '\n')))
+      found = memchr(dec->input_buffer, '\n', dec->input_count);
+
+      if (found)
       {
-        print_non_packet(dec, dec->input_buffer, dec->input_count);
-        dec->input_count  = 0;
-        dec->flush_needed = false;
+        discard_size = ((found + 1) - dec->input_buffer);
       }
-      return;
+      else
+      {
+        if (dec->flush_needed)
+        {
+          discard_size = dec->input_count;
+        }
+        else
+        {
+          return; // keep looking for AA AA or '\n' before discarding
+        }
+      }
     }
 
-    dec->input_count -= skip;
-    memmove(dec->input_buffer, &dec->input_buffer[skip], dec->input_count);
-    dec->could_be_valid = true;
-    continue;
+    print_non_packet(dec, dec->input_buffer, discard_size);
+
+    if (discard_size == dec->input_count)
+    {
+      dec->input_count = 0;
+      dec->flush_needed = false;
+      dec->could_be_valid = true;
+      return;
+    }
+    else
+    {
+      dec->input_count -= discard_size;
+      memmove(dec->input_buffer, &dec->input_buffer[discard_size], dec->input_count);
+      dec->could_be_valid = true;
+      continue;
+    }
   }
 }}}
 
@@ -286,6 +309,12 @@ static inline bool is_printable(uint8_t byte)
   return ((byte >= 0x20) && (byte <= 0x7E));
 }}}
 
+// is this an ASCII character
+static inline bool is_ascii(uint8_t byte)
+{{{
+  return (((byte >= 0x20) && (byte <= 0x7E)) || (byte == '\f') || (byte == '\v') || (byte == '\r') || (byte == '\n') || (byte == '\t'));
+}}}
+
 // output a line representing the non-packet bytes in the arguments
 static void print_non_packet(struct decoder *dec, const uint8_t *data, uint32_t count)
 {{{
@@ -299,7 +328,11 @@ static void print_non_packet(struct decoder *dec, const uint8_t *data, uint32_t 
     {
       linebuffer_printf(&dec->output_buffer, " %02X", data[count_done]);
       count_done++;
-      color = dec->bold_color; // non-text & non-protocol bytes are unexpected
+
+      if (!is_ascii(data[count_done]))
+      {
+        color = dec->bold_color; // non-text & non-protocol bytes are unexpected
+      }
     }
     else
     {
@@ -346,9 +379,15 @@ static void print_packet(struct decoder *dec, const uint8_t *data, uint32_t coun
 // reset the line buffer to contain just the prefix
 static void output_linebuffer(struct decoder *dec, uint8_t color)
 {{{
+  // FIXME insert walltime() timestamp
+
   linebuffer_write(&dec->output_buffer, (const uint8_t*)"\r\n", 2);
 
-  terminal_write_line(walltime(), color, &dec->output_buffer);
+  terminal_set_color(color);
+  terminal_write(dec->output_buffer.buffer, dec->output_buffer.length);
 
-  linebuffer_write(&dec->output_buffer, (const uint8_t*)&dec->prefix, sizeof dec->prefix); // ready for next time
+  // get ready for next time
+  dec->output_buffer.length = 0;
+
+  linebuffer_write(&dec->output_buffer, (const uint8_t*)&dec->prefix, sizeof dec->prefix);
 }}}

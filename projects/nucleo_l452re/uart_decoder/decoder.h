@@ -16,18 +16,17 @@ extern "C" {
 struct decoder
 {
   struct linebuffer output_buffer;
+  uint8_t          *input_buffer;
+  uint32_t          input_buffer_size;
 
-  char    prefix;
-  uint8_t normal_color;
-  uint8_t bold_color;
-  uint8_t super_color;
+  char     prefix;
+  uint8_t  normal_color;
+  uint8_t  bold_color;
+  uint8_t  super_color;
 
-  uint8_t *input_buffer;
-  uint32_t input_buffer_size;
   uint32_t input_count;
-
-  bool could_be_valid;
-  bool flush_needed;
+  bool     could_be_valid;
+  bool     flush_needed;
 
   uint64_t last_data_time;
   uint64_t timeout_ticks;

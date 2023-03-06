@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "write_buffer.h"
-#include "linebuffer.h"
 #include "terminal.h"
 
 // need this because we pass lots of string literals as uint8_t*
@@ -144,13 +143,6 @@ void terminal_write(const uint8_t *data, uint32_t count)
     write_buffer_write (data, count);
   }
 }}}
-
-void terminal_write_line(uint64_t timestamp, uint8_t color, struct linebuffer *lb)
-{
-  (void)timestamp; // FIXME
-  terminal_write (lb->buffer, lb->length);
-  lb->length = 0;
-}
 
 void terminal_restore(void)
 {{{
