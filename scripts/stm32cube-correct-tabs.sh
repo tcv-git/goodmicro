@@ -90,7 +90,6 @@ expand_t2 lib/Device_STM32L4xx/Source/startup_stm32l4s5xx.s
 expand_t2 lib/Device_STM32L4xx/Source/startup_stm32l4s7xx.s
 expand_t2 lib/Device_STM32L4xx/Source/startup_stm32l4s9xx.s
 expand_t2 lib/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c
-expand_t2 lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_utils.c
 expand_t2 lib/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c
 expand_t2 lib/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc.h
 expand_t2 lib/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr.h
@@ -99,6 +98,7 @@ expand_t2 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c
 expand_t2 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c
 expand_t2 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c
 expand_t2 lib/STM32H7xx_HAL_Driver/Inc/Legacy/stm32h7xx_hal_eth_legacy.h
+expand_t2 lib/STM32H7xx_HAL_Driver/Src/Legacy/stm32h7xx_hal_eth.c
 expand_t2 lib/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_dac_ex.c
 expand_t2 lib/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_firewall.c
 expand_t2 lib/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_firewall.c
@@ -128,6 +128,16 @@ expand_t4 lib/Device_STM32F7xx/Include/stm32f767xx.h
 expand_t4 lib/Device_STM32F7xx/Include/stm32f769xx.h
 expand_t4 lib/Device_STM32F7xx/Include/stm32f777xx.h
 expand_t4 lib/Device_STM32F7xx/Include/stm32f779xx.h
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g431xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g441xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g471xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g473xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g474xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g483xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g484xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g491xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32g4a1xx.s
+expand_t4 lib/Device_STM32G4xx/Source/startup_stm32gbk1cb.s
 expand_t4 lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cec.c
 expand_t4 lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
 expand_t4 lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_mmc.c
@@ -142,9 +152,7 @@ expand_t4 lib/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c
 expand_t4 lib/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio_ex.h
 expand_t4 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c
 expand_t4 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_mmc.c
-expand_t4 lib/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc.h
 expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_comp.c
-expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cryp.c
 expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_qspi.c
 expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_timebase_tim_template.c
 expand_t4 lib/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_lcd.c
@@ -154,13 +162,15 @@ expand_t4 projects/eval_f429ni/.template/startup_stm32f429xx.s
 expand_t4 projects/eval_f429ni/.template/startup_stm32f439xx.s
 expand_t4 projects/nucleo_f070rb/.template/STM32F070RBTx_FLASH.ld
 expand_t4 projects/nucleo_f401re/.template/startup_stm32f401xe.s
+expand_t4 projects/nucleo_g474re/.template/STM32G474RETX_FLASH.ld
+expand_t4 projects/nucleo_g474re/.template/startup_stm32g474retx.s
+expand_t4 projects/nucleo_g474re/.template/syscalls.c
+expand_t4 projects/nucleo_g474re/.template/sysmem.c
 expand_t4 projects/nucleo_l073rz/.template/syscalls.c
 
 expand_t8 lib/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_rcc_ex.h
 expand_t8 lib/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_mdios.h
 expand_t8 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_mdios.c
 expand_t8 lib/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdios.h
-expand_t8 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
-expand_t8 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
 
 rm tmp
