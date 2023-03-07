@@ -73,11 +73,13 @@ static void uart_receivers_init(void)
   /*
   Pinout:
   PA2  AF7 USART2_TX
+  PA3  AF7 USART2_RX    not implemented, reserved for future use
+  PA1  AF8 UART4_RX
   PB7  AF7 USART1_RX
   PC11 AF7 USART3_RX
-  PA1  AF8 UART4_RX
-  PC13 Button B1 active low
-  PA5  LED LD2 (green) active high
+  PC10 AF7 USART3_TX    not implemented, reserved for future use
+  PC13 Button B1        active low
+  PA5  LED LD2 (green)  active high
   */
 
   RCC->AHB2ENR   |=  RCC_AHB2ENR_GPIOAEN;
@@ -93,13 +95,13 @@ static void uart_receivers_init(void)
   RCC->APB1RSTR1 &= ~RCC_APB1RSTR1_USART3RST;
   RCC->APB1RSTR1 &= ~RCC_APB1RSTR1_UART4RST;
 
+  GPIO_alternate_push_pull_slow(GPIOA, PIN1,  AF8);
   GPIO_alternate_push_pull_slow(GPIOB, PIN7,  AF7);
   GPIO_alternate_push_pull_slow(GPIOC, PIN11, AF7);
-  GPIO_alternate_push_pull_slow(GPIOA, PIN1,  AF8);
 
-  intermcu_decoder_init(&decoders[0], '<', (GREEN  | ON_BLACK), (BOLD | GREEN  | ON_BLACK), (RED | ON_WHITE), decoder_buffers[0], sizeof(decoder_buffers[0]));
-  intermcu_decoder_init(&decoders[1], '>', (BLUE   | ON_BLACK), (BOLD | BLUE   | ON_BLACK), (RED | ON_WHITE), decoder_buffers[1], sizeof(decoder_buffers[2]));
-  intermcu_decoder_init(&decoders[2], '^', (YELLOW | ON_BLACK), (BOLD | YELLOW | ON_BLACK), (RED | ON_WHITE), decoder_buffers[2], sizeof(decoder_buffers[3]));
+  intermcu_decoder_init(&decoders[0], '<', (YELLOW | ON_BLACK), (BOLD | GREEN  | ON_BLACK), (RED | ON_WHITE), decoder_buffers[0], sizeof(decoder_buffers[0]));
+  intermcu_decoder_init(&decoders[1], '>', (GREEN  | ON_BLACK), (BOLD | BLUE   | ON_BLACK), (RED | ON_WHITE), decoder_buffers[1], sizeof(decoder_buffers[2]));
+  intermcu_decoder_init(&decoders[2], '^', (BLUE   | ON_BLACK), (BOLD | YELLOW | ON_BLACK), (RED | ON_WHITE), decoder_buffers[2], sizeof(decoder_buffers[3]));
 
   event_queue_init(event_queue_buffer, COUNTOF(event_queue_buffer));
   uart_rx_init(USART1);
@@ -112,15 +114,15 @@ static void uart_receivers_init(void)
 
 void USART1_IRQHandler(void)
 {
-  uart_rx_irq_handler(USART1, 0);
+  uart_rx_irq_handler(USART1, 1);
 }
 
 void USART3_IRQHandler(void)
 {
-  uart_rx_irq_handler(USART3, 1);
+  uart_rx_irq_handler(USART3, 2);
 }
 
 void UART4_IRQHandler(void)
 {
-  uart_rx_irq_handler(UART4, 2);
+  uart_rx_irq_handler(UART4, 0);
 }
