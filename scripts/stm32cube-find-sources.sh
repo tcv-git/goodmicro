@@ -47,6 +47,7 @@ lf STM32CubeF4/Projects/STM32F401RE-Nucleo/Templates
 lf STM32CubeF4/Projects/STM32F4-Discovery/Templates
 lf STM32CubeF4/Projects/STM32F429I-Discovery/Templates
 lf STM32CubeF4/Projects/STM324x9I_EVAL/Templates
+lf STM32CubeF4/Projects/STM32446E-Nucleo/Templates
 
 lf STM32CubeF7/Drivers/CMSIS/Device/ST/STM32F7xx
 lf STM32CubeF7/Drivers/STM32F7xx_HAL_Driver

@@ -123,6 +123,12 @@ copyto projects/eval_f429ni/.template      STM32CubeF4/Projects/STM324x9I_EVAL/T
 copyto projects/eval_f429ni/.template      STM32CubeF4/Projects/STM324x9I_EVAL/Templates/SW4STM32/STM32429I_EVAL/*.ld
 copyto projects/eval_f429ni/.template      STM32CubeF4/Projects/STM324x9I_EVAL/Templates/SW4STM32/STM32429I_EVAL/.project
 copyto projects/eval_f429ni/.template      STM32CubeF4/Projects/STM324x9I_EVAL/Templates/SW4STM32/STM32429I_EVAL/.cproject
+copyto projects/nucleo_f446re/.template    STM32CubeF4/Projects/STM32446E-Nucleo/Templates/Inc/*.h
+copyto projects/nucleo_f446re/.template    STM32CubeF4/Projects/STM32446E-Nucleo/Templates/Src/*.c
+copyto projects/nucleo_f446re/.template    STM32CubeF4/Projects/STM32446E-Nucleo/Templates/SW4STM32/*.s
+copyto projects/nucleo_f446re/.template    STM32CubeF4/Projects/STM32446E-Nucleo/Templates/SW4STM32/STM32446E_Nucleo/*.ld
+copyto projects/nucleo_f446re/.template    STM32CubeF4/Projects/STM32446E-Nucleo/Templates/SW4STM32/STM32446E_Nucleo/.project
+copyto projects/nucleo_f446re/.template    STM32CubeF4/Projects/STM32446E-Nucleo/Templates/SW4STM32/STM32446E_Nucleo/.cproject
 
 copyto lib/Device_STM32F7xx/Include        STM32CubeF7/Drivers/CMSIS/Device/ST/STM32F7xx/Include/*.h
 copyto lib/Device_STM32F7xx/Source         STM32CubeF7/Drivers/CMSIS/Device/ST/STM32F7xx/Source/Templates/*.c

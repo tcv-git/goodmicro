@@ -104,6 +104,7 @@ expand_t2 lib/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_firewall.c
 expand_t2 lib/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_firewall.c
 expand_t2 lib/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rng_ex.c
 expand_t2 projects/disco_f746ng/.template/system_stm32f7xx.c
+expand_t2 projects/nucleo_f446re/.template/startup_stm32f446xx.s
 expand_t2 projects/nucleo_l073rz/.template/startup_stm32l073xx.s
 expand_t2 projects/nucleo_l452re/.template/STM32L452RETx_FLASH.ld
 expand_t2 projects/nucleo_l452re/.template/startup_stm32l452xx.s
