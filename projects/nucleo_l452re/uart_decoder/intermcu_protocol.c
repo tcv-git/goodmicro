@@ -343,21 +343,24 @@ static void print_packet(struct intermcu_decoder *dec, const uint8_t *data, uint
 // reset the line buffer to contain just the prefix
 static void output_linebuffer(struct intermcu_decoder *dec, uint8_t color)
 {{{
-  // FIXME insert walltime() timestamp
-
-  if ((dec->output_buffer.length + 2) <= dec->output_buffer.size)
+  if (dec->output_buffer.length > sizeof dec->prefix)
   {
-    linebuffer_write(&dec->output_buffer, (const uint8_t*)"\r\n", 2);
-  }
-  else
-  {
-    dec->output_buffer.buffer[dec->output_buffer.size - 3] = '-'; // hyphen to indicate truncation
-    dec->output_buffer.buffer[dec->output_buffer.size - 2] = '\r';
-    dec->output_buffer.buffer[dec->output_buffer.size - 1] = '\n';
-  }
+    // FIXME insert walltime() timestamp
 
-  terminal_set_color(toggle_get() ? color : (WHITE | ON_BLACK));
-  terminal_write(dec->output_buffer.buffer, dec->output_buffer.length);
+    if ((dec->output_buffer.length + 2) <= dec->output_buffer.size)
+    {
+      linebuffer_write(&dec->output_buffer, (const uint8_t*)"\r\n", 2);
+    }
+    else
+    {
+      dec->output_buffer.buffer[dec->output_buffer.size - 3] = '-'; // hyphen to indicate truncation
+      dec->output_buffer.buffer[dec->output_buffer.size - 2] = '\r';
+      dec->output_buffer.buffer[dec->output_buffer.size - 1] = '\n';
+    }
+
+    terminal_set_color(toggle_get() ? color : (WHITE | ON_BLACK));
+    terminal_write(dec->output_buffer.buffer, dec->output_buffer.length);
+  }
 
   // get ready for next time
   dec->output_buffer.length = 0;
