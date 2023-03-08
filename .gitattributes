@@ -1,0 +1,21 @@
+*               -text
+*.bat           text eol=crlf
+*.c             text eol=lf
+*.csv           text eol=lf
+*.defaults      text eol=lf
+*.h             text eol=lf
+*.ld            text eol=lf
+*.md            text eol=lf
+*.mk            text eol=lf
+*.patch         text eol=lf
+*.projbuild     text eol=lf
+*.py            text eol=lf
+*.S             text eol=lf
+*.s             text eol=lf
+*.sh            text eol=lf
+*.txt           text eol=lf
+*.yaml          text eol=lf
+BuildProperties text eol=lf
+Doxyfile        text eol=lf
+Jenkinsfile     text eol=lf
+Makefile        text eol=lf
