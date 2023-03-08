@@ -18,8 +18,8 @@
   through you.
 */
 
-#include "stm32l4xx.h"
-#include "stm32l4xx_simple_gpio.h"
+#include "stm32g4xx.h"
+#include "stm32g4xx_simple_gpio.h"
 #include "delay.h"
 
 int main(void)
@@ -33,8 +33,8 @@ int main(void)
   for (;;)
   {
     GPIO_set_reset(GPIOA, PIN5_HI);
-    DELAY_MS((GPIOC->IDR & PIN13) ? 400 : 150);
+    DELAY_MS((GPIOC->IDR & PIN13) ? 150 : 400);
     GPIO_set_reset(GPIOA, PIN5_LO);
-    DELAY_MS((GPIOC->IDR & PIN13) ? 400 : 150);
+    DELAY_MS((GPIOC->IDR & PIN13) ? 150 : 400);
   }
 }
