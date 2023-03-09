@@ -10,6 +10,14 @@ logged in both directions, as well as the output of TAP test interface.
 
 The messages are decoded and interleaved to a single built-in USB-UART.
 
+## Solder bridges
+
+It is neccescary to open solder bridge `SB55` and close `SB50` and `SB16` on the
+back of the Nucleo board (circled here):
+
+![Solder bridges](soldering.jpg)
+
+
 ## Pinout
 
 The following 4 pins must be connected with jumper leads:
@@ -27,6 +35,10 @@ The following pin is reserved for future expansion (not currently implemented):
 | -----------|-----------------|------------|----------------|------------|------------|
 | TAP to K32 | PC10(USART3_TX) | CN7 pin 1  | J2 pin 2       | `$`        | White      |
 
+![CAD board photo](cad-photo.jpg)
+![Nucleo board photo](nucleo-photo.jpg)
+![Nucleo board pinout](nucleo-pinout.jpg)
+
 ## USB
 
 The USB cable provides both power and communication to the PC.  It will appear
@@ -34,8 +46,9 @@ in both Linux and Windows as a multifunction device providing both a storage
 drive and a standard serial port.  The storage drive can be ignored.
 
 The serial port can be opened with any normal serial console or logging program,
-such as [putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/).  With
-putty, timestamps can be prefixed to each line.
+such as [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/).  With
+[Tera Term](https://ttssh2.osdn.jp/index.html.en), timestamps can be prefixed to
+each line.
 
 The serial settings to use are 1000000 Baud (1MBaud), 1 start bit, 8 data bits,
 no parity, 1 stop bit.  The device name under Linux will be something like
