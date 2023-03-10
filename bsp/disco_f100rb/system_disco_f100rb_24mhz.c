@@ -25,6 +25,10 @@
  */
 uint32_t SystemCoreClock = (24u * 1000 * 1000);
 
+/* System interrupt vector
+ */
+extern uint32_t g_pfnVectors[];
+
 
 /* System initialization
  */
@@ -100,4 +104,7 @@ void SystemInit(void)
   // SysTick on with no interrupt
   SysTick->LOAD = -1;
   SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
+
+  // set vector address
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 }

@@ -53,6 +53,10 @@
  */
 uint32_t SystemCoreClock = HCLK;
 
+/* System interrupt vector
+ */
+extern uint32_t g_pfnVectors[];
+
 
 /* System initialization
  */
@@ -208,5 +212,5 @@ void SystemInit(void)
   SCB->CPACR |= ((3u << (10 * 2)) | (3u << (11 * 2)));
 
   // set vector address
-  SCB->VTOR = FLASH_BASE;
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 }

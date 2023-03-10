@@ -25,14 +25,15 @@
  */
 uint32_t SystemCoreClock = (32u * 1000 * 1000);
 
+/* System interrupt vector
+ */
+extern uint32_t g_pfnVectors[];
+
 
 /* System initialization
  */
 void SystemInit(void)
 {
-  // set vector address
-  SCB->VTOR = FLASH_BASE;
-
   // disable clock interrupts
   RCC->CIER = 0;
 
@@ -123,4 +124,7 @@ void SystemInit(void)
   SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
   SysTick->VAL  = 0;
   SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
+
+  // set vector address
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 }
