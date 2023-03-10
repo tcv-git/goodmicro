@@ -254,6 +254,10 @@
 
 uint32_t SystemCoreClock = SYSTEM_CORE_CLOCK;
 
+/* System interrupt vector
+ */
+extern uint32_t g_pfnVectors[];
+
 
 // #############################################################################
 //
@@ -422,6 +426,9 @@ void SystemInit(void)
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
   DWT->CYCCNT       = 0;
+
+  // set vector address
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 }
 
 
