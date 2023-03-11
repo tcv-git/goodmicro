@@ -46,51 +46,42 @@ void SystemInit(void)
   // disable clock interrupts
   RCC->CIER = 0;
 
-  // MCO off
-  RCC->CFGR &= ~RCC_CFGR_MCOSEL;
-
   // MSI on
   RCC->CR |= RCC_CR_MSION;
 
   // wait until MSI ready
   while ((RCC->CR & RCC_CR_MSIRDY) != RCC_CR_MSIRDY);
 
-  // sysclk from MSI
-  RCC->CFGR = ((RCC->CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_MSI);
+  // MCO off, STOPWUCK=MSI, HPRE=1, PPRE2=1, PPRE1=1, SYSCLK from MSI
+  RCC->CFGR = RCC_CFGR_SW_MSI;
 
-  // wait until sysclk from MSI
+  // wait until SYSCLK from MSI
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI);
 
-  // HSI48 off
-  RCC->CRRCR = 0;
-
-  // wait until HSI48 stopped
-  while ((RCC->CRRCR & RCC_CRRCR_HSI48RDY) != 0);
-
   // PLLs and CSS off
-  RCC->CR &= ~(RCC_CR_PLLSAI1ON | RCC_CR_PLLON | RCC_CR_CSSON);
+  RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_PLLSAI1ON | RCC_CR_CSSON);
 
   // wait until PLLs stopped
-  while ((RCC->CR & (RCC_CR_PLLSAI1RDY | RCC_CR_PLLRDY)) != 0);
+  while ((RCC->CR & (RCC_CR_PLLRDY | RCC_CR_PLLSAI1RDY)) != 0);
 
   // HSE and HSI off, keep MSI on
   RCC->CR = RCC_CR_MSION;
 
   // wait until HSE and HSI stopped
-  while ((RCC->CR & (RCC_CR_HSERDY | RCC_CR_HSIRDY)) != 0);
+  while ((RCC->CR & (RCC_CR_HSIRDY | RCC_CR_HSERDY)) != 0);
 
-  // enable power interface
+  // enable power management interface
   RCC->APB1ENR1 |= RCC_APB1ENR1_PWREN;
   (void)RCC->APB1ENR1;
 
-  // disable backup domain access, VOS range 1
-  PWR->CR1 = PWR_CR1_VOS_0;
+  // disable low power run, select regulator voltage output scale 1 (maximum power)
+  PWR->CR1 = ((PWR->CR1 & ~(PWR_CR1_LPR | PWR_CR1_VOS)) | PWR_CR1_VOS_0);
 
   // wait until VOS changed
   while ((PWR->SR2 & PWR_SR2_VOSF) != 0);
 
   // HSE on with bypass
-  RCC->CR = (RCC_CR_HSEBYP | RCC_CR_HSEON | RCC_CR_MSION);
+  RCC->CR = (RCC_CR_MSION | RCC_CR_HSEON | RCC_CR_HSEBYP);
 
   // wait until HSE ready
   while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
@@ -105,33 +96,36 @@ void SystemInit(void)
                 | ((PLL_M - 1)       << RCC_PLLCFGR_PLLM_Pos    )
                 | RCC_PLLCFGR_PLLSRC_HSE);
 
-  // PLL on, CSS on
-  RCC->CR = (RCC_CR_PLLON | RCC_CR_CSSON | RCC_CR_HSEBYP | RCC_CR_HSEON | RCC_CR_MSION);
+  // PLL and CSS on
+  RCC->CR = (RCC_CR_MSION | RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
 
   // wait until PLL ready
   while ((RCC->CR & RCC_CR_PLLRDY) != RCC_CR_PLLRDY);
 
-  // configure flash prefetch, instruction cache, data cache and wait state
-  FLASH->ACR = (FLASH_ACR_PRFTEN
-              | FLASH_ACR_ICEN
-              | FLASH_ACR_DCEN
-              | FLASH_ACR_LATENCY_Value);
+  // configure flash prefetch, instruction cache, data cache and wait states
+  FLASH->ACR = (FLASH_ACR_PRFTEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_LATENCY_Value);
 
   // wait for wait-states to be applied
   while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_ACR_LATENCY_Value);
 
-  // peripheral clocks to default sources
-  RCC->CCIPR  = 0;
-  RCC->CCIPR2 = 0;
-
-  // sysclk from PLL, HPRE=1, PPRE2=1, PPRE1=1
+  // HPRE=1, PPRE2=1, PPRE1=1, SYSCLK from PLL
   RCC->CFGR = RCC_CFGR_SW_PLL;
 
-  // wait until sysclk from PLL
+  // wait until SYSCLK from PLL
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
+  // CLK48 from PLLQ, ADC clock from SYSCLK, all other peripheral clocks from HCLK/PCLK
+  RCC->CCIPR  = (RCC_CCIPR_CLK48SEL_1 | RCC_CCIPR_ADCSEL);
+  RCC->CCIPR2 = 0;
+
+  // HSI48 off
+  RCC->CRRCR = 0;
+
+  // wait until HSI48 stopped
+  while ((RCC->CRRCR & RCC_CRRCR_HSI48RDY) != 0);
+
   // MSI off
-  RCC->CR = (RCC_CR_PLLON | RCC_CR_CSSON | RCC_CR_HSEBYP | RCC_CR_HSEON);
+  RCC->CR = (RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
 
   // wait until MSI stopped
   while ((RCC->CR & RCC_CR_MSIRDY) != 0);

@@ -46,8 +46,13 @@ void SystemInit(void)
   // wait until HSI ready
   while ((RCC->CR & RCC_CR_HSIRDY) != RCC_CR_HSIRDY);
 
-  // SYSCLK from HSI
-  RCC->CFGR = ((RCC->CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_HSI);
+  // MCO off, HPRE=1, PPRE2=1 PPRE1=1, ADCPRE=2, SYSCLK from HSI
+  RCC->CFGR = ((RCC->CFGR & ~(RCC_CFGR_MCO
+                            | RCC_CFGR_HPRE
+                            | RCC_CFGR_PPRE2
+                            | RCC_CFGR_PPRE1
+                            | RCC_CFGR_ADCPRE
+                            | RCC_CFGR_SW)) | RCC_CFGR_SW_HSI);
 
   // wait until SYSCLK from HSI
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
@@ -58,14 +63,17 @@ void SystemInit(void)
   // wait until PLL stopped
   while ((RCC->CR & RCC_CR_PLLRDY) != 0);
 
-  // HSE off
-  RCC->CR &= ~RCC_CR_HSEON;
+  // HSE off, default HSI trim, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION);
 
   // wait until HSE stopped
   while ((RCC->CR & RCC_CR_HSERDY) != 0);
 
-  // default HSI trim, HSE bypass off
-  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION);
+  // HSE on (without bypass), keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON);
+
+  // wait until HSE ready
+  while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
 
   // configure PLL, clock output and clock dividers
   RCC->CFGR = (RCC_CFGR_MCO_NOCLOCK
@@ -80,14 +88,8 @@ void SystemInit(void)
   // set PREDIV (also sets RCC_CFGR_PLLXTPRE)
   RCC->CFGR2 = RCC_CFGR2_PREDIV1_DIV2;
 
-  // HSE and CSS on
-  RCC->CR |= (RCC_CR_CSSON | RCC_CR_HSEON);
-
-  // wait until HSE ready
-  while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
-
-  // PLL on
-  RCC->CR |= RCC_CR_PLLON;
+  // PLL and CSS on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_PLLON | RCC_CR_CSSON);
 
   // wait until PLL ready
   while ((RCC->CR & RCC_CR_PLLRDY) != RCC_CR_PLLRDY);
@@ -99,13 +101,23 @@ void SystemInit(void)
   while ((FLASH->ACR & FLASH_ACR_HLFCYA) != 0);
 
   // SYSCLK from PLL
-  RCC->CFGR = ((RCC->CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_PLL);
+  RCC->CFGR = (RCC_CFGR_MCO_NOCLOCK
+            | RCC_CFGR_PLLMULL6
+            | RCC_CFGR_PLLSRC
+            | RCC_CFGR_ADCPRE_DIV2
+            | RCC_CFGR_PPRE2_DIV1
+            | RCC_CFGR_PPRE1_DIV1
+            | RCC_CFGR_HPRE_DIV1
+            | RCC_CFGR_SW_PLL);
 
   // wait until SYSCLK from PLL
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
   // HSI off
-  RCC->CR &= ~RCC_CR_HSION;
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSEON | RCC_CR_PLLON | RCC_CR_CSSON);
+
+  // wait until HSI stopped
+  while ((RCC->CR & RCC_CR_HSIRDY) != 0);
 
   // SysTick on with no interrupt
   SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;

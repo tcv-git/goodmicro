@@ -65,7 +65,7 @@ void SystemInit(void)
   // wait until PLL stopped
   while ((RCC->CR & RCC_CR_PLLRDY) != 0);
 
-  // HSE off, keep HSI on, HSIKER off
+  // HSE off, keep HSI on
   RCC->CR = RCC_CR_HSION;
 
   // wait until HSE stopped
@@ -84,7 +84,7 @@ void SystemInit(void)
   // enable regulator boost mode
   PWR->CR5 = 0; // sic
 
-  // HSE on without bypass
+  // HSE on (without bypass)
   RCC->CR = (RCC_CR_HSION | RCC_CR_HSEON);
 
   // wait until HSE ready
@@ -143,7 +143,7 @@ void SystemInit(void)
   while ((RCC->CRRCR & RCC_CRRCR_HSI48RDY) != 0);
 
   // HSI off
-  RCC->CR = (RCC_CR_HSEON | RCC_CR_PLLON);
+  RCC->CR = (RCC_CR_HSEON | RCC_CR_PLLON | RCC_CR_CSSON);
 
   // wait until HSI stopped
   while ((RCC->CR & RCC_CR_HSIRDY) != 0);

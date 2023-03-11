@@ -70,8 +70,8 @@ void SystemInit(void)
   // disable clock interrupts
   RCC->CIR = 0;
 
-  // HSI on, CSS off
-  RCC->CR = ((RCC->CR & ~RCC_CR_CSSON) | RCC_CR_HSION);
+  // HSI on
+  RCC->CR |= RCC_CR_HSION;
 
   // wait until HSI ready
   while ((RCC->CR & RCC_CR_HSIRDY) != RCC_CR_HSIRDY);
@@ -82,14 +82,14 @@ void SystemInit(void)
   // wait until SYSCLK from HSI
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
 
-  // PLLs off
-  RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_PLLI2SON | RCC_CR_PLLSAION);
+  // PLLs and CSS off
+  RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_PLLI2SON | RCC_CR_PLLSAION | RCC_CR_CSSON);
 
   // wait until PLLs stopped
   while ((RCC->CR & (RCC_CR_PLLRDY | RCC_CR_PLLI2SRDY | RCC_CR_PLLSAIRDY)) != 0);
 
-  // HSE off
-  RCC->CR &= ~RCC_CR_HSEON;
+  // HSE off, default HSI trim, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION);
 
   // wait until HSE stopped
   while ((RCC->CR & RCC_CR_HSERDY) != 0);
@@ -101,8 +101,8 @@ void SystemInit(void)
   // select regulator voltage output scale 1 (maximum power)
   PWR->CR |= PWR_CR_VOS;
 
-  // HSE on with bypass
-  RCC->CR |= (RCC_CR_HSEON | RCC_CR_HSEBYP);
+  // HSE on with bypass, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_HSEBYP);
 
   // wait until HSE ready
   while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
@@ -139,12 +139,8 @@ void SystemInit(void)
                 | ((PLLSAIDIVQ - 1) << RCC_DCKCFGR_PLLSAIDIVQ_Pos)
                 | ((PLLI2SDIVQ - 1) << RCC_DCKCFGR_PLLI2SDIVQ_Pos));
 
-  // main PLL (only) on, CSS on, keep HSI and HSE on, default HSITRIM
-  RCC->CR = (RCC_CR_PLLON
-           | RCC_CR_CSSON
-           | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_Default
-           | RCC_CR_HSION);
+  // main PLL (only) on, CSS on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
 
   // enable over-drive
   PWR->CR |= PWR_CR_ODEN;
@@ -162,10 +158,7 @@ void SystemInit(void)
   while ((RCC->CR & RCC_CR_PLLRDY) != RCC_CR_PLLRDY);
 
   // configure flash prefetch, instruction cache, data cache and wait states
-  FLASH->ACR = (FLASH_ACR_PRFTEN
-              | FLASH_ACR_ICEN
-              | FLASH_ACR_DCEN
-              | FLASH_ACR_LATENCY_Value);
+  FLASH->ACR = (FLASH_ACR_PRFTEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_LATENCY_Value);
 
   // wait for wait-states to be applied
   while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_ACR_LATENCY_Value);
@@ -181,10 +174,10 @@ void SystemInit(void)
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
   // HSI off
-  RCC->CR = (RCC_CR_PLLON
-           | RCC_CR_CSSON
-           | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_Default);
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
+
+  // wait until HSI stopped
+  while ((RCC->CR & RCC_CR_HSIRDY) != 0);
 
   // SysTick on with no interrupt
   SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;

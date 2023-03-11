@@ -26,6 +26,9 @@
 // location of field which is reserved but must still set:
 #define RCC_PLLCFGR_PLLR_Pos        RCC_PLLI2SCFGR_PLLI2SR_Pos
 
+// crystal/clock input frequency in Hz:
+#define HSE_VALUE        (8u * 1000 * 1000)
+
 // main PLL parameters:
 #define PLL_M             4
 #define PLL_N           168
@@ -53,8 +56,8 @@ void SystemInit(void)
   // disable clock interrupts
   RCC->CIR = 0;
 
-  // HSI on, CSS off
-  RCC->CR = ((RCC->CR & ~RCC_CR_CSSON) | RCC_CR_HSION);
+  // HSI on
+  RCC->CR |= RCC_CR_HSION;
 
   // wait until HSI ready
   while ((RCC->CR & RCC_CR_HSIRDY) != RCC_CR_HSIRDY);
@@ -65,30 +68,30 @@ void SystemInit(void)
   // wait until SYSCLK from HSI
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
 
-  // PLLs off
-  RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_PLLI2SON);
+  // PLLs and CSS off
+  RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_PLLI2SON | RCC_CR_CSSON);
 
   // wait until PLLs stopped
   while ((RCC->CR & (RCC_CR_PLLRDY | RCC_CR_PLLI2SRDY)) != 0);
 
-  // HSE off
-  RCC->CR &= ~RCC_CR_HSEON;
+  // HSE off, default HSI trim, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION);
 
   // wait until HSE stopped
   while ((RCC->CR & RCC_CR_HSERDY) != 0);
-
-  // HSE on with bypass
-  RCC->CR |= (RCC_CR_HSEON | RCC_CR_HSEBYP);
-
-  // wait until HSE ready
-  while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
 
   // enable power management interface
   RCC->APB1ENR |= RCC_APB1ENR_PWREN;
   (void)RCC->APB1ENR;
 
-  // select regulator voltage output scale
-  PWR->CR |= PWR_CR_VOS_1;
+  // select regulator voltage output scale 2 (maximum power)
+  PWR->CR = ((PWR->CR & ~PWR_CR_VOS) | PWR_CR_VOS_1);
+
+  // HSE on with bypass, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_HSEBYP);
+
+  // wait until HSE ready
+  while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
 
   // configure PLL
   RCC->PLLCFGR = (RCC_PLLCFGR_PLLSRC_HSE
@@ -101,30 +104,26 @@ void SystemInit(void)
   // disable spread-spectrum
   RCC->SSCGR = 0;
 
-  // PLL and CSS on, keep HSI and HSE on, default HSITRIM
-  RCC->CR = (RCC_CR_PLLON
-           | RCC_CR_CSSON
-           | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_Default
-           | RCC_CR_HSION);
+  // set dedicated clock sources and dividers
+  RCC->DCKCFGR = RCC_DCKCFGR_TIMPRE;
+
+  // PLL and CSS on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
+
+  // wait until regulator ready (only changes mode after PLL on)
+  while ((PWR->CSR & PWR_CSR_VOSRDY) != PWR_CSR_VOSRDY);
 
   // wait until PLL ready
   while ((RCC->CR & RCC_CR_PLLRDY) != RCC_CR_PLLRDY);
 
-  // configure flash prefetch, instruction cache, data cache and wait state
-  FLASH->ACR = (FLASH_ACR_PRFTEN
-              | FLASH_ACR_ICEN
-              | FLASH_ACR_DCEN
-              | FLASH_ACR_LATENCY_Value);
+  // configure flash prefetch, instruction cache, data cache and wait states
+  FLASH->ACR = (FLASH_ACR_PRFTEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_LATENCY_Value);
 
   // wait for wait-states to be applied
   while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_ACR_LATENCY_Value);
 
-  // all timers run at HCLK
-  RCC->DCKCFGR = RCC_DCKCFGR_TIMPRE;
-
   // default clock outputs, set bus divisors, SYSCLK from PLL
-  RCC->CFGR = ((RCC_CFGR_RTCPRE_0 * 8)
+  RCC->CFGR = ((RCC_CFGR_RTCPRE_0 * (HSE_VALUE / 1000000))
              |  RCC_CFGR_PPRE2_DIV2
              |  RCC_CFGR_PPRE1_DIV4
              |  RCC_CFGR_HPRE_DIV1
@@ -132,6 +131,12 @@ void SystemInit(void)
 
   // wait until SYSCLK from PLL
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+
+  // HSI off
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
+
+  // wait until HSI stopped
+  while ((RCC->CR & RCC_CR_HSIRDY) != 0);
 
   // SysTick on with no interrupt
   SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;

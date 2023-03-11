@@ -268,8 +268,8 @@ void SystemInit(void)
   // disable clock interrupts
   RCC->CIR = 0;
 
-  // HSI on, CSS off
-  RCC->CR = ((RCC->CR & ~RCC_CR_CSSON) | RCC_CR_HSION);
+  // HSI on
+  RCC->CR |= RCC_CR_HSION;
 
   // wait until HSI ready
   while ((RCC->CR & RCC_CR_HSIRDY) != RCC_CR_HSIRDY);
@@ -280,25 +280,17 @@ void SystemInit(void)
   // wait until SYSCLK from HSI
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
 
-  // PLLs off
-  RCC->CR &= ~RCC_CR_ALL_PLLs_ON;
+  // PLLs and CSS off
+  RCC->CR &= ~(RCC_CR_ALL_PLLs_ON | RCC_CR_CSSON);
 
   // wait until PLLs stopped
   while ((RCC->CR & RCC_CR_ALL_PLLs_RDY) != 0);
 
-  // HSE off
-  RCC->CR &= ~RCC_CR_HSEON;
+  // HSE off, default HSI trim, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION);
 
   // wait until HSE stopped
   while ((RCC->CR & RCC_CR_HSERDY) != 0);
-
-  // HSE on with HSE bypass if required
-  RCC->CR = ((RCC->CR & ~RCC_CR_HSEBYP) | RCC_CR_HSEON_Value | RCC_CR_HSEBYP_Value);
-
-  // wait until HSE ready if required
-#if HSEON
-  while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
-#endif
 
   // enable power management interface
   RCC->APB1ENR |= RCC_APB1ENR_PWREN;
@@ -306,6 +298,14 @@ void SystemInit(void)
 
   // select regulator voltage output scale
   PWR->CR = ((PWR->CR & ~PWR_CR_VOS) | PWR_CR_VOS_Value);
+
+  // HSE on with HSE bypass if required, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON_Value | RCC_CR_HSEBYP_Value);
+
+  // wait until HSE ready if required
+#if HSEON
+  while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
+#endif
 
   // configure PLL
   RCC->PLLCFGR = (RCC_PLLCFGR_Reserved_Value
@@ -333,7 +333,7 @@ void SystemInit(void)
                   |  (RCC_PLLSAICFGR_PLLSAIN_Value));
 #endif
 
-  // set dedicated clock dividers
+  // set dedicated clock sources and dividers
 #ifdef RCC_DCKCFGR_TIMPRE_Pos
   RCC->DCKCFGR = (RCC_DCKCFGR_TIMPRE_Value
                 | RCC_DCKCFGR_PLLSAIDIVR_Value
@@ -341,12 +341,13 @@ void SystemInit(void)
                 | RCC_DCKCFGR_PLLI2SDIVQ_Value);
 #endif
 
-  // PLLs and CSS on, keep HSI and HSE on, default HSITRIM
-  RCC->CR = (RCC_CR_PLLs_ON
-           | RCC_CR_CSSON_Value
+  // PLL and CSS on
+  RCC->CR = (RCC_CR_HSITRIM_Default
+           | RCC_CR_HSION
            | RCC_CR_HSEON_Value
-           | RCC_CR_HSITRIM_Default
-           | RCC_CR_HSION);
+           | RCC_CR_HSEBYP_Value
+           | RCC_CR_PLLs_ON
+           | RCC_CR_CSSON_Value);
 
 #if defined(PWR_CR_ODEN_Pos) && (PWR_CR_ODEN_Value == PWR_CR_ODEN_ENABLE)
   // enable over-drive
@@ -361,12 +362,17 @@ void SystemInit(void)
   // wait for over-drive switching
   while ((PWR->CSR & PWR_CSR_ODSWRDY) != PWR_CSR_ODSWRDY);
 
+#else // PWR_CR_ODEN_Pos
+
+  // wait until regulator ready (only changes mode after PLL on)
+  while ((PWR->CSR & PWR_CSR_VOSRDY) != PWR_CSR_VOSRDY);
+
 #endif // PWR_CR_ODEN_Pos
 
   // wait until PLLs ready
   while ((RCC->CR & RCC_CR_PLLs_RDY) != RCC_CR_PLLs_RDY);
 
-  // configure flash prefetch, instruction cache, data cache and wait state
+  // configure flash prefetch, instruction cache, data cache and wait states
   FLASH->ACR = (FLASH_ACR_PRFTEN_Value
               | FLASH_ACR_ICEN_Value
               | FLASH_ACR_DCEN_Value
@@ -391,11 +397,15 @@ void SystemInit(void)
 
   // HSI off if no longer required
 #if !HSION
-  RCC->CR = (RCC_CR_PLLs_ON
-           | RCC_CR_CSSON_Value
+  RCC->CR = (RCC_CR_HSITRIM_Default
+           | RCC_CR_HSION_Value
            | RCC_CR_HSEON_Value
-           | RCC_CR_HSITRIM_Default
-           | RCC_CR_HSION_Value);
+           | RCC_CR_HSEBYP_Value
+           | RCC_CR_PLLs_ON
+           | RCC_CR_CSSON_Value);
+
+  // wait until HSI stopped
+  while ((RCC->CR & RCC_CR_HSIRDY) != 0);
 #endif
 
   // SysTick on with no interrupt
