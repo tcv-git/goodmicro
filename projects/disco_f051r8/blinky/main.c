@@ -27,10 +27,6 @@
 
 int main(void)
 {
-  // SysTick on with no interrupt
-  SysTick->LOAD = -1;
-  SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
-
   RCC->AHBENR |= (RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOCEN);
   (void)RCC->AHBENR;
 

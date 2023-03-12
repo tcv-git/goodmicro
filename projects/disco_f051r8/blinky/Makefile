@@ -22,7 +22,7 @@ ASFILES += ../../../lib/goodmicro_stm32f0/vectors/vectors_stm32f051x8.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../lib/Device_STM32F0xx/Source/system_stm32f0xx.c
+CFILES += ../../../bsp/disco_f051r8/system_disco_f051r8_48mhz.c
 CFILES += main.c
 
 # input for C++ compiler
@@ -30,6 +30,7 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
+INCLUDE_PATH += ../../../bsp/disco_f051r8
 INCLUDE_PATH += ../../../lib/goodmicro_stm32f0
 INCLUDE_PATH += ../../../lib/goodmicro_armv6m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
