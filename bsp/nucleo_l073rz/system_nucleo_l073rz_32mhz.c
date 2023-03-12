@@ -23,14 +23,6 @@
  */
 uint32_t SystemCoreClock = (32u * 1000 * 1000);
 
-/* CMSIS required function which is supposed to read the clock registers
- * and set the global variable to the core speed.  In this application
- * the core speed is fixed at compile time and the global variable is
- * constant, so this does not need to do anything.
- */
-void SystemCoreClockUpdate(void)
-{
-}
 
 /* System initialization
  */
