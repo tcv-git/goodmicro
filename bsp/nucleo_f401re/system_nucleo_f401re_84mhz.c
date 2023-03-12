@@ -26,11 +26,12 @@
 // location of field which is reserved but must still set:
 #define RCC_PLLCFGR_PLLR_Pos        RCC_PLLI2SCFGR_PLLI2SR_Pos
 
-#define PLL_M              4
-#define PLL_N            168
-#define PLL_P              4
-#define PLL_Q              7
-#define PLL_R              2 // reserved bits must be kept at this value
+// main PLL parameters:
+#define PLL_M             4
+#define PLL_N           168
+#define PLL_P             4
+#define PLL_Q             7
+#define PLL_R             2 // reserved bits must be kept at this value
 
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_2WS
 

@@ -27,13 +27,14 @@
 // location of field which is reserved but must still set:
 #define RCC_PLLSAICFGR_PLLSAIR_Pos  RCC_PLLI2SCFGR_PLLI2SR_Pos
 
+// main PLL parameters:
 #define PLL_M             4
 #define PLL_N           180
 #define PLL_P             2
 #define PLL_Q             8
 #define PLL_R             3
 
-// NB: PLLI2S is not started below
+// I2S PLL parameters (NB: PLLI2S is not started below)
 #define PLLI2S_M          4
 #define PLLI2S_N        120
 #define PLLI2S_P          2
@@ -41,7 +42,7 @@
 #define PLLI2S_R          2
 #define PLLI2SDIVQ        1
 
-// NB: PLLSAI is not started below
+// SAI PLL parameters (NB: PLLSAI is not started below)
 #define PLLSAI_M          4
 #define PLLSAI_N         96
 #define PLLSAI_P          4

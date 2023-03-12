@@ -20,12 +20,12 @@
 #include "stm32g4xx.h"
 #include "system_stm32g4xx.h"
 
-#define HSE_VALUE  (24u * 1000 * 1000)
-#define PLL_M        6
-#define PLL_N       85
-#define PLL_P       12
-#define PLL_Q        8
-#define PLL_R        2
+// main PLL parameters:
+#define PLL_M             6
+#define PLL_N            85
+#define PLL_P            12
+#define PLL_Q             8
+#define PLL_R             2
 
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_4WS
 

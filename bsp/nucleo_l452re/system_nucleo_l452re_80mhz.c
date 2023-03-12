@@ -20,11 +20,12 @@
 #include "stm32l4xx.h"
 #include "system_stm32l4xx.h"
 
-#define PLL_M              2
-#define PLL_N             40
-#define PLL_P             16
-#define PLL_Q              4
-#define PLL_R              2
+// main PLL parameters:
+#define PLL_M             2
+#define PLL_N            40
+#define PLL_P            16
+#define PLL_Q             4
+#define PLL_R             2
 
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_4WS
 
