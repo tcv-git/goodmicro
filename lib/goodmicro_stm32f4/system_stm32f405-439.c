@@ -372,6 +372,9 @@ void SystemInit(void)
               | FLASH_ACR_DCEN_Value
               | FLASH_ACR_LATENCY_Value);
 
+  // wait for wait-states to be applied
+  while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_ACR_LATENCY_Value);
+
   // set clock outputs, clock divisors and SYSCLK source
   RCC->CFGR = (RCC_CFGR_MCO2_Value
              | RCC_CFGR_MCO2PRE_Value

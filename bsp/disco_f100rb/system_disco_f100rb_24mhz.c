@@ -95,6 +95,9 @@ void SystemInit(void)
   // flash zero wait states, single cycle access
   FLASH->ACR = 0;
 
+  // wait for wait-states to be applied
+  while ((FLASH->ACR & FLASH_ACR_HLFCYA) != 0);
+
   // SYSCLK from PLL
   RCC->CFGR = ((RCC->CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_PLL);
 

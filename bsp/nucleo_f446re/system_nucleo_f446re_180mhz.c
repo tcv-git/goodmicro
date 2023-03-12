@@ -50,7 +50,8 @@
 #define PLLSAI_R          4 // reserved bits must be kept at this value
 #define PLLSAIDIVQ        1
 
-#define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_5WS
+// flash wait states:
+#define FLASH_ACR_LATENCY_Value     FLASH_ACR_LATENCY_5WS
 
 
 /* CMSIS required global variable containing system core speed in Hz.
@@ -164,10 +165,10 @@ void SystemInit(void)
   FLASH->ACR = (FLASH_ACR_PRFTEN
               | FLASH_ACR_ICEN
               | FLASH_ACR_DCEN
-              | FLASH_WAIT_STATES);
+              | FLASH_ACR_LATENCY_Value);
 
   // wait for wait-states to be applied
-  while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_WAIT_STATES);
+  while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_ACR_LATENCY_Value);
 
   // default clock outputs, set bus divisors, SYSCLK from PLL
   RCC->CFGR = ((RCC_CFGR_RTCPRE_0 * (HSE_VALUE / 1000000))

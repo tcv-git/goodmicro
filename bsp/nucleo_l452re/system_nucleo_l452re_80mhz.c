@@ -27,7 +27,7 @@
 #define PLL_Q             4
 #define PLL_R             2
 
-#define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_4WS
+#define FLASH_ACR_LATENCY_Value     FLASH_ACR_LATENCY_4WS
 
 
 /* CMSIS required global variable containing system core speed in Hz.
@@ -115,10 +115,10 @@ void SystemInit(void)
   FLASH->ACR = (FLASH_ACR_PRFTEN
               | FLASH_ACR_ICEN
               | FLASH_ACR_DCEN
-              | FLASH_WAIT_STATES);
+              | FLASH_ACR_LATENCY_Value);
 
   // wait for wait-states to be applied
-  while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_WAIT_STATES);
+  while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_ACR_LATENCY_Value);
 
   // peripheral clocks to default sources
   RCC->CCIPR  = 0;
