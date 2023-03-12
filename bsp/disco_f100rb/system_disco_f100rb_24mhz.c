@@ -20,6 +20,9 @@
 #include "stm32f1xx.h"
 #include "system_stm32f1xx.h"
 
+// default value of register field:
+#define RCC_CR_HSITRIM_Default      (16 << RCC_CR_HSITRIM_Pos)
+
 
 /* CMSIS required global variable containing system core speed in Hz.
  */
@@ -62,7 +65,7 @@ void SystemInit(void)
   while ((RCC->CR & RCC_CR_HSERDY) != 0);
 
   // default HSI trim, HSE bypass off
-  RCC->CR = (0x00000080u | RCC_CR_HSION);
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION);
 
   // configure PLL, clock output and clock dividers
   RCC->CFGR = (RCC_CFGR_MCO_NOCLOCK

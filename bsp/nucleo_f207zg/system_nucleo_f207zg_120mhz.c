@@ -20,6 +20,9 @@
 #include "stm32f2xx.h"
 #include "system_stm32f2xx.h"
 
+// default value of register field:
+#define RCC_CR_HSITRIM_Default      RCC_CR_HSITRIM_4
+
 #define RCC_PLLCFGR_PLLR_Pos  28
 
 #define PLL_M              4
@@ -92,7 +95,7 @@ void SystemInit(void)
   RCC->CR = (RCC_CR_PLLON
            | RCC_CR_CSSON
            | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_4
+           | RCC_CR_HSITRIM_Default
            | RCC_CR_HSION);
 
   // wait until PLL ready

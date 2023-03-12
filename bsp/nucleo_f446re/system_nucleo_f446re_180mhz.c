@@ -21,6 +21,9 @@
 #include "system_stm32f4xx.h"
 #include "system_nucleo_f446re_180mhz.h"
 
+// default value of register field:
+#define RCC_CR_HSITRIM_Default      RCC_CR_HSITRIM_4
+
 // define location of field which is reserved but must still set:
 #define RCC_PLLSAICFGR_PLLSAIR_Pos  RCC_PLLI2SCFGR_PLLI2SR_Pos
 
@@ -138,7 +141,7 @@ void SystemInit(void)
   RCC->CR = (RCC_CR_PLLON
            | RCC_CR_CSSON
            | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_4
+           | RCC_CR_HSITRIM_Default
            | RCC_CR_HSION);
 
   // enable over-drive
@@ -179,7 +182,7 @@ void SystemInit(void)
   RCC->CR = (RCC_CR_PLLON
            | RCC_CR_CSSON
            | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_4);
+           | RCC_CR_HSITRIM_Default);
 
   // SysTick on with no interrupt
   SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;

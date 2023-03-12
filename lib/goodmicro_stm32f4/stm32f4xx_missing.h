@@ -104,6 +104,8 @@ typedef struct
 //
 // #############################################################################
 
+#define RCC_CR_HSITRIM_Default                  RCC_CR_HSITRIM_4
+
 #define RCC_CR_HSEBYP_DISABLE                   (0u << RCC_CR_HSEBYP_Pos)
 #define RCC_CR_HSEBYP_ENABLE                    (1u << RCC_CR_HSEBYP_Pos)
 
