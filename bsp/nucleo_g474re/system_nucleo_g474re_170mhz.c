@@ -153,7 +153,7 @@ void SystemInit(void)
   SysTick->VAL  = 0;
   SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
 
-  // cycle counter on
+  // debug cycle counter on
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
   DWT->CYCCNT       = 0;

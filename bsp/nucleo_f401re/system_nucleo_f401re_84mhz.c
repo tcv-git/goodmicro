@@ -124,6 +124,17 @@ void SystemInit(void)
   // wait until SYSCLK from PLL
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
+  // SysTick on with no interrupt
+  SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
+  SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
+  SysTick->VAL  = 0;
+  SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
+
+  // debug cycle counter on
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
+  DWT->CYCCNT       = 0;
+
   // enable system configuration interface
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
   (void)RCC->APB2ENR;
@@ -142,15 +153,6 @@ void SystemInit(void)
 
   // enable FPU (set CP10 and CP11 full access)
   SCB->CPACR |= ((3u << (10 * 2)) | (3u << (11 * 2)));
-
-  // SysTick on with no interrupt
-  SysTick->LOAD = -1;
-  SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
-
-  // cycle counter on
-  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-  DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
-  DWT->CYCCNT       = 0;
 
   // set vector address
   SCB->VTOR = (uint32_t)&g_pfnVectors[0];

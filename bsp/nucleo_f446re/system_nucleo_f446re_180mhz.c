@@ -181,6 +181,17 @@ void SystemInit(void)
            | RCC_CR_HSEON
            | RCC_CR_HSITRIM_4);
 
+  // SysTick on with no interrupt
+  SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
+  SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
+  SysTick->VAL  = 0;
+  SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
+
+  // debug cycle counter on
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
+  DWT->CYCCNT       = 0;
+
   // enable system configuration interface
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
   (void)RCC->APB2ENR;
@@ -190,17 +201,6 @@ void SystemInit(void)
 
   // wait until IO compensation cell is ready
   while ((SYSCFG->CMPCR & SYSCFG_CMPCR_READY) != SYSCFG_CMPCR_READY);
-
-  // SysTick on with no interrupt
-  SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
-  SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
-  SysTick->VAL  = 0;
-  SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
-
-  // cycle counter on
-  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-  DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
-  DWT->CYCCNT       = 0;
 
   // enable faults
   SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk);

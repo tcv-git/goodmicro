@@ -102,8 +102,15 @@ void SystemInit(void)
   RCC->CR &= ~RCC_CR_HSION;
 
   // SysTick on with no interrupt
-  SysTick->LOAD = -1;
+  SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
+  SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
+  SysTick->VAL  = 0;
   SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
+
+  // debug cycle counter on
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
+  DWT->CYCCNT       = 0;
 
   // set vector address
   SCB->VTOR = (uint32_t)&g_pfnVectors[0];
