@@ -16,11 +16,11 @@
   problems encountered by those who obtain the software through you.
 */
 
+#include <stdint.h>
 #include "stm32f4xx.h"
 #include "system_stm32f4xx.h"
 
 #define RCC_PLLCFGR_PLLR_Pos  28
-
 
 #define PLL_M              4
 #define PLL_N            168
@@ -31,9 +31,13 @@
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_2WS
 
 
+/* CMSIS required global variable containing system core speed in Hz.
+ */
 uint32_t SystemCoreClock = (84u * 1000 * 1000);
 
 
+/* System initialization
+ */
 void SystemInit(void)
 {
   // disable clock interrupts

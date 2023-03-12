@@ -29,8 +29,14 @@
 
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_4WS
 
+
+/* CMSIS required global variable containing system core speed in Hz.
+ */
 uint32_t SystemCoreClock = (170u * 1000 * 1000);
 
+
+/* System initialization
+ */
 void SystemInit(void)
 {
   // disable clock interrupts

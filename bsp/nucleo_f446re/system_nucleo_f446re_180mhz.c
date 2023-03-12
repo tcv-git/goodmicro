@@ -16,6 +16,7 @@
   problems encountered by those who obtain the software through you.
 */
 
+#include <stdint.h>
 #include "stm32f4xx.h"
 #include "system_stm32f4xx.h"
 #include "system_nucleo_f446re_180mhz.h"
@@ -48,8 +49,13 @@
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_5WS
 
 
+/* CMSIS required global variable containing system core speed in Hz.
+ */
 uint32_t SystemCoreClock = HCLK;
 
+
+/* System initialization
+ */
 void SystemInit(void)
 {
   // disable clock interrupts

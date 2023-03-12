@@ -16,6 +16,7 @@
   problems encountered by those who obtain the software through you.
 */
 
+#include <stdint.h>
 #include "stm32l4xx.h"
 #include "system_stm32l4xx.h"
 
@@ -26,6 +27,7 @@
 #define PLL_R              2
 
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_4WS
+
 
 /* CMSIS required global variable containing system core speed in Hz.
  */
