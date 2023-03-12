@@ -18,8 +18,10 @@
   through you.
 */
 
+#include <stdint.h>
 #include "stm32l0xx.h"
 #include "system_stm32l0xx.h"
+
 
 /* CMSIS required global variable containing system core speed in Hz.
  */
