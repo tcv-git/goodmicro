@@ -23,7 +23,8 @@
 // default value of register field:
 #define RCC_CR_HSITRIM_Default      RCC_CR_HSITRIM_4
 
-#define RCC_PLLCFGR_PLLR_Pos  28
+// location of field which is reserved but must still set:
+#define RCC_PLLCFGR_PLLR_Pos        RCC_PLLI2SCFGR_PLLI2SR_Pos
 
 #define PLL_M              4
 #define PLL_N            120
