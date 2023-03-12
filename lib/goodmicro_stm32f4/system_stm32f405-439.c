@@ -347,7 +347,7 @@ void SystemInit(void)
   RCC->CR = (RCC_CR_PLLs_ON
            | RCC_CR_CSSON_Value
            | RCC_CR_HSEON_Value
-           | RCC_CR_HSITRIM_4
+           | RCC_CR_HSITRIM_Default
            | RCC_CR_HSION);
 
 #if defined(PWR_CR_ODEN_Pos) && (PWR_CR_ODEN_Value == PWR_CR_ODEN_ENABLE)
@@ -393,7 +393,7 @@ void SystemInit(void)
   RCC->CR = (RCC_CR_PLLs_ON
            | RCC_CR_CSSON_Value
            | RCC_CR_HSEON_Value
-           | RCC_CR_HSITRIM_4
+           | RCC_CR_HSITRIM_Default
            | RCC_CR_HSION_Value);
 #endif
 
