@@ -82,17 +82,17 @@ void SystemInit(void)
   // wait until HSI48 off
   while ((RCC->CRRCR & RCC_CRRCR_HSI48RDY) != 0);
 
-  // SysTick on with no interrupt
-  SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
-  SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
-  SysTick->VAL  = 0;
-  SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
-
   // enable power interface
   RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 
   // disable programmable voltage detector, regulator range 3 (lowest power)
   PWR->CR = ((PWR->CR & ~PWR_CR_PVDE) | PWR_CR_VOS);
+
+  // enable systick without interrupt
+  SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
+  SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
+  SysTick->VAL  = 0;
+  SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
 
   // set vector address
   SCB->VTOR = (uint32_t)&g_pfnVectors[0];

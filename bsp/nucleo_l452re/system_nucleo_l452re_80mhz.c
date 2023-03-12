@@ -146,13 +146,8 @@ void SystemInit(void)
   DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
   DWT->CYCCNT       = 0;
 
-  // enable system configuration interface
-  RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-  (void)RCC->APB2ENR;
-
-  // disable I2C FM+, disable analog switch boost, keep memory firewall diabled
-  // disable FPU interrupts except invalid operation and divide by zero
-  SYSCFG->CFGR1 = (SYSCFG_CFGR1_FPU_IE_0 | SYSCFG_CFGR1_FPU_IE_1 | SYSCFG_CFGR1_FWDIS);
+  // set vector address
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 
   // enable faults
   SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk);
@@ -163,6 +158,11 @@ void SystemInit(void)
   // enable FPU (set CP10 and CP11 full access)
   SCB->CPACR |= ((3u << (10 * 2)) | (3u << (11 * 2)));
 
-  // set vector address
-  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
+  // enable system configuration interface
+  RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+  (void)RCC->APB2ENR;
+
+  // disable I2C FM+, disable analog switch boost, keep memory firewall diabled
+  // disable FPU interrupts except invalid operation and divide by zero
+  SYSCFG->CFGR1 = (SYSCFG_CFGR1_FPU_IE_0 | SYSCFG_CFGR1_FPU_IE_1 | SYSCFG_CFGR1_FWDIS);
 }

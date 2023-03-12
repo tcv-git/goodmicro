@@ -125,6 +125,15 @@ void SystemInit(void)
   DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
   DWT->CYCCNT       = 0;
 
+  // set vector address
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
+
+  // enable faults
+  SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk);
+
+  // trap integer divide by zero
+  SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
+
   // enable system configuration interface
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
   (void)RCC->APB2ENR;
@@ -134,13 +143,4 @@ void SystemInit(void)
 
   // wait until IO compensation cell is ready
   while ((SYSCFG->CMPCR & SYSCFG_CMPCR_READY) != SYSCFG_CMPCR_READY);
-
-  // enable faults
-  SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk);
-
-  // trap divide by zero
-  SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
-
-  // set vector address
-  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 }

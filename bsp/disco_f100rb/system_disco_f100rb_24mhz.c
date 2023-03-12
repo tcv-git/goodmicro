@@ -114,4 +114,10 @@ void SystemInit(void)
 
   // set vector address
   SCB->VTOR = (uint32_t)&g_pfnVectors[0];
+
+  // enable faults
+  SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk);
+
+  // trap integer divide by zero
+  SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
 }
