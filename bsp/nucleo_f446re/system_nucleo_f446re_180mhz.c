@@ -48,7 +48,7 @@
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_5WS
 
 
-uint32_t SystemCoreClock = SYSTEM_CORE_CLOCK;
+uint32_t SystemCoreClock = HCLK;
 
 void SystemInit(void)
 {

@@ -31,7 +31,7 @@
 #define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_2WS
 
 
-uint32_t SystemCoreClock = 84000000;
+uint32_t SystemCoreClock = (84u * 1000 * 1000);
 
 
 void SystemInit(void)

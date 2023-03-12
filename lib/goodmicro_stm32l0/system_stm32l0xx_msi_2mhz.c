@@ -21,7 +21,7 @@
 
 /* CMSIS required global variable containing system core speed in Hz.
  */
-uint32_t SystemCoreClock = 2097152u;
+uint32_t SystemCoreClock = (2u * 1024 * 1024);
 
 /* CMSIS required function which is supposed to read the clock registers
  * and set the global variable to the core speed.  In this application

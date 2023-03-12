@@ -76,7 +76,7 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
 CPPFLAGS += -DSTM32F207xx
-CPPFLAGS += -DSYSTEM_CORE_CLOCK=120000000
+CPPFLAGS += -DSYSTEM_CORE_CLOCK=0 # zero means check SystemCoreClock variable at runtime
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
 

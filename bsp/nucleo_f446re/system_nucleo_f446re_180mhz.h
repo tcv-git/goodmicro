@@ -16,8 +16,8 @@
   problems encountered by those who obtain the software through you.
 */
 
-#define HSE_VALUE             8000000u
-#define SYSCLK              180000000u
+#define HSE_VALUE           (  8u * 1000 * 1000)
+#define SYSCLK              (180u * 1000 * 1000)
 #define HCLK                SYSCLK
 #define APB1_CLK            (HCLK / 4)
 #define APB2_CLK            (HCLK / 2)
