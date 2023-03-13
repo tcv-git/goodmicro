@@ -1,4 +1,4 @@
-/* stm32f070xBxx.ld */
+/* stm32f07xxBxx.ld */
 /* PUBLIC DOMAIN */
 /* https://www.purposeful.co.uk/goodmicro/ */
 
