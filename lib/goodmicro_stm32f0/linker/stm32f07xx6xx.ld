@@ -1,4 +1,4 @@
-/* stm32f05xx8xx.ld */
+/* stm32f07xx6xx.ld */
 /* PUBLIC DOMAIN */
 /* https://www.purposeful.co.uk/goodmicro/ */
 
@@ -23,8 +23,8 @@
 
 MEMORY
 {
-  ROM (rx)  : ORIGIN = 0x08000000, LENGTH = 64K
-  RAM (rwx) : ORIGIN = 0x20000000, LENGTH =  8K
+  ROM (rx)  : ORIGIN = 0x08000000, LENGTH =  32K
+  RAM (rwx) : ORIGIN = 0x20000000, LENGTH =   6K
 }
 
 _Min_Stack_Size = 2K;

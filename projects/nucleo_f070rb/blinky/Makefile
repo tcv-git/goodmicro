@@ -45,7 +45,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../../../lib/goodmicro_stm32f0/stm32f070xBxx.ld
+LINK_SCRIPT := ../../../lib/goodmicro_stm32f0/linker/stm32f07xxBxx.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
