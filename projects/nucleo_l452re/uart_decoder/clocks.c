@@ -5,8 +5,6 @@
 #include "uptime.h"
 #include "clocks.h"
 
-const uint32_t MONOTIME_HZ = SYSTEM_CORE_CLOCK;
-
 // fast monotonic clock, system dependant units
 uint64_t monotime(void)
 {

@@ -2,10 +2,11 @@
 // Copyright Green Energy Options Ltd.
 
 #include "stm32l4xx.h"
+#include "system_stm32l4xx.h"
 #include "event_queue.h"
 #include "uart_interrupt_receive.h"
 
-#define UART_APBx_CLK   SYSTEM_CORE_CLOCK
+#define UART_APBx_CLK   SystemCoreClock
 #define BAUD_RATE       115200u
 
 

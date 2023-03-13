@@ -5,13 +5,14 @@
 #define CLOCKS_H_INCLUDED
 
 #include <stdint.h>
+#include "system_stm32l4xx.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // counts of monotime() per second
-extern const uint32_t MONOTIME_HZ;
+#define MONOTIME_HZ  SystemCoreClock
 
 // fast monotonic clock, system dependant units
 uint64_t monotime(void);

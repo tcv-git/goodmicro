@@ -24,7 +24,6 @@ ASFILES += ../../../lib/goodmicro_stm32l4/vectors/vectors_stm32l452xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_l452re/system_nucleo_l452re_80mhz.c
-CFILES += ../../../lib/goodmicro_armv7m/uptime.c
 CFILES += clocks.c
 CFILES += crc.c
 CFILES += event_queue.c
@@ -91,7 +90,7 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
 CPPFLAGS += -DSTM32L452xx
-CPPFLAGS += -DSYSTEM_CORE_CLOCK=80000000
+CPPFLAGS += -DSYSTEM_CORE_CLOCK=0 # zero means check SystemCoreClock variable at runtime
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
 

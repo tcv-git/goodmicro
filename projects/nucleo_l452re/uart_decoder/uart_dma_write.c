@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "stm32l4xx.h"
 #include "stm32l4xx_simple_gpio.h"
+#include "system_stm32l4xx.h"
 #include "uart_dma_write.h"
 
 // PA2 AF4 USART2_TX
@@ -22,7 +23,7 @@
 #define UART_APBx_RSTR_UARTxRST  RCC_APB1RSTR1_USART2RST
 #define UARTx                    USART2
 
-#define UART_APBx_CLK            SYSTEM_CORE_CLOCK
+#define UART_APBx_CLK            SystemCoreClock
 #define BAUD_RATE                (1000u * 1000)
 
 #define DMA_AHBxENR              AHB1ENR
