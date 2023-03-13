@@ -147,4 +147,5 @@ int main(void)
  *   -will need a "buffer full" message
  *
  * enable 7bit+parity on console?
+ * newlines on console
  */
