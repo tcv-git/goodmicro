@@ -22,7 +22,7 @@ ASFILES += ../../../lib/goodmicro_stm32l0/vectors/vectors_stm32l073xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../lib/goodmicro_stm32l0/system_stm32l0xx_msi_2mhz.c
+CFILES += ../../../bsp/nucleo_l073rz/system_nucleo_l073rz_32mhz.c
 CFILES += main.c
 
 # input for C++ compiler
@@ -30,6 +30,7 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
+INCLUDE_PATH += ../../../bsp/nucleo_l073rz
 INCLUDE_PATH += ../../../lib/goodmicro_stm32l0
 INCLUDE_PATH += ../../../lib/goodmicro_armv6m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
@@ -75,8 +76,8 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
 CPPFLAGS += -DSTM32L073xx
+CPPFLAGS += -DSYSTEM_CORE_CLOCK=0 # zero means check SystemCoreClock variable at runtime
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
-CPPFLAGS += -DSYSTEM_CORE_CLOCK=0
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
 
 # flags for assembler

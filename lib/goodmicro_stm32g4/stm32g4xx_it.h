@@ -1,4 +1,4 @@
-// main.c
+// stm32g4xx_it.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -18,28 +18,47 @@
   through you.
 */
 
-#include "stm32f0xx.h"
-#include "stm32f0xx_simple_gpio.h"
-#include "delay.h"
+#ifndef STM32G4XX_IT_H_INCLUDED
+#define STM32G4XX_IT_H_INCLUDED
 
-#define BLUE_ON    PIN8_HI
-#define BLUE_OFF   PIN8_LO
-#define GREEN_ON   PIN9_HI
-#define GREEN_OFF  PIN9_LO
+#ifdef STM32G431xx
+#include "vectors/vectors_stm32g431xx.h"
+#endif
 
-int main(void)
-{
-  RCC->AHBENR |= (RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOCEN);
-  (void)RCC->AHBENR;
+#ifdef STM32G441xx
+#include "vectors/vectors_stm32g441xx.h"
+#endif
 
-  GPIO_output_push_pull_slow(GPIOC, (PIN8 | PIN9));
-  GPIO_input(GPIOA, PIN0);
+#ifdef STM32G471xx
+#include "vectors/vectors_stm32g471xx.h"
+#endif
 
-  for (;;)
-  {
-    GPIO_set_reset(GPIOC, (GREEN_ON | BLUE_OFF));
-    DELAY_MS((GPIOA->IDR & PIN0) ? 150 : 400);
-    GPIO_set_reset(GPIOC, (BLUE_ON | GREEN_OFF));
-    DELAY_MS((GPIOA->IDR & PIN0) ? 150 : 400);
-  }
-}
+#ifdef STM32G473xx
+#include "vectors/vectors_stm32g473xx.h"
+#endif
+
+#ifdef STM32G474xx
+#include "vectors/vectors_stm32g474xx.h"
+#endif
+
+#ifdef STM32G483xx
+#include "vectors/vectors_stm32g483xx.h"
+#endif
+
+#ifdef STM32G484xx
+#include "vectors/vectors_stm32g484xx.h"
+#endif
+
+#ifdef STM32G491xx
+#include "vectors/vectors_stm32g491xx.h"
+#endif
+
+#ifdef STM32G4A1xx
+#include "vectors/vectors_stm32g4a1xx.h"
+#endif
+
+#ifdef STM32GBK1CB
+#include "vectors/vectors_stm32gbk1cb.h"
+#endif
+
+#endif /* STM32G4XX_IT_H_INCLUDED */

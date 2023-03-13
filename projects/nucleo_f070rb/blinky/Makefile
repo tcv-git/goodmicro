@@ -18,12 +18,11 @@ ASFILES += ../../../lib/goodmicro_armv6m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv6m/delay_systick_dynamic.s
 ASFILES += ../../../lib/goodmicro_armv6m/imath.s
 ASFILES += ../../../lib/goodmicro_cortexm/startup.s
-ASFILES += ../../../lib/goodmicro_stm32l0/vectors/vectors_stm32l073xx.s
+ASFILES += ../../../lib/goodmicro_stm32f0/vectors/vectors_stm32f070xb.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/nucleo_l073rz/system_nucleo_l073rz_32mhz.c
-CFILES += ../../../lib/goodmicro_stm32l0/debug_printf_blocking.c
+CFILES += ../../../bsp/nucleo_f070rb/system_nucleo_f070rb_48mhz.c
 CFILES += main.c
 
 # input for C++ compiler
@@ -31,11 +30,11 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
-INCLUDE_PATH += ../../../bsp/nucleo_l073rz
-INCLUDE_PATH += ../../../lib/goodmicro_stm32l0
+INCLUDE_PATH += ../../../bsp/nucleo_f070rb
+INCLUDE_PATH += ../../../lib/goodmicro_stm32f0
 INCLUDE_PATH += ../../../lib/goodmicro_armv6m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
-INCLUDE_PATH += ../../../lib/Device_STM32L0xx/Include
+INCLUDE_PATH += ../../../lib/Device_STM32F0xx/Include
 INCLUDE_PATH += ../../../lib/CMSIS/Include
 
 # binary library search path (gets added to LDFLAGS)
@@ -46,7 +45,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../../../lib/goodmicro_stm32l0/stm32l0x3xZxx.ld
+LINK_SCRIPT := ../../../lib/goodmicro_stm32f0/stm32f070xBxx.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
@@ -68,7 +67,7 @@ LD  := $(CROSS_COMPILE)$(if $(CXXFILES),g++,gcc)
 # flags for assembler, compiler and linker
 COMMON_FLAGS :=
 COMMON_FLAGS += -mthumb
-COMMON_FLAGS += -mcpu=cortex-m0plus
+COMMON_FLAGS += -mcpu=cortex-m0
 COMMON_FLAGS += -fmessage-length=0
 COMMON_FLAGS += -fno-diagnostics-show-option
 COMMON_FLAGS += -fno-diagnostics-show-caret
@@ -76,7 +75,7 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # C pre-processor flags (for both .c and .S files)
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
-CPPFLAGS += -DSTM32L073xx
+CPPFLAGS += -DSTM32F070xB
 CPPFLAGS += -DSYSTEM_CORE_CLOCK=0 # zero means check SystemCoreClock variable at runtime
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
@@ -232,10 +231,8 @@ clean :
 
 .PHONY : erase flash
 
-# FIXME use correct scripts
-
 erase :
-	../../../scripts/erase_stm32f2_swd_hrst
+	../../../scripts/erase_stm32f4_swd_hrst
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32f2_swd_hrst $<
+	../../../scripts/program_stm32f4_swd_hrst $<

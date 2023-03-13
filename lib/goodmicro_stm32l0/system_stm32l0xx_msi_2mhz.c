@@ -18,58 +18,47 @@
   through you.
 */
 
+#include <stdint.h>
 #include "stm32l0xx.h"
 #include "system_stm32l0xx.h"
 
+
 /* CMSIS required global variable containing system core speed in Hz.
  */
-uint32_t SystemCoreClock = 2097152u;
+uint32_t SystemCoreClock = (2u * 1024 * 1024);
 
-/* CMSIS required function which is supposed to read the clock registers
- * and set the global variable to the core speed.  In this application
- * the core speed is fixed at compile time and the global variable is
- * constant, so this does not need to do anything.
+/* System interrupt vector
  */
-void SystemCoreClockUpdate(void)
-{
-}
+extern uint32_t g_pfnVectors[];
+
 
 /* System initialization
  */
 void SystemInit(void)
 {
-  // set VTOR
-  SCB->VTOR = FLASH_BASE;
-
   // disable clock interrupts
   RCC->CIER = 0;
 
-  // disable MCO
-  RCC->CFGR &= ~RCC_CFGR_MCOSEL;
+  // MCO off
+  RCC->CFGR &= ~(RCC_CFGR_MCOPRE | RCC_CFGR_MCOSEL);
 
   // set MSI range and MSI/HSI16 trim to zero
   RCC->ICSCR = RCC_ICSCR_MSIRANGE_5;
 
-  // enable MSI
+  // MSI on
   RCC->CR |= RCC_CR_MSION;
 
   // wait until MSI ready
   while ((RCC->CR & RCC_CR_MSIRDY) != RCC_CR_MSIRDY);
 
-  // sysclk from MSI
-  RCC->CFGR = ((RCC->CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_MSI);
+  // MCO off, STOPWUCK=MSI, HPRE=1, PPRE2=1, PPRE1=1, SYSCLK from MSI
+  RCC->CFGR = ((RCC->CFGR & ~(RCC_CFGR_MCOPRE | RCC_CFGR_MCOSEL | RCC_CFGR_STOPWUCK | RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1 | RCC_CFGR_SW)) | RCC_CFGR_SW_MSI);
 
-  // wait until sysclk from MSI
+  // wait until SYSCLK from MSI
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI);
-
-  // AHB and APB dividers to one
-  RCC->CFGR = RCC_CFGR_SW_MSI;
 
   // peripheral clocks to default sources
   RCC->CCIPR = 0;
-
-  // disable flash pre-read/prefetch/cache, zero-wait states
-  FLASH->ACR = FLASH_ACR_DISAB_BUF;
 
   // PLL and CSS off
   RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_CSSHSEON);
@@ -77,27 +66,40 @@ void SystemInit(void)
   // wait until PLL stopped
   while ((RCC->CR & RCC_CR_PLLRDY) != 0);
 
-  // HSE, HSI16, HSI16OUT off
-  RCC->CR &= ~(RCC_CR_HSEON | RCC_CR_HSIOUTEN | RCC_CR_HSIKERON | RCC_CR_HSION);
+  // HSE and HSI off, RTCPRE=2, keep MSI on
+  RCC->CR = RCC_CR_MSION;
 
-  // wait until HSE, HSI16 off
+  // wait until HSE and HSI stopped
   while ((RCC->CR & (RCC_CR_HSIRDY | RCC_CR_HSERDY)) != 0);
 
   // HSI48 off
   RCC->CRRCR = 0;
 
-  // wait until HSI48 off
+  // wait until HSI48 stopped
   while ((RCC->CRRCR & RCC_CRRCR_HSI48RDY) != 0);
+
+  // disable flash pre-read/prefetch/cache, zero-wait states
+  FLASH->ACR = FLASH_ACR_DISAB_BUF;
 
   // enable power interface
   RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+  (void)RCC->APB1ENR;
+
+  // wait until ready to change VOS
+  while ((PWR->CSR & PWR_CSR_VOSF) != 0);
 
   // disable programmable voltage detector, regulator range 3 (lowest power)
   PWR->CR = ((PWR->CR & ~PWR_CR_PVDE) | PWR_CR_VOS);
 
-  // enable systick without interrupt
+  // wait until VOS changed
+  while ((PWR->CSR & PWR_CSR_VOSF) != 0);
+
+  // SysTick on with no interrupt
   SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
   SysTick->LOAD = SysTick_LOAD_RELOAD_Msk;
   SysTick->VAL  = 0;
   SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
+
+  // set vector address
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 }

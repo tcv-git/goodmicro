@@ -18,28 +18,23 @@
   through you.
 */
 
-#include "stm32f0xx.h"
-#include "stm32f0xx_simple_gpio.h"
+#include "stm32l0xx.h"
+#include "stm32l0xx_simple_gpio.h"
 #include "delay.h"
-
-#define BLUE_ON    PIN8_HI
-#define BLUE_OFF   PIN8_LO
-#define GREEN_ON   PIN9_HI
-#define GREEN_OFF  PIN9_LO
 
 int main(void)
 {
-  RCC->AHBENR |= (RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOCEN);
-  (void)RCC->AHBENR;
+  RCC->IOPENR |= (RCC_IOPENR_GPIOAEN | RCC_IOPENR_GPIOCEN);
+  (void)RCC->IOPENR;
 
-  GPIO_output_push_pull_slow(GPIOC, (PIN8 | PIN9));
-  GPIO_input(GPIOA, PIN0);
+  GPIO_output_push_pull_slow(GPIOA, PIN5);
+  GPIO_input(GPIOC, PIN13);
 
   for (;;)
   {
-    GPIO_set_reset(GPIOC, (GREEN_ON | BLUE_OFF));
-    DELAY_MS((GPIOA->IDR & PIN0) ? 150 : 400);
-    GPIO_set_reset(GPIOC, (BLUE_ON | GREEN_OFF));
-    DELAY_MS((GPIOA->IDR & PIN0) ? 150 : 400);
+    GPIO_set_reset(GPIOA, PIN5_HI);
+    DELAY_MS((GPIOC->IDR & PIN13) ? 400 : 150);
+    GPIO_set_reset(GPIOA, PIN5_LO);
+    DELAY_MS((GPIOC->IDR & PIN13) ? 400 : 150);
   }
 }

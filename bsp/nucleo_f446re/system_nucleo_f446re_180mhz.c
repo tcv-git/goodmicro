@@ -18,20 +18,25 @@
   through you.
 */
 
+#include <stdint.h>
 #include "stm32f4xx.h"
 #include "system_stm32f4xx.h"
 #include "system_nucleo_f446re_180mhz.h"
 
-// define location of field which is reserved but must still set:
+// default value of register field:
+#define RCC_CR_HSITRIM_Default      RCC_CR_HSITRIM_4
+
+// location of field which is reserved but must still set:
 #define RCC_PLLSAICFGR_PLLSAIR_Pos  RCC_PLLI2SCFGR_PLLI2SR_Pos
 
+// main PLL parameters:
 #define PLL_M             4
 #define PLL_N           180
 #define PLL_P             2
 #define PLL_Q             8
 #define PLL_R             3
 
-// NB: PLLI2S is not started below
+// I2S PLL parameters (NB: PLLI2S is not started below)
 #define PLLI2S_M          4
 #define PLLI2S_N        120
 #define PLLI2S_P          2
@@ -39,7 +44,7 @@
 #define PLLI2S_R          2
 #define PLLI2SDIVQ        1
 
-// NB: PLLSAI is not started below
+// SAI PLL parameters (NB: PLLSAI is not started below)
 #define PLLSAI_M          4
 #define PLLSAI_N         96
 #define PLLSAI_P          4
@@ -47,18 +52,28 @@
 #define PLLSAI_R          4 // reserved bits must be kept at this value
 #define PLLSAIDIVQ        1
 
-#define FLASH_WAIT_STATES  FLASH_ACR_LATENCY_5WS
+// flash wait states:
+#define FLASH_ACR_LATENCY_Value     FLASH_ACR_LATENCY_5WS
 
 
-uint32_t SystemCoreClock = SYSTEM_CORE_CLOCK;
+/* CMSIS required global variable containing system core speed in Hz.
+ */
+uint32_t SystemCoreClock = HCLK;
 
+/* System interrupt vector
+ */
+extern uint32_t g_pfnVectors[];
+
+
+/* System initialization
+ */
 void SystemInit(void)
 {
   // disable clock interrupts
   RCC->CIR = 0;
 
-  // HSI on, CSS off
-  RCC->CR = ((RCC->CR & ~RCC_CR_CSSON) | RCC_CR_HSION);
+  // HSI on
+  RCC->CR |= RCC_CR_HSION;
 
   // wait until HSI ready
   while ((RCC->CR & RCC_CR_HSIRDY) != RCC_CR_HSIRDY);
@@ -69,14 +84,14 @@ void SystemInit(void)
   // wait until SYSCLK from HSI
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
 
-  // PLLs off
-  RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_PLLI2SON | RCC_CR_PLLSAION);
+  // PLLs and CSS off
+  RCC->CR &= ~(RCC_CR_PLLON | RCC_CR_PLLI2SON | RCC_CR_PLLSAION | RCC_CR_CSSON);
 
   // wait until PLLs stopped
   while ((RCC->CR & (RCC_CR_PLLRDY | RCC_CR_PLLI2SRDY | RCC_CR_PLLSAIRDY)) != 0);
 
-  // HSE off
-  RCC->CR &= ~RCC_CR_HSEON;
+  // HSE off, default HSI trim, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION);
 
   // wait until HSE stopped
   while ((RCC->CR & RCC_CR_HSERDY) != 0);
@@ -88,8 +103,8 @@ void SystemInit(void)
   // select regulator voltage output scale 1 (maximum power)
   PWR->CR |= PWR_CR_VOS;
 
-  // HSE on with bypass
-  RCC->CR |= (RCC_CR_HSEON | RCC_CR_HSEBYP);
+  // HSE on with bypass, keep HSI on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_HSEBYP);
 
   // wait until HSE ready
   while ((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY);
@@ -126,12 +141,8 @@ void SystemInit(void)
                 | ((PLLSAIDIVQ - 1) << RCC_DCKCFGR_PLLSAIDIVQ_Pos)
                 | ((PLLI2SDIVQ - 1) << RCC_DCKCFGR_PLLI2SDIVQ_Pos));
 
-  // main PLL (only) on, CSS on, keep HSI and HSE on, default HSITRIM
-  RCC->CR = (RCC_CR_PLLON
-           | RCC_CR_CSSON
-           | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_4
-           | RCC_CR_HSION);
+  // main PLL (only) on, CSS on
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
 
   // enable over-drive
   PWR->CR |= PWR_CR_ODEN;
@@ -149,13 +160,10 @@ void SystemInit(void)
   while ((RCC->CR & RCC_CR_PLLRDY) != RCC_CR_PLLRDY);
 
   // configure flash prefetch, instruction cache, data cache and wait states
-  FLASH->ACR = (FLASH_ACR_PRFTEN
-              | FLASH_ACR_ICEN
-              | FLASH_ACR_DCEN
-              | FLASH_WAIT_STATES);
+  FLASH->ACR = (FLASH_ACR_PRFTEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_LATENCY_Value);
 
   // wait for wait-states to be applied
-  while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_WAIT_STATES);
+  while ((FLASH->ACR & FLASH_ACR_LATENCY) != FLASH_ACR_LATENCY_Value);
 
   // default clock outputs, set bus divisors, SYSCLK from PLL
   RCC->CFGR = ((RCC_CFGR_RTCPRE_0 * (HSE_VALUE / 1000000))
@@ -168,20 +176,10 @@ void SystemInit(void)
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
   // HSI off
-  RCC->CR = (RCC_CR_PLLON
-           | RCC_CR_CSSON
-           | RCC_CR_HSEON
-           | RCC_CR_HSITRIM_4);
+  RCC->CR = (RCC_CR_HSITRIM_Default | RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_PLLON | RCC_CR_CSSON);
 
-  // enable system configuration interface
-  RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-  (void)RCC->APB2ENR;
-
-  // enable IO compensation cell
-  SYSCFG->CMPCR = SYSCFG_CMPCR_CMP_PD;
-
-  // wait until IO compensation cell is ready
-  while ((SYSCFG->CMPCR & SYSCFG_CMPCR_READY) != SYSCFG_CMPCR_READY);
+  // wait until HSI stopped
+  while ((RCC->CR & RCC_CR_HSIRDY) != 0);
 
   // SysTick on with no interrupt
   SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk;
@@ -189,10 +187,13 @@ void SystemInit(void)
   SysTick->VAL  = 0;
   SysTick->CTRL = (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
 
-  // cycle counter on
+  // debug cycle counter on
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
   DWT->CYCCNT       = 0;
+
+  // set vector address
+  SCB->VTOR = (uint32_t)&g_pfnVectors[0];
 
   // enable faults
   SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk);
@@ -203,6 +204,13 @@ void SystemInit(void)
   // enable FPU (set CP10 and CP11 full access)
   SCB->CPACR |= ((3u << (10 * 2)) | (3u << (11 * 2)));
 
-  // set vector address
-  SCB->VTOR = FLASH_BASE;
+  // enable system configuration interface
+  RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+  (void)RCC->APB2ENR;
+
+  // enable IO compensation cell
+  SYSCFG->CMPCR = SYSCFG_CMPCR_CMP_PD;
+
+  // wait until IO compensation cell is ready
+  while ((SYSCFG->CMPCR & SYSCFG_CMPCR_READY) != SYSCFG_CMPCR_READY);
 }

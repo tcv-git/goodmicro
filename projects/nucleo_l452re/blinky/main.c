@@ -25,7 +25,7 @@
 int main(void)
 {
   RCC->AHB2ENR |= (RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOCEN);
-  (void)RCC->AHB1ENR;
+  (void)RCC->AHB2ENR;
 
   GPIO_output_push_pull_slow(GPIOA, PIN5);
   GPIO_input(GPIOC, PIN13);
