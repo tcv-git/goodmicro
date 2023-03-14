@@ -15,14 +15,14 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 # input for assembler
 ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
-ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_dynamic.s
+ASFILES += ../../../lib/goodmicro_armv7m/delay_systick_dynamic.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_cortexm/startup.s
 ASFILES += ../../../lib/goodmicro_stm32f7/vectors/vectors_stm32f746xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../lib/Device_STM32F7xx/Source/system_stm32f7xx.c
+CFILES += ../../../bsp/disco_f746ng/system_stm32f7xx_disco_f746ng.c
 CFILES += main.c
 
 # input for C++ compiler

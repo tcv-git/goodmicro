@@ -29,13 +29,9 @@ int main(void)
 
   for (;;)
   {
-    if (GPIOI->IDR & PIN11)
-    {
-      GPIO_set_reset(GPIOI, PIN1_HI);
-    }
-    else
-    {
-      GPIO_set_reset(GPIOI, PIN1_LO);
-    }
+    GPIO_set_reset(GPIOI, PIN1_HI);
+    DELAY_MS((GPIOI->IDR & PIN11) ? 150 : 400);
+    GPIO_set_reset(GPIOI, PIN1_LO);
+    DELAY_MS((GPIOI->IDR & PIN11) ? 150 : 400);
   }
 }
