@@ -56,6 +56,7 @@ void SystemInit(void)
 
   // debug cycle counter on
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->LAR          = 0xC5ACCE55u;
   DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
   DWT->CYCCNT       = 0;
 }

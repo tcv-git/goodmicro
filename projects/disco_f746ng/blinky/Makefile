@@ -15,7 +15,7 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 # input for assembler
 ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
-ASFILES += ../../../lib/goodmicro_armv7m/delay_systick_dynamic.s
+ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_dynamic.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_cortexm/startup.s
 ASFILES += ../../../lib/goodmicro_stm32f7/vectors/vectors_stm32f746xx.s
@@ -30,6 +30,7 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
+INCLUDE_PATH += ../../../bsp/disco_f746ng
 INCLUDE_PATH += ../../../lib/goodmicro_stm32f7
 INCLUDE_PATH += ../../../lib/goodmicro_armv7m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
