@@ -59,4 +59,7 @@ void SystemInit(void)
   DWT->LAR          = 0xC5ACCE55u;
   DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
   DWT->CYCCNT       = 0;
+
+  // enable FPU (set CP10 and CP11 full access)
+  SCB->CPACR |= ((3u << (10 * 2)) | (3u << (11 * 2)));
 }
