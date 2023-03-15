@@ -22,7 +22,7 @@ ASFILES += ../../../lib/goodmicro_stm32f7/vectors/vectors_stm32f746xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/disco_f746ng/system_stm32f7xx_disco_f746ng.c
+CFILES += ../../../bsp/disco_f746ng/system_stm32f7xx_disco_f746ng_216mhz.c
 CFILES += ../../../lib/goodmicro_stm32f7/debug_printf_blocking.c
 CFILES += main.c
 
