@@ -45,7 +45,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../.template/STM32H743ZITx_FLASH_RAM_D1.ld
+LINK_SCRIPT := ../../../lib/goodmicro_stm32h7/stm32h743xi.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
