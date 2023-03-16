@@ -22,7 +22,7 @@ ASFILES += ../../../lib/goodmicro_stm32f7/vectors/vectors_stm32f746xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../bsp/nucleo_h743zi2/system_stm32h7xx_nucleo_h743zi2.c
+CFILES += ../../../bsp/nucleo_h743zi2/system_stm32h7xx_nucleo_h743zi2_480mhz.c
 CFILES += main.c
 
 # input for C++ compiler
