@@ -1,0 +1,64 @@
+// startup_vos0.c
+// PUBLIC DOMAIN
+// https://www.purposeful.co.uk/goodmicro/
+
+/*
+  I, Tom Vajzovic, am the author of this software and its documentation.
+  I permanently abandon all copyright and other intellectual property rights
+  in them.
+
+  I am fairly certain that the software does what the documentation says it
+  does, but I do not guarantee that it does, or that it does what you think it
+  should.  I do not guarantee that it will not have undesirable side effects.
+
+  If you use, modify or distribute this software then you do so at your own
+  risk.  If you do not pass on this warning then you may be responsible for any
+  problems encountered by those who obtain the software through you.
+*/
+
+/*
+  The following is a *pseudocode* implementation of startup_vos0, for
+  documentation purposes only.
+
+  It should not be compiled, because a C compiler is likely to use the stack,
+  but this code must run before any RAM is available.
+
+  See the assembly language version for a usable implementation.
+*/
+
+
+#include "stm32h7xx.h"
+
+void startup_vos0(void)
+{
+  uint32_t cr3 = PWR->CR3;
+
+  // if LDO bypass already enabled, go no further
+  while ((cr3 & PWR_CR3_BYPASS) != 0);
+
+  // if power-on reset
+  if (cr3 & PWR_CR3_SCUEN)
+  {
+    // disable BYPASS and enable LDO until next power-on reset
+    PWR->CR3 = (cr3 | PWR_CR3_LDOEN);
+  }
+
+  // wait until Run* mode complete
+  while ((PWR->CSR1 & PWR_CSR1_ACTVOSRDY) != PWR_CSR1_ACTVOSRDY);
+
+  // set VOS scale 1
+  PWR->D3CR = PWR_D3CR_VOS;
+
+  // wait until VOS scale 1 ready
+  while ((PWR->D3CR & PWR_D3CR_VOSRDY) != PWR_D3CR_VOSRDY);
+
+  // enable system configuration interface
+  RCC->APB4ENR |= RCC_APB4ENR_SYSCFGEN;
+  (void)RCC->APB4ENR;
+
+  // enable regulator overdrive
+  SYSCFG->PWRCR |= SYSCFG_PWRCR_ODEN;
+
+  // wait until VOS scale 0 ready
+  while ((PWR->CSR1 & (PWR_CSR1_ACTVOS | PWR_CSR1_ACTVOSRDY)) != (PWR_CSR1_ACTVOS | PWR_CSR1_ACTVOSRDY));
+}

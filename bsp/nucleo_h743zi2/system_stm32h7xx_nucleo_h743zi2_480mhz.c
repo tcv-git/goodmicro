@@ -47,12 +47,11 @@ The STM32Cube template project startup does:
 This project uses this arrangement:
 
   Reset_Handler:
-    configure external DRAM
+    set regulator scale
     fill bss
     copy data
     SystemInit:
       system clock source to default
-      set regulator scale               FIXME: cannot write to RAM before this
       setup oscilators and PLLs
       enable regulator overdrive
       flash accelerator enable
@@ -165,22 +164,6 @@ void SystemInit(void)
 
   // wait until HSE, CSI and HSI48 stopped
   while ((RCC->CR & (RCC_CR_HSERDY | RCC_CR_CSIRDY | RCC_CR_HSI48RDY)) != 0);
-
-  // enable LDO, disable LDO bypass
-  PWR->CR3 = ((PWR->CR3 & ~PWR_CR3_BYPASS) | PWR_CR3_LDOEN);
-
-  // set VOS scale 1 (maximum power)
-  PWR->D3CR |= PWR_D3CR_VOS;
-
-  // enable system configuration interface
-  RCC->APB4ENR |= RCC_APB4ENR_SYSCFGEN;
-  (void)RCC->APB4ENR;
-
-  // enable regulator overdrive
-  SYSCFG->PWRCR |= SYSCFG_PWRCR_ODEN;
-
-  // wait until VOS ready
-  while ((PWR->CSR1 & (PWR_CSR1_ACTVOS | PWR_CSR1_ACTVOSRDY)) != (PWR_CSR1_ACTVOS | PWR_CSR1_ACTVOSRDY));
 
   // HSE on with bypass, keep HSI on
   RCC->CR = (RCC_CR_HSION | RCC_CR_HSEON | RCC_CR_HSEBYP);
