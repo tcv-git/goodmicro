@@ -1,5 +1,3 @@
-bigclub_adc     Big club board ADC processor
-bigclub         Big club board main processor
 disco_f051r8    STM32F0-Discovery
 disco_f100rb    STM32VL-Discovery
 disco_f407vg    STM32F4-Discovery
@@ -10,8 +8,8 @@ feather_f405rg  Adafruit Feather STM32F405 Express
 nucleo_f070rb   STM32F0xx-Nucleo
 nucleo_f207zg   STM32F2xx_Nucleo_144
 nucleo_f401re   STM32F4xx-Nucleo
-nucleo_h743zi   STM32H7xx_Nucleo
+nucleo_f446re   STM32F4xx-Nucleo
+nucleo_g474re   STM32G4xx_Nucleo
+nucleo_h743zi2  STM32H7xx_Nucleo
 nucleo_l073rz   STM32L0xx_Nucleo
-round_adc       Round board ADC processor
-round           Round board main processor
-smallclub       Small club board
+nucleo_l452re   STM32L4xx-Nucleo
