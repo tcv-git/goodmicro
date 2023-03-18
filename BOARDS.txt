@@ -13,7 +13,14 @@ nucleo_g474re   STM32G4xx_Nucleo
 nucleo_h743zi2  STM32H7xx_Nucleo
 nucleo_l073rz   STM32L0xx_Nucleo
 nucleo_l452re   STM32L4xx-Nucleo
+
 eval_lpc1857    Keil MCB1857 (LPC1857FET256, CM3 180MHz, 1M Flash, 136K SRAM)
 xpresso_lpc1769 NXP LPCXpresso1769/CD (LPC1769FBD100, CM3 120MHz, 512K Flash, 64K SRAM)
 xplained_samv71 Atmel SAM V71 Xplained Ultra (ATSAMV71Q21, CM7 300MHz, 2M Flash, 384K SRAM)
 xplained_samd21 Atmel SAM D21 Xplained Pro (ATSAMD21J18A, CM0+ 48MHz, 256K Flash, 32K SRAM)
+
+smallclub       Small club board
+bigclub         Big club board main processor
+bigclub_adc     Big club board ADC processor
+round           Round board main processor
+round_adc       Round board ADC processor
