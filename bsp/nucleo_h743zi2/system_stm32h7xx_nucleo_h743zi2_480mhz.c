@@ -119,10 +119,47 @@ This project uses this arrangement:
 
 #define RCC_D1CFGR_D1CPRE_Value   RCC_D1CFGR_D1CPRE_DIV1  // core
 #define RCC_D1CFGR_HPRE_Value     RCC_D1CFGR_HPRE_DIV2    // AXI and AHB buses
-#define RCC_D1CFGR_D1PPRE_Value   RCC_D1CFGR_D1PPRE_DIV1  // WWDG, LTDC
-#define RCC_D2CFGR_D2PPRE1_Value  RCC_D2CFGR_D2PPRE1_DIV2 // CEC, CRS, DAC, FDCAN, I2C1,2,3, LPTIM1, MDIO, OPAMP, SPDIF, SPI2,3, SWP, TIM2-7,12-14, UART3,4,5,7,8
-#define RCC_D2CFGR_D2PPRE2_Value  RCC_D2CFGR_D2PPRE2_DIV2 // DFSDM, HRTIM, SAI123, SPI1,4,5, TIM1,8,15-16, USART1,6
-#define RCC_D3CFGR_D3PPRE_Value   RCC_D3CFGR_D3PPRE_DIV4  // SAI4, RTC, VREF, COMP1,2, LPTIM2,3,4,5, I2C4, SPI6, LPUART1, SYSCFG
+#define RCC_D1CFGR_D1PPRE_Value   RCC_D1CFGR_D1PPRE_DIV1  // (APB3) WWDG, LTDC
+#define RCC_D2CFGR_D2PPRE1_Value  RCC_D2CFGR_D2PPRE1_DIV2 // (APB1) CEC, CRS, DAC, FDCAN, I2C1,2,3, LPTIM1, MDIO, OPAMP, SPDIF, SPI2,3, SWP, TIM2-7,12-14, UART3,4,5,7,8
+#define RCC_D2CFGR_D2PPRE2_Value  RCC_D2CFGR_D2PPRE2_DIV2 // (APB2) DFSDM, HRTIM, SAI123, SPI1,4,5, TIM1,8,15-16, USART1,6
+#define RCC_D3CFGR_D3PPRE_Value   RCC_D3CFGR_D3PPRE_DIV4  // (APB4) SAI4, RTC, VREF, COMP1,2, LPTIM2,3,4,5, I2C4, SPI6, LPUART1, SYSCFG
+
+#define RCC_D1CCIPR_CKPERSEL_Value      2  // HSE -> per_ck
+#define RCC_D1CCIPR_SDMMCSEL_Value      1  // PLL2_R
+#define RCC_D1CCIPR_QSPISEL_Value       2  // PLL2_R
+#define RCC_D1CCIPR_FMCSEL_Value        0  // HCLK
+
+#define RCC_D2CCIP1R_SWPSEL_Value       0  // APB1CLK
+#define RCC_D2CCIP1R_FDCANSEL_Value     2  // PLL2_Q
+#define RCC_D2CCIP1R_DFSDM1SEL_Value    0  // APB2CLK
+#define RCC_D2CCIP1R_SPDIFSEL_Value     1  // PLL2_R
+#define RCC_D2CCIP1R_SPI45SEL_Value     0  // APB2CLK
+#define RCC_D2CCIP1R_SPI123SEL_Value    2  // PLL3_P
+#define RCC_D2CCIP1R_SAI23SEL_Value     2  // PLL3_P
+#define RCC_D2CCIP1R_SAI1SEL_Value      2  // PLL3_P
+
+#define RCC_D2CCIP2R_LPTIM1SEL_Value    0  // APB1CLK
+#define RCC_D2CCIP2R_CECSEL_Value       0  // LSE
+#define RCC_D2CCIP2R_USBSEL_Value       0  // disabled
+#define RCC_D2CCIP2R_I2C123SEL_Value    0  // APB1CLK
+#define RCC_D2CCIP2R_RNGSEL_Value       1  // PLL1_Q
+#define RCC_D2CCIP2R_USART16SEL_Value   0  // APB2CLK
+#define RCC_D2CCIP2R_USART28SEL_Value   0  // APB1CLK
+
+#define RCC_D3CCIPR_SPI6SEL_Value       0  // APB4
+#define RCC_D3CCIPR_SAI4BSEL_Value      2  // PLL3_P
+#define RCC_D3CCIPR_SAI4ASEL_Value      2  // PLL3_P
+#define RCC_D3CCIPR_ADCSEL_Value        0  // PLL2_P
+#define RCC_D3CCIPR_LPTIM345SEL_Value   0  // APB4
+#define RCC_D3CCIPR_LPTIM2SEL_Value     0  // APB4
+#define RCC_D3CCIPR_I2C4SEL_Value       0  // APB4
+#define RCC_D3CCIPR_LPUART1SEL_Value    0  // APB4
+
+#define RCC_CFGR_TIMPRE_Value           RCC_CFGR_TIMPRE   // TIMx at maximum speed
+#define RCC_CFGR_HRTIMSEL_Value         RCC_CFGR_HRTIMSEL // HRTIM at core speed
+
+#define FLASH_ACR_WRHIGHFREQ_Value      FLASH_ACR_WRHIGHFREQ_1
+#define FLASH_ACR_LATENCY_Value         FLASH_ACR_LATENCY_4WS
 
 
 /* CMSIS required global variable containing system core speed in Hz.
@@ -240,47 +277,47 @@ void SystemInit(void)
   RCC->D2CFGR = (RCC_D2CFGR_D2PPRE1_Value | RCC_D2CFGR_D2PPRE2_Value);
   RCC->D3CFGR = (RCC_D3CFGR_D3PPRE_Value);
 
-  RCC->D1CCIPR  = ((2 << RCC_D1CCIPR_CKPERSEL_Pos)      // HSE -> per_ck
-                 | (1 << RCC_D1CCIPR_SDMMCSEL_Pos)      // PLL2_R
-                 | (2 << RCC_D1CCIPR_QSPISEL_Pos)       // PLL2_R
-                 | (0 << RCC_D1CCIPR_FMCSEL_Pos));      // HCLK
+  RCC->D1CCIPR  = ((RCC_D1CCIPR_CKPERSEL_Value    << RCC_D1CCIPR_CKPERSEL_Pos)
+                 | (RCC_D1CCIPR_SDMMCSEL_Value    << RCC_D1CCIPR_SDMMCSEL_Pos)
+                 | (RCC_D1CCIPR_QSPISEL_Value     << RCC_D1CCIPR_QSPISEL_Pos)
+                 | (RCC_D1CCIPR_FMCSEL_Value      << RCC_D1CCIPR_FMCSEL_Pos));
 
-  RCC->D2CCIP1R = ((0 << RCC_D2CCIP1R_SWPSEL_Pos)       // APB1CLK
-                 | (2 << RCC_D2CCIP1R_FDCANSEL_Pos)     // PLL2_Q
-                 | (0 << RCC_D2CCIP1R_DFSDM1SEL_Pos)    // APB2CLK
-                 | (1 << RCC_D2CCIP1R_SPDIFSEL_Pos)     // PLL2_R
-                 | (0 << RCC_D2CCIP1R_SPI45SEL_Pos)     // APB2CLK
-                 | (2 << RCC_D2CCIP1R_SPI123SEL_Pos)    // PLL3_P
-                 | (2 << RCC_D2CCIP1R_SAI23SEL_Pos)     // PLL3_P
-                 | (2 << RCC_D2CCIP1R_SAI1SEL_Pos));    // PLL3_P
+  RCC->D2CCIP1R = ((RCC_D2CCIP1R_SWPSEL_Value     << RCC_D2CCIP1R_SWPSEL_Pos)
+                 | (RCC_D2CCIP1R_FDCANSEL_Value   << RCC_D2CCIP1R_FDCANSEL_Pos)
+                 | (RCC_D2CCIP1R_DFSDM1SEL_Value  << RCC_D2CCIP1R_DFSDM1SEL_Pos)
+                 | (RCC_D2CCIP1R_SPDIFSEL_Value   << RCC_D2CCIP1R_SPDIFSEL_Pos)
+                 | (RCC_D2CCIP1R_SPI45SEL_Value   << RCC_D2CCIP1R_SPI45SEL_Pos)
+                 | (RCC_D2CCIP1R_SPI123SEL_Value  << RCC_D2CCIP1R_SPI123SEL_Pos)
+                 | (RCC_D2CCIP1R_SAI23SEL_Value   << RCC_D2CCIP1R_SAI23SEL_Pos)
+                 | (RCC_D2CCIP1R_SAI1SEL_Value    << RCC_D2CCIP1R_SAI1SEL_Pos));
 
-  RCC->D2CCIP2R = ((0 << RCC_D2CCIP2R_LPTIM1SEL_Pos)    // APB1CLK
-                 | (0 << RCC_D2CCIP2R_CECSEL_Pos)       // LSE
-                 | (0 << RCC_D2CCIP2R_USBSEL_Pos)       // disabled
-                 | (0 << RCC_D2CCIP2R_I2C123SEL_Pos)    // APB1CLK
-                 | (1 << RCC_D2CCIP2R_RNGSEL_Pos)       // PLL1_Q
-                 | (0 << RCC_D2CCIP2R_USART16SEL_Pos)   // APB2CLK
-                 | (0 << RCC_D2CCIP2R_USART28SEL_Pos)); // APB1CLK
+  RCC->D2CCIP2R = ((RCC_D2CCIP2R_LPTIM1SEL_Value  << RCC_D2CCIP2R_LPTIM1SEL_Pos)
+                 | (RCC_D2CCIP2R_CECSEL_Value     << RCC_D2CCIP2R_CECSEL_Pos)
+                 | (RCC_D2CCIP2R_USBSEL_Value     << RCC_D2CCIP2R_USBSEL_Pos)
+                 | (RCC_D2CCIP2R_I2C123SEL_Value  << RCC_D2CCIP2R_I2C123SEL_Pos)
+                 | (RCC_D2CCIP2R_RNGSEL_Value     << RCC_D2CCIP2R_RNGSEL_Pos)
+                 | (RCC_D2CCIP2R_USART16SEL_Value << RCC_D2CCIP2R_USART16SEL_Pos)
+                 | (RCC_D2CCIP2R_USART28SEL_Value << RCC_D2CCIP2R_USART28SEL_Pos));
 
-  RCC->D3CCIPR  = ((0 << RCC_D3CCIPR_SPI6SEL_Pos)       // APB4
-                 | (2 << RCC_D3CCIPR_SAI4BSEL_Pos)      // PLL3_P
-                 | (2 << RCC_D3CCIPR_SAI4ASEL_Pos)      // PLL3_P
-                 | (0 << RCC_D3CCIPR_ADCSEL_Pos)        // PLL2_P
-                 | (0 << RCC_D3CCIPR_LPTIM345SEL_Pos)   // APB4
-                 | (0 << RCC_D3CCIPR_LPTIM2SEL_Pos)     // APB4
-                 | (0 << RCC_D3CCIPR_I2C4SEL_Pos)       // APB4
-                 | (0 << RCC_D3CCIPR_LPUART1SEL_Pos));  // APB4
+  RCC->D3CCIPR  = ((RCC_D3CCIPR_SPI6SEL_Value     << RCC_D3CCIPR_SPI6SEL_Pos)
+                 | (RCC_D3CCIPR_SAI4BSEL_Value    << RCC_D3CCIPR_SAI4BSEL_Pos)
+                 | (RCC_D3CCIPR_SAI4ASEL_Value    << RCC_D3CCIPR_SAI4ASEL_Pos)
+                 | (RCC_D3CCIPR_ADCSEL_Value      << RCC_D3CCIPR_ADCSEL_Pos)
+                 | (RCC_D3CCIPR_LPTIM345SEL_Value << RCC_D3CCIPR_LPTIM345SEL_Pos)
+                 | (RCC_D3CCIPR_LPTIM2SEL_Value   << RCC_D3CCIPR_LPTIM2SEL_Pos)
+                 | (RCC_D3CCIPR_I2C4SEL_Value     << RCC_D3CCIPR_I2C4SEL_Pos)
+                 | (RCC_D3CCIPR_LPUART1SEL_Value  << RCC_D3CCIPR_LPUART1SEL_Pos));
 
   // configure flash write timing and wait states
-  FLASH->ACR = (FLASH_ACR_WRHIGHFREQ_1 | FLASH_ACR_LATENCY_4WS);
+  FLASH->ACR = (FLASH_ACR_WRHIGHFREQ_Value | FLASH_ACR_LATENCY_Value);
 
   // wait for timings to be applied
-  while ((FLASH->ACR & (FLASH_ACR_WRHIGHFREQ | FLASH_ACR_LATENCY)) != (FLASH_ACR_WRHIGHFREQ_1 | FLASH_ACR_LATENCY_4WS));
+  while ((FLASH->ACR & (FLASH_ACR_WRHIGHFREQ | FLASH_ACR_LATENCY)) != (FLASH_ACR_WRHIGHFREQ_Value | FLASH_ACR_LATENCY_Value));
 
   // default clock outputs, timers run at full speed, SYSCLK from PLL
-  RCC->CFGR = (RCC_CFGR_TIMPRE
-             | RCC_CFGR_HRTIMSEL
-             | ((HSE_VALUE / 1000000) << RCC_CFGR_RTCPRE_Pos)
+  RCC->CFGR = (RCC_CFGR_TIMPRE_Value
+             | RCC_CFGR_HRTIMSEL_Value
+             | ((HSE_VALUE / (1000u * 1000)) << RCC_CFGR_RTCPRE_Pos)
              | RCC_CFGR_SW_PLL1);
 
   // wait until SYSCLK from PLL
