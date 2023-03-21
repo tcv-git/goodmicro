@@ -18,11 +18,12 @@ ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_180MHz.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_armv7m/uptime_sysclk.s
-ASFILES += ../../../lib/goodmicro_stm32f4/startup/startup_stm32f405-439.s
+ASFILES += ../../../lib/goodmicro_stm32f4/startup/startup_stm32f405-439_extram.s
 ASFILES += ../../../lib/goodmicro_stm32f4/vectors/vectors_stm32f429xx.s
 
 # input for C compiler
 CFILES :=
+CFILES += ../../../bsp/eval_f429ni/eval_f429ni_sdram.c
 CFILES += ../../../lib/goodmicro_armv7m/uptime.c
 CFILES += ../../../lib/goodmicro_stm32f4/debug_printf_blocking.c
 CFILES += ../../../lib/goodmicro_stm32f4/i2c_master.c
@@ -49,7 +50,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../../../lib/goodmicro_stm32f4/linker/stm32f429xIxx_ccm.ld
+LINK_SCRIPT := ../../../bsp/eval_f429ni/eval_f429ni_ccm.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
