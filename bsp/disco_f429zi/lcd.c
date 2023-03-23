@@ -17,6 +17,7 @@
 */
 
 #include "stm32f4xx.h"
+#include "peripheral_enable.h"
 #include "delay.h"
 #include "lcd.h"
 
@@ -90,15 +91,14 @@ static void LCD_WriteData (unsigned char byte)
 
 void lcd_init (void)
 {
-  RCC->AHB1ENR |= (RCC_AHB1ENR_GPIOAEN
-                 | RCC_AHB1ENR_GPIOBEN
-                 | RCC_AHB1ENR_GPIOCEN
-                 | RCC_AHB1ENR_GPIODEN
-                 | RCC_AHB1ENR_GPIOFEN
-                 | RCC_AHB1ENR_GPIOGEN);
-  RCC->APB2ENR |= (RCC_APB2ENR_LTDCEN
-                 | RCC_APB2ENR_SPI5EN);
-  __DSB ();
+  peripheral_enable(&RCC->AHB1ENR, (RCC_AHB1ENR_GPIOAEN
+                                  | RCC_AHB1ENR_GPIOBEN
+                                  | RCC_AHB1ENR_GPIOCEN
+                                  | RCC_AHB1ENR_GPIODEN
+                                  | RCC_AHB1ENR_GPIOFEN
+                                  | RCC_AHB1ENR_GPIOGEN));
+
+  peripheral_enable(&RCC->APB2ENR, (RCC_APB2ENR_LTDCEN | RCC_APB2ENR_SPI5EN));
 
 /*
 PA3     B5      LTDC data

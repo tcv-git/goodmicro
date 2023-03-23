@@ -1,4 +1,4 @@
-// hwrand.c
+// peripheral_enable.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -16,20 +16,34 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include "stm32f4xx.h"
-#include "peripheral_enable.h"
-#include "hwrand.h"
+#ifndef PERIPHERAL_ENABLE_H_INCLUDED
+#define PERIPHERAL_ENABLE_H_INCLUDED
 
-void hwrand_init (void)
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static inline void peripheral_reset_enable(volatile uint32_t *rstr, volatile uint32_t *enr, uint32_t bit)
 {
-  peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_RNGEN);
+  uint32_t rst = *rstr;
 
-  RNG->CR = RNG_CR_RNGEN;
+  *rstr = (rst | bit);
+  *enr |= bit;
+  (void)*enr;
+  *rstr = (rst & ~bit);
+  (void)*rstr;
 }
 
-unsigned int hwrand32 (void)
+static inline void peripheral_enable(volatile uint32_t *enr, uint32_t bit)
 {
-  while ((RNG->SR & RNG_SR_DRDY) != RNG_SR_DRDY);
-
-  return RNG->DR;
+  *enr |= bit;
+  (void)*enr;
 }
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* PERIPHERAL_ENABLE_H_INCLUDED */

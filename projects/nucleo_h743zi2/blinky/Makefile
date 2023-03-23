@@ -35,6 +35,7 @@ INCLUDE_PATH += ../../../bsp/nucleo_h743zi2
 INCLUDE_PATH += ../../../lib/goodmicro_stm32h7
 INCLUDE_PATH += ../../../lib/goodmicro_armv7m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
+INCLUDE_PATH += ../../../lib/goodmicro_misc
 INCLUDE_PATH += ../../../lib/Device_STM32H7xx/Include
 INCLUDE_PATH += ../../../lib/CMSIS/Include
 

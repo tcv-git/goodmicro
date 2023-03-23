@@ -33,6 +33,7 @@ INCLUDE_PATH :=
 INCLUDE_PATH += ../../../lib/goodmicro_stm32l0
 INCLUDE_PATH += ../../../lib/goodmicro_armv6m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
+INCLUDE_PATH += ../../../lib/goodmicro_misc
 INCLUDE_PATH += ../../../lib/Device_STM32L0xx/Include
 INCLUDE_PATH += ../../../lib/CMSIS/Include
 
