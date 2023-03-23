@@ -38,6 +38,7 @@ INCLUDE_PATH += ../../../bsp/disco_f429zi
 INCLUDE_PATH += ../../../lib/goodmicro_stm32f4
 INCLUDE_PATH += ../../../lib/goodmicro_armv7m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
+INCLUDE_PATH += ../../../lib/goodmicro_misc
 INCLUDE_PATH += ../../../lib/Device_STM32F4xx/Include
 INCLUDE_PATH += ../../../lib/CMSIS/Include
 
