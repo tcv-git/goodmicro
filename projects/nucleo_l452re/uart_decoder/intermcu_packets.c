@@ -831,7 +831,7 @@ static void handle_AP_DETAILS(struct linebuffer *lb, const IntermcuApDetailsPack
 
   linebuffer_printf(lb, " bssid=%02X:%02X:%02X:%02X:%02X:%02X ip=%u.%u.%u.%u",
     packet->bssid[0], packet->bssid[1], packet->bssid[2], packet->bssid[3], packet->bssid[4], packet->bssid[5],
-    (unsigned int)((packet->deviceIp >> 24) & 0xFF), (unsigned int)((packet->deviceIp >> 16) & 0xFF), (unsigned int)((packet->deviceIp >>  8) & 0xFF), (unsigned int)((packet->deviceIp >>  0) & 0xFF));
+    (unsigned int)((packet->deviceIp >>  0) & 0xFF), (unsigned int)((packet->deviceIp >>  8) & 0xFF), (unsigned int)((packet->deviceIp >> 16) & 0xFF), (unsigned int)((packet->deviceIp >> 24) & 0xFF));
 }
 
 static void handle_AP_WPS_SCAN(struct linebuffer *lb, const IntermcuEmptyPacket_t *packet)
@@ -846,7 +846,7 @@ static void handle_AP_WPS_FINISHED(struct linebuffer *lb, const IntermcuEmptyPac
 
 static void handle_RDP_CONFIGURE(struct linebuffer *lb, const IntermcuRdpEndpoint_t *packet)
 {
-  linebuffer_printf(lb, "RDP_CONFIGURE ip=%u.%u.%u.%u port=%u", (unsigned int)((packet->ip >> 24) & 0xFF), (unsigned int)((packet->ip >> 16) & 0xFF), (unsigned int)((packet->ip >>  8) & 0xFF), (unsigned int)((packet->ip >>  0) & 0xFF), (unsigned int)packet->port);
+  linebuffer_printf(lb, "RDP_CONFIGURE ip=%u.%u.%u.%u port=%u", (unsigned int)((packet->ip >>  0) & 0xFF), (unsigned int)((packet->ip >>  8) & 0xFF), (unsigned int)((packet->ip >> 16) & 0xFF), (unsigned int)((packet->ip >> 24) & 0xFF), (unsigned int)packet->port);
 }
 
 static void handle_RDP_DISCONNECT(struct linebuffer *lb, const IntermcuEmptyPacket_t *packet)
@@ -869,7 +869,7 @@ static void handle_RDP_DNS_LOOKUP(struct linebuffer *lb, const IntermcuDnsLookup
 static void handle_RDP_DNS_RESULTS(struct linebuffer *lb, const IntermcuDnsResult_t *packet)
 {
   linebuffer_printf(lb, "DNS_RESULTS %u.%u.%u.%u",
-  (unsigned int)((packet->ip >> 24) & 0xFF), (unsigned int)((packet->ip >> 16) & 0xFF), (unsigned int)((packet->ip >>  8) & 0xFF), (unsigned int)((packet->ip >>  0) & 0xFF));
+  (unsigned int)((packet->ip >>  0) & 0xFF), (unsigned int)((packet->ip >>  8) & 0xFF), (unsigned int)((packet->ip >> 16) & 0xFF), (unsigned int)((packet->ip >> 24) & 0xFF));
 }
 
 static void handle_WELCOME_CHALLENGE(struct linebuffer *lb, const IntermcuWelcomeChallenge_t *packet)
