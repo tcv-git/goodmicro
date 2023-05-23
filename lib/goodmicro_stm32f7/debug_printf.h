@@ -1,4 +1,4 @@
-// hwrand.c
+// debug_printf.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -18,20 +18,27 @@
   through you.
 */
 
-#include "stm32f4xx.h"
-#include "peripheral_enable.h"
-#include "hwrand.h"
+#ifndef DEBUG_PRINTF_H_INCLUDED
+#define DEBUG_PRINTF_H_INCLUDED
 
-void hwrand_init (void)
-{
-  peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_RNGEN);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  RNG->CR = RNG_CR_RNGEN;
+// Set-up serial interface after boot
+//
+void debug_uart_init(void);
+
+// like printf
+//
+void debug_printf(const char *fmt, ...) __attribute__((format(printf,1,2)));
+
+// write byte to interface (blocking)
+//
+void debug_putc(unsigned char c);
+
+#ifdef __cplusplus
 }
+#endif
 
-unsigned int hwrand32 (void)
-{
-  while ((RNG->SR & RNG_SR_DRDY) != RNG_SR_DRDY);
-
-  return RNG->DR;
-}
+#endif // DEBUG_PRINTF_H_INCLUDED

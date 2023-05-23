@@ -1,6 +1,6 @@
-// hwrand.c
-// PUBLIC DOMAIN
-// https://www.purposeful.co.uk/goodmicro/
+/* measure_hse.h PUBLIC DOMAIN 2019 t.cortexm@purposeful.co.uk */
+
+/* http:///www.purposeful.co.uk/software/cortexm */
 
 /*
   I, Tom Vajzovic, am the author of this software and its documentation.
@@ -18,20 +18,17 @@
   through you.
 */
 
-#include "stm32f4xx.h"
-#include "peripheral_enable.h"
-#include "hwrand.h"
+#ifndef MEASURE_HSE_H_INCLUDED
+#define MEASURE_HSE_H_INCLUDED
 
-void hwrand_init (void)
-{
-  peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_RNGEN);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  RNG->CR = RNG_CR_RNGEN;
+unsigned int measure_hse (void);
+
+#ifdef __cplusplus
 }
+#endif
 
-unsigned int hwrand32 (void)
-{
-  while ((RNG->SR & RNG_SR_DRDY) != RNG_SR_DRDY);
-
-  return RNG->DR;
-}
+#endif /* MEASURE_HSE_H_INCLUDED */

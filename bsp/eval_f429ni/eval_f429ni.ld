@@ -1,4 +1,4 @@
-/* stm32f070xBxx.ld */
+/* eval_f429ni.ld */
 /* PUBLIC DOMAIN */
 /* https://www.purposeful.co.uk/goodmicro/ */
 
@@ -25,17 +25,19 @@
 
 MEMORY
 {
-  ROM (rx)  : ORIGIN = 0x08000000, LENGTH = 128K
-  RAM (rwx) : ORIGIN = 0x20000000, LENGTH =  16K
+  ROM    (rx)  : ORIGIN = 0x08000000, LENGTH =   2M
+  CCMRAM (rw)  : ORIGIN = 0x10000000, LENGTH =  64K
+  SRAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 192K
+  EXTRAM (rwx) : ORIGIN = 0xC0000000, LENGTH =  32M
 }
 
-_Min_Stack_Size = 2K;
-_Min_Heap_Size  = 0K;
+_Min_Stack_Size = 8K;
+_Min_Heap_Size  = 8K;
 
 SECTIONS
 {
   /****************************************************************************/
-  /*****        ROM                                                       *****/
+  /*****        INTERNAL FLASH ROM                                        *****/
   /****************************************************************************/
 
   .vectors :
@@ -165,33 +167,41 @@ SECTIONS
 
 
   /****************************************************************************/
-  /*****        RAM                                                       *****/
+  /*****        MAIN INTERNAL SRAM (dma-accessible)                       *****/
   /****************************************************************************/
 
   .data :
   {
+    *(.sram_data .sram_data.*)
     *(.data .data.* .gnu.linkonce.d.*)
     *(.sdata .sdata.* .gnu.linkonce.s.*)
     *(.data1)
     . = .;
   }
-  >RAM AT>ROM
+  >SRAM AT>ROM
 
   .bss (NOLOAD) :
   {
+    *(.sram_bss .sram_bss.*)
     *(.bss .bss.* .gnu.linkonce.b.*)
     *(COMMON)
     *(.sbss .sbss.* .scommon)
     . = .;
   }
-  >RAM
+  >SRAM
+
+  .sram_uninit (NOLOAD) :
+  {
+    *(.sram_uninit .sram_uninit.*)
+  }
+  >SRAM
 
   .heap (NOLOAD) : ALIGN(8)
   {
     *(.heap .heap.*)
     . = (. < _Min_Heap_Size ? _Min_Heap_Size : .);
   }
-  >RAM
+  >SRAM
 
   .stack (NOLOAD) : ALIGN(8)
   {
@@ -199,7 +209,57 @@ SECTIONS
     . = (. < _Min_Stack_Size ? _Min_Stack_Size : .);
     . = ALIGN(8);
   }
-  >RAM
+  >SRAM
+
+
+  /****************************************************************************/
+  /*****        INTERNAL CORE-COUPLED SRAM (not dma-accessible)           *****/
+  /****************************************************************************/
+
+  .ccm_data :
+  {
+    *(.ccm_data .ccm_data.*)
+    . = .;
+  }
+  >CCMRAM AT>ROM
+
+  .ccm_bss (NOLOAD) :
+  {
+    *(.ccm_bss .ccm_bss.*)
+    . = .;
+  }
+  >CCMRAM
+
+  .ccm_uninit (NOLOAD) :
+  {
+    *(.ccm_uninit .ccm_uninit.*)
+  }
+  >CCMRAM
+
+
+  /****************************************************************************/
+  /*****        EXTERNAL RAM (dma-accessible)                             *****/
+  /****************************************************************************/
+
+  .ext_data :
+  {
+    *(.ext_data .ext_data.*)
+    . = .;
+  }
+  >EXTRAM AT>ROM
+
+  .ext_bss (NOLOAD) :
+  {
+    *(.ext_bss .ext_bss.*)
+    . = .;
+  }
+  >EXTRAM
+
+  .ext_uninit (NOLOAD) :
+  {
+    *(.ext_uninit .ext_uninit.*)
+  }
+  >EXTRAM
 
 
   /****************************************************************************/
@@ -251,7 +311,7 @@ SECTIONS
     *(*)
     __should_be_empty_end = .;
   }
-  >RAM
+  >SRAM
 }
 
 
@@ -297,8 +357,8 @@ ASSERT((__should_be_empty_start == __should_be_empty_end), "Non-empty unexpected
  */
 __ROM_BASE = ORIGIN(ROM);
 __ROM_SIZE = LENGTH(ROM);
-__RAM_BASE = ORIGIN(RAM);
-__RAM_SIZE = LENGTH(RAM);
+__RAM_BASE = ORIGIN(SRAM);
+__RAM_SIZE = LENGTH(SRAM);
 
 /* Execution start address:
  */
@@ -309,6 +369,29 @@ ENTRY(Reset_Handler)
 PROVIDE(__Vectors      = ADDR(.vectors));
 PROVIDE(__Vectors_Size = SIZEOF(.vectors));
 PROVIDE(__Vectors_End  = (__Vectors + __Vectors_Size));
+
+/* Symbols for multi-bank startup:
+ */
+_ccm_data_addr = ADDR(.ccm_data);
+_ccm_data_size = SIZEOF(.ccm_data);
+_ccm_data_load = LOADADDR(.ccm_data);
+
+_sram_data_addr = ADDR(.data);
+_sram_data_size = SIZEOF(.data);
+_sram_data_load = LOADADDR(.data);
+
+_ext_data_addr = ADDR(.ext_data);
+_ext_data_size = SIZEOF(.ext_data);
+_ext_data_load = LOADADDR(.ext_data);
+
+_ccm_bss_addr = ADDR(.ccm_bss);
+_ccm_bss_size = SIZEOF(.ccm_bss);
+
+_sram_bss_addr = ADDR(.bss);
+_sram_bss_size = SIZEOF(.bss);
+
+_ext_bss_addr = ADDR(.ext_bss);
+_ext_bss_size = SIZEOF(.ext_bss);
 
 /* CMSIS symbols for start and end of data and bss:
  */
@@ -335,7 +418,7 @@ _sidata = LOADADDR(.data);
 /* CMSIS symbols for stack:
  */
 __StackLimit = ADDR(.stack);
-__StackTop   = (ORIGIN(RAM) + LENGTH(RAM));
+__StackTop   = (ORIGIN(SRAM) + LENGTH(SRAM));
 __STACK_SIZE = (__StackTop - __StackLimit);
 
 /* ST symbols for stack:

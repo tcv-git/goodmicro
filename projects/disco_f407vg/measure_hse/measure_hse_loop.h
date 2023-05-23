@@ -1,4 +1,4 @@
-// hwrand.c
+// measure_hse_loop.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -18,20 +18,19 @@
   through you.
 */
 
+#ifndef MEASURE_HSE_LOOP_H_INCLUDED
+#define MEASURE_HSE_LOOP_H_INCLUDED
+
 #include "stm32f4xx.h"
-#include "peripheral_enable.h"
-#include "hwrand.h"
 
-void hwrand_init (void)
-{
-  peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_RNGEN);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  RNG->CR = RNG_CR_RNGEN;
+unsigned int measure_hse_loop (TIM_TypeDef *tim, unsigned int count);
+
+#ifdef __cplusplus
 }
+#endif
 
-unsigned int hwrand32 (void)
-{
-  while ((RNG->SR & RNG_SR_DRDY) != RNG_SR_DRDY);
-
-  return RNG->DR;
-}
+#endif /* MEASURE_HSE_LOOP_H_INCLUDED */

@@ -14,15 +14,15 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 
 # input for assembler
 ASFILES :=
-ASFILES += ../../../lib/goodmicro_armv6m/_exit.s
-ASFILES += ../../../lib/goodmicro_armv6m/delay_systick_dynamic.s
-ASFILES += ../../../lib/goodmicro_armv6m/imath.s
+ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
+ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_dynamic.s
+ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_cortexm/startup.s
-ASFILES += ../../../lib/goodmicro_stm32f0/vectors/vectors_stm32f070xb.s
+ASFILES += ../../../lib/goodmicro_stm32f7/vectors/vectors_stm32f746xx.s
 
 # input for C compiler
 CFILES :=
-CFILES += ../../../lib/goodmicro_stm32f0/system_stm32f0xx_pll.c
+CFILES += ../../../bsp/disco_f746ng/system_stm32f7xx_disco_f746ng_216mhz.c
 CFILES += main.c
 
 # input for C++ compiler
@@ -30,11 +30,11 @@ CXXFILES :=
 
 # header incude path (gets added to CPPFLAGS)
 INCLUDE_PATH :=
-INCLUDE_PATH += ../../../bsp/nucleo_f070rb
-INCLUDE_PATH += ../../../lib/goodmicro_stm32f0
-INCLUDE_PATH += ../../../lib/goodmicro_armv6m
+INCLUDE_PATH += ../../../bsp/disco_f746ng
+INCLUDE_PATH += ../../../lib/goodmicro_stm32f7
+INCLUDE_PATH += ../../../lib/goodmicro_armv7m
 INCLUDE_PATH += ../../../lib/goodmicro_cortexm
-INCLUDE_PATH += ../../../lib/Device_STM32F0xx/Include
+INCLUDE_PATH += ../../../lib/Device_STM32F7xx/Include
 INCLUDE_PATH += ../../../lib/CMSIS/Include
 
 # binary library search path (gets added to LDFLAGS)
@@ -45,7 +45,7 @@ LDLIBS :=
 LDLIBS += m
 
 # linker control script
-LINK_SCRIPT := ../../../lib/goodmicro_stm32f0/linker/stm32f07xxBxx.ld
+LINK_SCRIPT := ../../../lib/goodmicro_stm32f7/stm32f746ng.ld
 
 
 #################### OUTPUT DEFINITIONS ########################################
@@ -67,7 +67,9 @@ LD  := $(CROSS_COMPILE)$(if $(CXXFILES),g++,gcc)
 # flags for assembler, compiler and linker
 COMMON_FLAGS :=
 COMMON_FLAGS += -mthumb
-COMMON_FLAGS += -mcpu=cortex-m0
+COMMON_FLAGS += -mcpu=cortex-m7
+COMMON_FLAGS += -mfloat-abi=hard
+COMMON_FLAGS += -mfpu=fpv5-sp-d16
 COMMON_FLAGS += -fmessage-length=0
 COMMON_FLAGS += -fno-diagnostics-show-option
 COMMON_FLAGS += -fno-diagnostics-show-caret
@@ -75,7 +77,7 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # C pre-processor flags (for both .c and .S files)
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
-CPPFLAGS += -DSTM32F070xB
+CPPFLAGS += -DSTM32F746xx
 CPPFLAGS += -DSYSTEM_CORE_CLOCK=0 # zero means check SystemCoreClock variable at runtime
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))

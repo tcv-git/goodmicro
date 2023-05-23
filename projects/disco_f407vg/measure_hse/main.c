@@ -1,4 +1,4 @@
-// hwrand.c
+// main.c
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -19,19 +19,29 @@
 */
 
 #include "stm32f4xx.h"
-#include "peripheral_enable.h"
-#include "hwrand.h"
+#include "measure_hse.h"
+#include "debug_printf.h"
 
-void hwrand_init (void)
+int main(void)
 {
-  peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_RNGEN);
+  debug_uart_init();
 
-  RNG->CR = RNG_CR_RNGEN;
-}
+  debug_printf("hello\n");
 
-unsigned int hwrand32 (void)
-{
-  while ((RNG->SR & RNG_SR_DRDY) != RNG_SR_DRDY);
+  for (;;)
+  {
+    unsigned int i;
 
-  return RNG->DR;
+    for (i = 2; i < 32; i++)
+    {
+      RCC->CFGR = ((RCC->CFGR & ~RCC_CFGR_RTCPRE) | (RCC_CFGR_RTCPRE_0 * i));
+
+      unsigned int hse = measure_hse();
+
+      if (hse != 0)
+      {
+        debug_printf("%u, %u\n", i, hse);
+      }
+    }
+  }
 }

@@ -1,4 +1,4 @@
-// hwrand.c
+// main.c
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -18,20 +18,18 @@
   through you.
 */
 
-#include "stm32f4xx.h"
-#include "peripheral_enable.h"
-#include "hwrand.h"
+#include "debug_printf.h"
+#include "delay.h"
 
-void hwrand_init (void)
+int main(void)
 {
-  peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_RNGEN);
+  debug_uart_init();
 
-  RNG->CR = RNG_CR_RNGEN;
-}
+  unsigned int i;
 
-unsigned int hwrand32 (void)
-{
-  while ((RNG->SR & RNG_SR_DRDY) != RNG_SR_DRDY);
-
-  return RNG->DR;
+  for (i = 0;; i++)
+  {
+    debug_printf("%u\n", i);
+    DELAY_MS(100);
+  }
 }
