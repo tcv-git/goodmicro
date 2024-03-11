@@ -127,3 +127,47 @@ atomic_swap_u32:
     bx      lr
 
 .size atomic_swap_u32, .-atomic_swap_u32
+
+
+.section  .text.atomic_or_u32, "ax", %progbits
+
+.global   atomic_or_u32
+.type     atomic_or_u32, %function
+.thumb_func
+
+@; uint32_t atomic_or_u32(volatile uint32_t*, uint32_t);
+
+atomic_or_u32:
+    ldrex   r2, [r0]
+    orrs    r2, r1
+    strex   r3, r2, [r0]
+    tst     r3, r3
+    bne.n   atomic_or_u32
+    mov     r0, r2
+    bx      lr
+
+.size atomic_or_u32, .-atomic_or_u32
+
+
+.section  .text.atomic_bic_u32_if_u8_eq_zero, "ax", %progbits
+
+.global   atomic_bic_u32_if_u8_eq_zero
+.type     atomic_bic_u32_if_u8_eq_zero, %function
+.thumb_func
+
+@; int atomic_bic_u32_if_u8_eq_zero(volatile uint32_t *, uint32_t, const volatile uint8_t*);
+
+atomic_bic_u32_if_u8_eq_zero:
+    ldrex   r12, [r0]
+    ldrb    r3, [r2]
+    cbnz    r3, 1f
+    bic     r12, r1
+    strex   r3, r12, [r0]
+    tst     r3, r3
+    bne.n   atomic_bic_u32_if_u8_eq_zero
+1:  clrex
+    mov     r0, r3
+    bx      lr
+
+.size atomic_bic_u32_if_u8_eq_zero, .-atomic_bic_u32_if_u8_eq_zero
+
