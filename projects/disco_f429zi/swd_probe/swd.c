@@ -13,12 +13,18 @@
 #define DATA_GPIO   GPIOE
 #define DATA_PIN    PIN6
 
-#define START_BIT 1
-#define STOP_BIT  0
-#define PARK_BIT  1
+#define LINE_RESET 1
+#define LINE_IDLE  0
 
-#define RW_READ   1
-#define RW_WRITE  0
+#define START_BIT  1
+#define STOP_BIT   0
+#define PARK_BIT   1
+
+enum rw
+{
+  RW_WRITE = 0,
+  RW_READ  = 1,
+};
 
 
 static inline void delay(void)
@@ -98,11 +104,11 @@ static bool read_bit(void)
 void reset_sequence(void)
 {
   setup_clock();
-  setup_data_output(1);
+  setup_data_output(LINE_RESET);
 
   for (uint_fast8_t i = 0; i < 50; i++)
   {
-    write_bit(1);
+    write_bit(LINE_RESET);
   }
 
 #if 0
@@ -151,146 +157,146 @@ void reset_sequence(void)
   // re-reset after switching sequence
   for (uint_fast8_t i = 0; i < 50; i++)
   {
-    write_bit(1);
+    write_bit(LINE_RESET);
   }
 #endif
+
+  // idle so first start bit can be detected
+
+  for (uint_fast8_t i = 0; i < 16; i++)
+  {
+    write_bit(LINE_IDLE);
+  }
+}
+
+static void send_request(enum rw rw, enum port port, enum address address)
+{
+  bool addr_lo = ((address >> 0) & 1);
+  bool addr_hi = ((address >> 1) & 1);
+
+  bool parity = ((port + rw + addr_lo + addr_hi) & 1);
+
+  write_bit(START_BIT);
+  write_bit(port);
+  write_bit(rw);
+  write_bit(addr_lo);
+  write_bit(addr_hi);
+  write_bit(parity);
+  write_bit(STOP_BIT);
+  write_bit(PARK_BIT);
+}
+
+static enum result read_ack(void)
+{
+  setup_data_input();
+  (void)read_bit(); // turnaround
+
+  bool ack_ok   = read_bit();
+  bool ack_wait = read_bit();
+  bool ack_err  = read_bit();
+
+  if (ack_ok && (!ack_wait) && (!ack_err))
+  {
+    return OK;
+  }
+  else if ((!ack_ok) && ack_wait && (!ack_err))
+  {
+    return WAIT_RESPONSE;
+  }
+  else if ((!ack_ok) && (!ack_wait) && ack_err)
+  {
+    return ERROR_RESPONSE;
+  }
+  else
+  {
+    return PROTOCOL_ERROR;
+  }
 }
 
 enum result write_word(enum port port, enum address address, uint32_t data)
 {
-  setup_data_output(0);
+  send_request(RW_WRITE, port, address);
 
-  for (uint_fast8_t i = 0; i < 16; i++)
-  {
-    write_bit(0);
-  }
-
-  bool addr_lo = ((address >> 0) & 1);
-  bool addr_hi = ((address >> 1) & 1);
-
-  bool parity = ((port + RW_WRITE + addr_lo + addr_hi) & 1);
-
-  write_bit(START_BIT);
-  write_bit(port);
-  write_bit(RW_WRITE);
-  write_bit(addr_lo);
-  write_bit(addr_hi);
-  write_bit(parity);
-  write_bit(STOP_BIT);
-  write_bit(PARK_BIT);
-
-  setup_data_input();
-  (void)read_bit(); // turnaround
-
-  bool ack_ok   = read_bit();
-  bool ack_wait = read_bit();
-  bool ack_err  = read_bit();
+  enum result result = read_ack();
 
   (void)read_bit(); // turnaround
-  setup_data_output(0);
 
-  if ((ack_ok + ack_wait + ack_err) != 1)
+  if (result == OK)
   {
-    return PROTOCOL_ERROR;
+    setup_data_output(data & 1);
+
+    bool parity = 0;
+
+    for (uint_fast8_t i = 0; i < 32; i++)
+    {
+      bool bit = ((data >> i) & 1);
+
+      parity ^= bit;
+
+      write_bit(bit);
+    }
+
+    write_bit(parity);
+  }
+  else
+  {
+    setup_data_output(LINE_IDLE);
   }
 
-  if (ack_err)
+  for (uint_fast8_t i = 0; i < 8; i++)
   {
-    return ERROR_RESPONSE;
+    write_bit(LINE_IDLE);
   }
 
-  if (ack_wait)
-  {
-    return WAIT_RESPONSE;
-  }
-
-  parity = 0;
-
-  for (uint_fast8_t i = 0; i < 32; i++)
-  {
-    bool bit = ((data >> i) & 1);
-
-    parity = ((parity + bit) & 1);
-
-    write_bit(bit);
-  }
-
-  write_bit(parity);
-
-  return OK;
+  return result;
 }
 
 enum result read_word(enum port port, enum address address, uint32_t *p_data)
 {
-  setup_data_output(0);
+  send_request(RW_READ, port, address);
 
-  for (uint_fast8_t i = 0; i < 16; i++)
+  enum result result = read_ack();
+
+  if (result == OK)
   {
-    write_bit(0);
+    uint32_t data = 0;
+
+    bool parity = 0;
+
+    for (uint_fast8_t i = 0; i < 32; i++)
+    {
+      bool bit = read_bit();
+
+      parity ^= bit;
+
+      data |= (bit << i);
+    }
+
+    parity ^= read_bit();
+
+    if (parity == 0)
+    {
+      if (p_data)
+      {
+        *p_data = data;
+      }
+    }
+    else
+    {
+      result = PARITY_ERROR;
+    }
   }
 
-  bool addr_lo = ((address >> 0) & 1);
-  bool addr_hi = ((address >> 1) & 1);
-
-  bool parity = ((port + RW_READ + addr_lo + addr_hi) & 1);
-
-  write_bit(START_BIT);
-  write_bit(port);
-  write_bit(RW_READ);
-  write_bit(addr_lo);
-  write_bit(addr_hi);
-  write_bit(parity);
-  write_bit(STOP_BIT);
-  write_bit(PARK_BIT);
-
-  setup_data_input();
   (void)read_bit(); // turnaround
 
-  bool ack_ok   = read_bit();
-  bool ack_wait = read_bit();
-  bool ack_err  = read_bit();
+  setup_data_output(LINE_IDLE);
 
-  if ((ack_ok + ack_wait + ack_err) != 1)
+  for (uint_fast8_t i = 0; i < 8; i++)
   {
-    return PROTOCOL_ERROR;
+    write_bit(LINE_IDLE);
   }
 
-  if (ack_err)
-  {
-    return ERROR_RESPONSE;
-  }
-
-  if (ack_wait)
-  {
-    return WAIT_RESPONSE;
-  }
-
-  uint32_t data = 0;
-
-  parity = 0;
-
-  for (uint_fast8_t i = 0; i < 32; i++)
-  {
-    bool bit = read_bit();
-
-    data |= (bit << i);
-
-    parity = ((parity + bit) & 1);
-  }
-
-  parity = ((parity + read_bit()) & 1);
-
-  if (parity)
-  {
-    return PARITY_ERROR;
-  }
-
-  if (p_data)
-  {
-    *p_data = data;
-  }
-
-  return OK;
+  return result;
 }
 
 enum result read_register_via_buffer(enum port port, enum address address, uint32_t *p_data)
