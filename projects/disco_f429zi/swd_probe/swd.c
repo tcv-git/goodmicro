@@ -45,6 +45,8 @@ static inline void setup_clock(void)
 {
   peripheral_enable(&RCC->AHB1ENR, RCC_AHB1ENR_GPIOEEN);
 
+  set_clock_lo();
+
   GPIO_output_push_pull_slow(CLOCK_GPIO, CLOCK_PIN);
 }
 
@@ -103,25 +105,8 @@ void reset_sequence(void)
     write_bit(1);
   }
 
-#if 1
-  // 0 1111 00 1111 00 111
-  write_bit(0);
-  write_bit(1);
-  write_bit(1);
-  write_bit(1);
-  write_bit(1);
-  write_bit(0);
-  write_bit(0);
-  write_bit(1);
-  write_bit(1);
-  write_bit(1);
-  write_bit(1);
-  write_bit(0);
-  write_bit(0);
-  write_bit(1);
-  write_bit(1);
-  write_bit(1);
-#else
+#if 0
+  // old JTAG to SWD switching sequence
   // 0 11 0 11 0 11 0 11 0 111
   write_bit(0);
   write_bit(1);
@@ -141,10 +126,34 @@ void reset_sequence(void)
   write_bit(1);
 #endif
 
+#if 0
+  // new JTAG to SWD switching sequence
+  // 0 1111 00 1111 00 111
+  write_bit(0);
+  write_bit(1);
+  write_bit(1);
+  write_bit(1);
+  write_bit(1);
+  write_bit(0);
+  write_bit(0);
+  write_bit(1);
+  write_bit(1);
+  write_bit(1);
+  write_bit(1);
+  write_bit(0);
+  write_bit(0);
+  write_bit(1);
+  write_bit(1);
+  write_bit(1);
+#endif
+
+#if 0
+  // re-reset after switching sequence
   for (uint_fast8_t i = 0; i < 50; i++)
   {
     write_bit(1);
   }
+#endif
 }
 
 enum result write_word(enum port port, enum address address, uint32_t data)
