@@ -57,8 +57,7 @@ int main(void)
     {
       uint32_t data;
 
-      assert_ok(set_apsel_apbank(i, 0xF));
-      assert_ok(read_ap(3, &data));
+      assert_ok(read_ap(i, 0xFC, &data));
 
       if (data != 0)
       {
