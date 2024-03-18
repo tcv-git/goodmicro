@@ -6,7 +6,7 @@
 #include "peripheral_enable.h"
 #include "stm32f4xx_simple_gpio.h"
 #include "delay.h"
-#include "swd.h"
+#include "swd_dp.h"
 
 #define CLOCK_GPIO  GPIOE
 #define CLOCK_PIN   PIN2
@@ -25,7 +25,6 @@ enum rw
   RW_WRITE = 0,
   RW_READ  = 1,
 };
-
 
 static inline void delay(void)
 {
@@ -91,10 +90,9 @@ static void write_bit(bool bit)
 static bool read_bit(void)
 {
   delay();
-  set_clock_hi();
-
   bool bit = get_data();
 
+  set_clock_hi();
   delay();
   set_clock_lo();
 
@@ -162,8 +160,7 @@ void reset_sequence(void)
 #endif
 
   // idle so first start bit can be detected
-
-  for (uint_fast8_t i = 0; i < 16; i++)
+  for (uint_fast8_t i = 0; i < 2; i++)
   {
     write_bit(LINE_IDLE);
   }
@@ -299,13 +296,227 @@ enum result read_word(enum port port, enum address address, uint32_t *p_data)
   return result;
 }
 
-enum result read_register_via_buffer(enum port port, enum address address, uint32_t *p_data)
+enum result read_dpidr(uint32_t *p_data)
 {
-  enum result result = read_word(port, address, NULL);
+  return read_word(DP, ADDR_DP_R_DPIDR, p_data);
+}
+
+enum result read_resend(uint32_t *p_data)
+{
+  return read_word(DP, ADDR_DP_R_RESEND, p_data);
+}
+
+enum result read_rdbuff(uint32_t *p_data)
+{
+  return read_word(DP, ADDR_DP_R_RDBUFF, p_data);
+}
+
+enum result write_abort(uint32_t data)
+{
+  return write_word(DP, ADDR_DP_W_ABORT, data);
+}
+
+enum result write_select(uint32_t data)
+{
+  return write_word(DP, ADDR_DP_W_SELECT, data);
+}
+
+static uint32_t previous_select = UINT32_MAX;
+
+enum result set_apsel(uint8_t apsel)
+{
+  uint32_t data;
+
+  if (previous_select == UINT32_MAX)
+  {
+    data = (apsel << 24);
+  }
+  else
+  {
+    data = ((apsel << 24) | (previous_select & 0xFF));
+  }
+
+  if (data == previous_select)
+  {
+    return OK;
+  }
+
+  enum result result = write_select(data);
 
   if (result == OK)
   {
-    result = read_word(DP, ADDR_DP_R_RDBUFF, p_data);
+    previous_select = data;
+  }
+  else
+  {
+    previous_select = UINT32_MAX;
+  }
+
+  return result;
+}
+
+enum result set_apbank(uint8_t apbank)
+{
+  uint32_t data;
+
+  if (previous_select == UINT32_MAX)
+  {
+    data = (apbank << 4);
+  }
+  else
+  {
+    data = ((apbank << 4) | (previous_select & 0xFF00000FuL));
+  }
+
+  if (data == previous_select)
+  {
+    return OK;
+  }
+
+  enum result result = write_select(data);
+
+  if (result == OK)
+  {
+    previous_select = data;
+  }
+  else
+  {
+    previous_select = UINT32_MAX;
+  }
+
+  return result;
+}
+
+enum result set_dpbank(uint8_t dpbank)
+{
+  uint32_t data;
+
+  if (previous_select == UINT32_MAX)
+  {
+    data = dpbank;
+  }
+  else
+  {
+    data = (dpbank | (previous_select & 0xFF0000F0uL));
+  }
+
+  if (data == previous_select)
+  {
+    return OK;
+  }
+
+  enum result result = write_select(data);
+
+  if (result == OK)
+  {
+    previous_select = data;
+  }
+  else
+  {
+    previous_select = UINT32_MAX;
+  }
+
+  return result;
+}
+
+enum result set_apsel_apbank(uint8_t apsel, uint8_t apbank)
+{
+  uint32_t data;
+
+  if (previous_select == UINT32_MAX)
+  {
+    data = ((apsel << 24) | (apbank << 4));
+  }
+  else
+  {
+    data = ((apsel << 24) | (apbank << 4) | (previous_select & 0x0000000FuL));
+  }
+
+  if (data == previous_select)
+  {
+    return OK;
+  }
+
+  enum result result = write_select(data);
+
+  if (result == OK)
+  {
+    previous_select = data;
+  }
+  else
+  {
+    previous_select = UINT32_MAX;
+  }
+
+  return result;
+}
+
+enum result set_apsel_apbank_dbank(uint8_t apsel, uint8_t apbank, uint8_t dpbank)
+{
+  uint32_t data = ((apsel << 24) | (apbank << 4) | dpbank);
+
+  if (data == previous_select)
+  {
+    return OK;
+  }
+
+  enum result result = write_select(data);
+
+  if (result == OK)
+  {
+    previous_select = data;
+  }
+  else
+  {
+    previous_select = UINT32_MAX;
+  }
+
+  return result;
+}
+
+enum result read_ctrlstat(uint32_t *p_data)
+{
+  enum result result = set_dpbank(0);
+
+  if (result == OK)
+  {
+    result = read_word(DP, ADDR_DP_RW_CTRLSTAT, p_data);
+  }
+
+  return result;
+}
+
+enum result read_dlcr(uint32_t *p_data)
+{
+  enum result result = set_dpbank(1);
+
+  if (result == OK)
+  {
+    result = read_word(DP, ADDR_DP_RW_CTRLSTAT, p_data);
+  }
+
+  return result;
+}
+
+enum result write_ctrlstat(uint32_t data)
+{
+  enum result result = set_dpbank(0);
+
+  if (result == OK)
+  {
+    result = write_word(DP, ADDR_DP_RW_CTRLSTAT, data);
+  }
+
+  return result;
+}
+
+enum result write_dlcr(uint32_t data)
+{
+  enum result result = set_dpbank(1);
+
+  if (result == OK)
+  {
+    result = write_word(DP, ADDR_DP_RW_CTRLSTAT, data);
   }
 
   return result;

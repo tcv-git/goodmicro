@@ -30,8 +30,9 @@ CFILES += ../../../bsp/disco_f429zi/lcd_text.c
 CFILES += ../../../lib/goodmicro_stm32f4/debug_printf_queue_dma.c
 CFILES += ../../../lib/goodmicro_stm32f4/printf_queue.c
 CFILES += ../../../lib/goodmicro_stm32f4/system_stm32f405-439.c
+CFILES += swd_dp.c
+CFILES += mem_ap.c
 CFILES += main.c
-CFILES += swd.c
 
 # input for C++ compiler
 CXXFILES :=
