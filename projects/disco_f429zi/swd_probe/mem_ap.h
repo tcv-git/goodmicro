@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include "swd_dp.h"
 
-enum result read_ap(enum address address, uint32_t *p_data);
 
 #if 0
 enum result memap_write_u8 (uint32_t memaddr, uint8_t  data);

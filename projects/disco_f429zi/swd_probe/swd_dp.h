@@ -3,22 +3,6 @@
 
 #include <stdint.h>
 
-enum port
-{
-  DP = 0,
-  AP = 1,
-};
-
-enum address
-{
-  ADDR_DP_R_DPIDR     = 0,
-  ADDR_DP_W_ABORT     = 0,
-  ADDR_DP_RW_CTRLSTAT = 1,
-  ADDR_DP_R_RESEND    = 2,
-  ADDR_DP_W_SELECT    = 2,
-  ADDR_DP_R_RDBUFF    = 3,
-};
-
 enum result
 {
   OK,
@@ -29,9 +13,6 @@ enum result
 };
 
 void reset_sequence(void);
-
-enum result write_word(enum port port, enum address address, uint32_t data);
-enum result read_word(enum port port, enum address address, uint32_t *p_data);
 
 enum result read_dpidr    (uint32_t *p_data);
 enum result read_ctrlstat (uint32_t *p_data);
@@ -49,3 +30,5 @@ enum result set_apbank(uint8_t apbank);
 enum result set_dpbank(uint8_t dpbank);
 enum result set_apsel_apbank(uint8_t apsel, uint8_t apbank);
 enum result set_apsel_apbank_dbank(uint8_t apsel, uint8_t apbank, uint8_t dpbank);
+
+enum result read_ap(uint8_t apsel, uint8_t address, uint32_t *p_data);
