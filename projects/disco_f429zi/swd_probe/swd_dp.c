@@ -373,6 +373,11 @@ enum result set_apsel(uint8_t apsel)
 
 enum result set_apbank(uint8_t apbank)
 {
+  if (apbank > 0xF)
+  {
+    return INVALID_ARG;
+  }
+
   uint32_t data;
 
   if (previous_select == UINT32_MAX)
@@ -405,6 +410,11 @@ enum result set_apbank(uint8_t apbank)
 
 enum result set_dpbank(uint8_t dpbank)
 {
+  if (dpbank > 0xF)
+  {
+    return INVALID_ARG;
+  }
+
   uint32_t data;
 
   if (previous_select == UINT32_MAX)
@@ -437,6 +447,11 @@ enum result set_dpbank(uint8_t dpbank)
 
 enum result set_apsel_apbank(uint8_t apsel, uint8_t apbank)
 {
+  if (apbank > 0xF)
+  {
+    return INVALID_ARG;
+  }
+
   uint32_t data;
 
   if (previous_select == UINT32_MAX)
@@ -469,6 +484,11 @@ enum result set_apsel_apbank(uint8_t apsel, uint8_t apbank)
 
 enum result set_apsel_apbank_dbank(uint8_t apsel, uint8_t apbank, uint8_t dpbank)
 {
+  if ((apbank > 0xF) || (dpbank > 0xF))
+  {
+    return INVALID_ARG;
+  }
+
   uint32_t data = ((apsel << 24) | (apbank << 4) | dpbank);
 
   if (data == previous_select)
@@ -540,6 +560,11 @@ enum result write_dlcr(uint32_t data)
 
 enum result read_ap(uint8_t apsel, uint8_t address, uint32_t *p_data)
 {
+  if ((address & 3) != 0)
+  {
+    return INVALID_ARG;
+  }
+
   enum result result = set_apsel_apbank(apsel, (address >> 4));
 
   if (result == OK)
