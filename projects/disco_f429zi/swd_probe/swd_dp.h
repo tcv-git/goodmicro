@@ -6,6 +6,7 @@
 enum result
 {
   OK,
+  INVALID_ARG,
   WAIT_RESPONSE,
   ERROR_RESPONSE,
   PROTOCOL_ERROR,
