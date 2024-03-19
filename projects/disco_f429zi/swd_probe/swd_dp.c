@@ -1,3 +1,5 @@
+// sw_dp.c
+// This unit implements the Serial Wire Debug Port from ARM Debug Interface v5.0 Architecture Specification
 
 #include <stddef.h>
 #include <stdint.h>
@@ -13,12 +15,12 @@
 #define DATA_GPIO   GPIOE
 #define DATA_PIN    PIN6
 
-#define LINE_RESET 1
-#define LINE_IDLE  0
+#define LINE_RESET  1
+#define LINE_IDLE   0
 
-#define START_BIT  1
-#define STOP_BIT   0
-#define PARK_BIT   1
+#define START_BIT   1
+#define STOP_BIT    0
+#define PARK_BIT    1
 
 enum rw
 {
@@ -32,14 +34,15 @@ enum port
   PORT_AP = 1,
 };
 
-enum address
+enum dp_address
 {
-  ADDR_DP_R_DPIDR     = 0,
-  ADDR_DP_W_ABORT     = 0,
-  ADDR_DP_RW_CTRLSTAT = 1,
-  ADDR_DP_R_RESEND    = 2,
-  ADDR_DP_W_SELECT    = 2,
-  ADDR_DP_R_RDBUFF    = 3,
+  DP_ADDR_R_IDCODE    = 0,  // called DPIDR in later versions
+  DP_ADDR_W_ABORT     = 0,
+  DP_ADDR_RW_CTRLSTAT = 1,
+  DP_ADDR_R_RESEND    = 2,
+  DP_ADDR_W_SELECT    = 2,
+  DP_ADDR_R_RDBUFF    = 3,
+  DP_ADDR_W_ROUTESEL  = 3, // reserved
 };
 
 static inline void delay(void)
@@ -182,7 +185,7 @@ void reset_sequence(void)
   }
 }
 
-static void send_request(enum rw rw, enum port port, enum address address)
+static void send_request(enum rw rw, enum port port, enum dp_address address)
 {
   bool addr_lo = ((address >> 0) & 1);
   bool addr_hi = ((address >> 1) & 1);
@@ -226,7 +229,7 @@ static enum result read_ack(void)
   }
 }
 
-static enum result write_word(enum port port, enum address address, uint32_t data)
+static enum result write_word(enum port port, enum dp_address address, uint32_t data)
 {
   send_request(RW_WRITE, port, address);
 
@@ -264,7 +267,7 @@ static enum result write_word(enum port port, enum address address, uint32_t dat
   return result;
 }
 
-static enum result read_word(enum port port, enum address address, uint32_t *p_data)
+static enum result read_word(enum port port, enum dp_address address, uint32_t *p_data)
 {
   send_request(RW_READ, port, address);
 
@@ -312,44 +315,45 @@ static enum result read_word(enum port port, enum address address, uint32_t *p_d
   return result;
 }
 
-enum result read_dpidr(uint32_t *p_data)
+enum result read_idcode(uint32_t *p_data)
 {
-  return read_word(PORT_DP, ADDR_DP_R_DPIDR, p_data);
+  return read_word(PORT_DP, DP_ADDR_R_IDCODE, p_data);
 }
 
 enum result read_resend(uint32_t *p_data)
 {
-  return read_word(PORT_DP, ADDR_DP_R_RESEND, p_data);
+  return read_word(PORT_DP, DP_ADDR_R_RESEND, p_data);
 }
 
 enum result read_rdbuff(uint32_t *p_data)
 {
-  return read_word(PORT_DP, ADDR_DP_R_RDBUFF, p_data);
+  return read_word(PORT_DP, DP_ADDR_R_RDBUFF, p_data);
 }
 
 enum result write_abort(uint32_t data)
 {
-  return write_word(PORT_DP, ADDR_DP_W_ABORT, data);
+  return write_word(PORT_DP, DP_ADDR_W_ABORT, data);
 }
 
 enum result write_select(uint32_t data)
 {
-  return write_word(PORT_DP, ADDR_DP_W_SELECT, data);
+  return write_word(PORT_DP, DP_ADDR_W_SELECT, data);
 }
 
 static uint32_t previous_select = UINT32_MAX;
 
-enum result set_apsel(uint8_t apsel)
+#if 0 // unused
+static enum result set_apsel(uint8_t apsel)
 {
   uint32_t data;
 
   if (previous_select == UINT32_MAX)
   {
-    data = (apsel << 24);
+    data = ((uint32_t)apsel << 24);
   }
   else
   {
-    data = ((apsel << 24) | (previous_select & 0xFF));
+    data = (((uint32_t)apsel << 24) | (previous_select & 0xFF));
   }
 
   if (data == previous_select)
@@ -371,7 +375,7 @@ enum result set_apsel(uint8_t apsel)
   return result;
 }
 
-enum result set_apbank(uint8_t apbank)
+static enum result set_apbank(uint_fast8_t apbank)
 {
   if (apbank > 0xF)
   {
@@ -407,10 +411,11 @@ enum result set_apbank(uint8_t apbank)
 
   return result;
 }
+#endif
 
-enum result set_dpbank(uint8_t dpbank)
+static enum result set_dpbank(uint_fast8_t dpbank) // called ctrlsel in this version, dpbanksel in later versions
 {
-  if (dpbank > 0xF)
+  if (dpbank > 0x1) // 0xF in later versions
   {
     return INVALID_ARG;
   }
@@ -445,7 +450,7 @@ enum result set_dpbank(uint8_t dpbank)
   return result;
 }
 
-enum result set_apsel_apbank(uint8_t apsel, uint8_t apbank)
+static enum result set_apsel_apbank(uint8_t apsel, uint_fast8_t apbank)
 {
   if (apbank > 0xF)
   {
@@ -456,11 +461,11 @@ enum result set_apsel_apbank(uint8_t apsel, uint8_t apbank)
 
   if (previous_select == UINT32_MAX)
   {
-    data = ((apsel << 24) | (apbank << 4));
+    data = (((uint32_t)apsel << 24) | (apbank << 4));
   }
   else
   {
-    data = ((apsel << 24) | (apbank << 4) | (previous_select & 0x0000000FuL));
+    data = (((uint32_t)apsel << 24) | (apbank << 4) | (previous_select & 0x0000000FuL));
   }
 
   if (data == previous_select)
@@ -482,14 +487,15 @@ enum result set_apsel_apbank(uint8_t apsel, uint8_t apbank)
   return result;
 }
 
-enum result set_apsel_apbank_dbank(uint8_t apsel, uint8_t apbank, uint8_t dpbank)
+#if 0 // unused
+static enum result set_apsel_apbank_dpbank(uint8_t apsel, uint_fast8_t apbank, uint_fast8_t dpbank)
 {
-  if ((apbank > 0xF) || (dpbank > 0xF))
+  if ((apbank > 0xF) || (dpbank > 0x1)) // (dpbank > 0xF) in later versions
   {
     return INVALID_ARG;
   }
 
-  uint32_t data = ((apsel << 24) | (apbank << 4) | dpbank);
+  uint32_t data = (((uint32_t)apsel << 24) | (apbank << 4) | dpbank);
 
   if (data == previous_select)
   {
@@ -509,6 +515,7 @@ enum result set_apsel_apbank_dbank(uint8_t apsel, uint8_t apbank, uint8_t dpbank
 
   return result;
 }
+#endif
 
 enum result read_ctrlstat(uint32_t *p_data)
 {
@@ -516,19 +523,19 @@ enum result read_ctrlstat(uint32_t *p_data)
 
   if (result == OK)
   {
-    result = read_word(PORT_DP, ADDR_DP_RW_CTRLSTAT, p_data);
+    result = read_word(PORT_DP, DP_ADDR_RW_CTRLSTAT, p_data);
   }
 
   return result;
 }
 
-enum result read_dlcr(uint32_t *p_data)
+enum result read_wcr(uint32_t *p_data)  // called DLCR in later versions
 {
   enum result result = set_dpbank(1);
 
   if (result == OK)
   {
-    result = read_word(PORT_DP, ADDR_DP_RW_CTRLSTAT, p_data);
+    result = read_word(PORT_DP, DP_ADDR_RW_CTRLSTAT, p_data);
   }
 
   return result;
@@ -540,19 +547,19 @@ enum result write_ctrlstat(uint32_t data)
 
   if (result == OK)
   {
-    result = write_word(PORT_DP, ADDR_DP_RW_CTRLSTAT, data);
+    result = write_word(PORT_DP, DP_ADDR_RW_CTRLSTAT, data);
   }
 
   return result;
 }
 
-enum result write_dlcr(uint32_t data)
+enum result write_wcr(uint32_t data)  // called DLCR in later versions
 {
   enum result result = set_dpbank(1);
 
   if (result == OK)
   {
-    result = write_word(PORT_DP, ADDR_DP_RW_CTRLSTAT, data);
+    result = write_word(PORT_DP, DP_ADDR_RW_CTRLSTAT, data);
   }
 
   return result;
@@ -574,7 +581,24 @@ enum result read_ap(uint8_t apsel, uint8_t address, uint32_t *p_data)
 
   if (result == OK)
   {
-    result = read_word(PORT_DP, ADDR_DP_R_RDBUFF, p_data);
+    result = read_word(PORT_DP, DP_ADDR_R_RDBUFF, p_data);
+  }
+
+  return result;
+}
+
+enum result write_ap(uint8_t apsel, uint8_t address, uint32_t data)
+{
+  if ((address & 3) != 0)
+  {
+    return INVALID_ARG;
+  }
+
+  enum result result = set_apsel_apbank(apsel, (address >> 4));
+
+  if (result == OK)
+  {
+    result = write_word(PORT_AP, ((address >> 2) & 3), data);
   }
 
   return result;
