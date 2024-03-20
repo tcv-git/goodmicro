@@ -267,3 +267,69 @@ enum result mem_ap_read_u8(uint32_t memaddr, uint8_t *p_data)
 
   return result;
 }
+
+enum result mem_ap_write_u8(uint32_t memaddr, uint8_t  data)
+{
+  enum result result = set_csw(AP_CSW_PROT | AP_CSW_SIZE_8);
+
+  if (result == OK)
+  {
+    result = write_ap(ONLY_AP, 0x04, memaddr); // TAR
+  }
+
+  uint32_t data32 = (((uint32_t)data << 24) | (data << 16) | (data << 8) | data);
+
+  if (result == OK)
+  {
+    result = write_ap(ONLY_AP, 0x0C, data32); // DRW
+  }
+
+  return result;
+}
+
+enum result mem_ap_write_u16(uint32_t memaddr, uint16_t data)
+{
+  if ((memaddr & 1) != 0)
+  {
+    return INVALID_ARG;
+  }
+
+  enum result result = set_csw(AP_CSW_PROT | AP_CSW_SIZE_16);
+
+  if (result == OK)
+  {
+    result = write_ap(ONLY_AP, 0x04, memaddr); // TAR
+  }
+
+  uint32_t data32 = (((uint32_t)data << 16) | data);
+
+  if (result == OK)
+  {
+    result = write_ap(ONLY_AP, 0x0C, data32); // DRW
+  }
+
+  return result;
+}
+
+enum result mem_ap_write_u32(uint32_t memaddr, uint32_t data)
+{
+  if ((memaddr & 3) != 0)
+  {
+    return INVALID_ARG;
+  }
+
+  enum result result = set_csw(AP_CSW_PROT | AP_CSW_SIZE_32);
+
+  if (result == OK)
+  {
+    result = write_ap(ONLY_AP, 0x04, memaddr); // TAR
+  }
+
+  if (result == OK)
+  {
+    result = write_ap(ONLY_AP, 0x0C, data); // DRW
+  }
+
+  return result;
+}
+
