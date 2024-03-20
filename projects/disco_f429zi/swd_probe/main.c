@@ -33,12 +33,15 @@ int main(void)
 
   lcd_printf("connect ok\n");
 
+#if 0
   uint32_t base;
 
   assert_ok(mem_ap_read_base(&base));
 
   lcd_printf("BASE %08X\n", (unsigned int)base);
+#endif
 
+#if 0
   uint32_t addr;
 
   for (addr = 0; addr < 16; addr++)
@@ -67,6 +70,31 @@ int main(void)
 
     lcd_printf("u32[0x%02X] 0x%08X\n", (unsigned int)addr, (unsigned int)data);
   }
+#endif
+
+#if 1
+  uint32_t addr = 0x04010000uL;
+  uint32_t data32;
+
+  assert_ok(mem_ap_write_u32(addr, 0x03020100uL));
+
+  assert_ok(mem_ap_read_u32(addr, &data32));
+
+  lcd_printf("%08X\n", (unsigned int)data32);
+
+  assert_ok(mem_ap_write_u16(addr + 2, 0x7766));
+
+  assert_ok(mem_ap_read_u32(addr, &data32));
+
+  lcd_printf("%08X\n", (unsigned int)data32);
+
+  assert_ok(mem_ap_write_u8(addr + 3, 0xFF));
+
+  assert_ok(mem_ap_read_u32(addr, &data32));
+
+  lcd_printf("%08X\n", (unsigned int)data32);
+#endif
+
 
   for (;;);
 }
