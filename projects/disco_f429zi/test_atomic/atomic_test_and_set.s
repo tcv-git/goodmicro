@@ -61,6 +61,55 @@ atomic_dec_u8:
 .size atomic_dec_u8, .-atomic_dec_u8
 
 
+.section  .text.atomic_inc_nowrap_u8, "ax", %progbits
+
+.global   atomic_inc_nowrap_u8
+.type     atomic_inc_nowrap_u8, %function
+.thumb_func
+
+@; uint8_t atomic_inc_nowrap_u8(volatile uint8_t*);
+
+atomic_inc_nowrap_u8:
+    ldrexb  r1, [r0]
+    adds    r1, 1
+    lsrs    r2, r1, 8
+    bne     1f
+    strexb  r2, r1, [r0]
+    tst     r2, r2
+    bne.n   atomic_inc_nowrap_u8
+    mov     r0, r1
+    bx      lr
+1:  negs    r0, r2
+    clrex
+    bx      lr
+
+.size atomic_inc_nowrap_u8, .-atomic_inc_nowrap_u8
+
+
+.section  .text.atomic_dec_nowrap_u8, "ax", %progbits
+
+.global   atomic_dec_nowrap_u8
+.type     atomic_dec_nowrap_u8, %function
+.thumb_func
+
+@; uint8_t atomic_dec_nowrap_u8(volatile uint8_t*);
+
+atomic_dec_nowrap_u8:
+    ldrexb  r1, [r0]
+    subs    r1, 1
+    bcc     1f
+    strexb  r2, r1, [r0]
+    tst     r2, r2
+    bne.n   atomic_dec_nowrap_u8
+    mov     r0, r1
+    bx      lr
+1:  clrex
+    mov     r0, r1
+    bx      lr
+
+.size atomic_dec_nowrap_u8, .-atomic_dec_nowrap_u8
+
+
 .section  .text.atomic_set_u8_if_zero, "ax", %progbits
 
 .global   atomic_set_u8_if_zero

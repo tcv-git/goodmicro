@@ -33,6 +33,16 @@ uint8_t atomic_inc_u8(volatile uint8_t*);
 //
 uint8_t atomic_dec_u8(volatile uint8_t*);
 
+// atomically increment the pointed unsigned-byte value and return the new value
+// or do nothing and return negative if it would wrap
+//
+int atomic_inc_nowrap_u8(volatile uint8_t*);
+
+// atomically decrement the pointed unsigned-byte value and return the new value
+// or do nothing and return negative if it would wrap
+//
+int atomic_dec_nowrap_u8(volatile uint8_t*);
+
 // If the unsigned-byte value pointed to by the first argument is zero then
 // atomically replace it with the second argument and return zero.  If it is
 // non-zero, do not change it and return non-zero.

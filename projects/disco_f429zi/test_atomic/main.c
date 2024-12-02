@@ -28,6 +28,30 @@ int main(void)
 
   lcd_printf("hello\n");
 
+
+#if 1
+
+  volatile uint8_t value;
+
+  int result;
+
+  value = 0;  result = atomic_inc_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+  value = 0;  result = atomic_dec_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+
+  value = 1;  result = atomic_inc_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+  value = 1;  result = atomic_dec_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+
+  value = 100;  result = atomic_inc_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+  value = 100;  result = atomic_dec_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+
+  value = 254;  result = atomic_inc_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+  value = 254;  result = atomic_dec_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+
+  value = 255;  result = atomic_inc_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+  value = 255;  result = atomic_dec_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+
+#endif
+
 #if 0
   volatile int8_t value = 0;
 
@@ -63,7 +87,7 @@ int main(void)
   lcd_printf("result %08X\n", word);
 #endif
 
-#if 1
+#if 0
   volatile uint32_t word = 0xFFFFFFFFuL;
   volatile uint8_t test;
 
