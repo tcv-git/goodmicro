@@ -31,6 +31,22 @@ int main(void)
 
 #if 1
 
+  volatile uint8_t  value8;
+  volatile uint32_t value32;
+
+  uint8_t result8;
+  uint32_t result32;
+
+  value8  = 7;        result8  = atomic_swap_u8 (&value8,       99);   lcd_printf("result %u value %u\n", (unsigned int)result8,  (unsigned int)value8);
+  value32 = 7;        result32 = atomic_swap_u32(&value32,      99);   lcd_printf("result %u value %u\n", (unsigned int)result32, (unsigned int)value32);
+  value32 = 12345678; result32 = atomic_swap_u32(&value32, 2233445);   lcd_printf("result %u value %u\n", (unsigned int)result32, (unsigned int)value32);
+
+                      result8  = atomic_swap_u8 (&value8,       40);   lcd_printf("result %u value %u\n", (unsigned int)result8,  (unsigned int)value8);
+                      result32 = atomic_swap_u32(&value32,     400);   lcd_printf("result %u value %u\n", (unsigned int)result32, (unsigned int)value32);
+
+#endif
+
+#if 0
   volatile uint8_t value;
 
   int result;
@@ -49,7 +65,6 @@ int main(void)
 
   value = 255;  result = atomic_inc_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
   value = 255;  result = atomic_dec_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
-
 #endif
 
 #if 0

@@ -58,6 +58,11 @@ int atomic_set_i8_if_le_zero(volatile int8_t*, int8_t);
 // Atomically set the value pointed to by the first argument to the value of the
 // second argument and return the previous value.
 //
+uint8_t atomic_swap_u8(volatile uint8_t*, uint8_t);
+
+// Atomically set the value pointed to by the first argument to the value of the
+// second argument and return the previous value.
+//
 uint32_t atomic_swap_u32(volatile uint32_t*, uint32_t);
 
 // Atomically set the bits in the second argument in the word pointed to by the

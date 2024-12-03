@@ -159,6 +159,25 @@ atomic_set_i8_if_le_zero:
 .size atomic_set_i8_if_le_zero, .-atomic_set_i8_if_le_zero
 
 
+.section  .text.atomic_swap_u8, "ax", %progbits
+
+.global   atomic_swap_u8
+.type     atomic_swap_u8, %function
+.thumb_func
+
+@; uint8_t atomic_swap_u8(volatile uint8_t*, uint8_t);
+
+atomic_swap_u8:
+    ldrexb  r2, [r0]
+    strexb  r3, r1, [r0]
+    tst     r3, r3
+    bne.n   atomic_swap_u8
+    mov     r0, r2
+    bx      lr
+
+.size atomic_swap_u8, .-atomic_swap_u8
+
+
 .section  .text.atomic_swap_u32, "ax", %progbits
 
 .global   atomic_swap_u32
