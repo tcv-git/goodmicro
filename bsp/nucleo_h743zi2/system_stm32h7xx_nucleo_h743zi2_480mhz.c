@@ -59,18 +59,17 @@ The STM32Cube template project startup does:
 This project uses this arrangement:
 
   Reset_Handler:
-    set regulator scale
+    enable ldo and wait until ready
     fill bss
     copy data
     SystemInit:
       system clock source to default
       setup oscilators and PLLs
-      enable regulator overdrive
-      flash accelerator enable
-      flash prefetch enable
-      flash wait states
-      setup bus dividers and system clock source
+      enable regulator scale 0 overdrive
+      set bus dividers
       set dedicated clock sources
+      set flash wait states
+      system clock from PLL
       enable systick counter without interrupt
       enable debug cycle counter
       set vector address using symbol
@@ -284,6 +283,22 @@ void SystemInit(void)
   // wait until PLL ready
   while ((RCC->CR & (RCC_CR_PLL1RDY | RCC_CR_PLL2RDY | RCC_CR_PLL3RDY)) != plls_rdy);
 
+  // set VOS scale 1
+  PWR->D3CR = PWR_D3CR_VOS;
+
+  // wait until VOS scale 1 ready
+  while ((PWR->D3CR & PWR_D3CR_VOSRDY) != PWR_D3CR_VOSRDY);
+
+  // enable system configuration interface
+  RCC->APB4ENR |= RCC_APB4ENR_SYSCFGEN;
+  (void)RCC->APB4ENR;
+
+  // enable regulator overdrive
+  SYSCFG->PWRCR |= SYSCFG_PWRCR_ODEN;
+
+  // wait until VOS scale 0 ready
+  while ((PWR->D3CR & PWR_D3CR_VOSRDY) != PWR_D3CR_VOSRDY);
+
   // set bus clock dividers
   RCC->D1CFGR = (RCC_D1CFGR_D1CPRE_Value | RCC_D1CFGR_D1PPRE_Value | RCC_D1CFGR_HPRE_Value);
   RCC->D2CFGR = (RCC_D2CFGR_D2PPRE1_Value | RCC_D2CFGR_D2PPRE2_Value);
@@ -374,10 +389,6 @@ void SystemInit(void)
 
   // wait until CSI ready
   while ((RCC->CR & RCC_CR_CSIRDY) != RCC_CR_CSIRDY);
-
-  // enable system configuration interface
-  RCC->APB4ENR |= RCC_APB4ENR_SYSCFGEN;
-  (void)RCC->APB4ENR;
 
   // enable IO compensation cell
   SYSCFG->CCCSR = SYSCFG_CCCSR_EN;

@@ -24,7 +24,7 @@
 .thumb_func
 
 Reset_Handler:
-        bl      startup_vos0
+        bl      startup_ldo
         ldr     r0, =_sdata
         ldr     r1, =_sidata
         ldr     r2, =_edata
