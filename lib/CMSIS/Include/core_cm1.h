@@ -1,11 +1,11 @@
 /**************************************************************************//**
  * @file     core_cm1.h
  * @brief    CMSIS Cortex-M1 Core Peripheral Access Layer Header File
- * @version  V1.0.1
- * @date     12. November 2018
+ * @version  V1.1.0
+ * @date     04. April 2023
  ******************************************************************************/
 /*
- * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+ * Copyright (c) 2009-2023 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -61,7 +61,7 @@
  */
 
 #include "cmsis_version.h"
- 
+
 /*  CMSIS CM1 definitions */
 #define __CM1_CMSIS_VERSION_MAIN  (__CM_CMSIS_VERSION_MAIN)              /*!< \deprecated [31:16] CMSIS HAL main version */
 #define __CM1_CMSIS_VERSION_SUB   (__CM_CMSIS_VERSION_SUB)               /*!< \deprecated [15:0]  CMSIS HAL sub version */
@@ -81,6 +81,11 @@
   #endif
 
 #elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+  #if defined __ARM_FP
+    #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
+  #endif
+
+#elif defined (__ti__)
   #if defined __ARM_FP
     #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
   #endif
