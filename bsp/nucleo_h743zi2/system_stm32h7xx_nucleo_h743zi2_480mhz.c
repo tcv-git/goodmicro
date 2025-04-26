@@ -17,12 +17,16 @@
 */
 
 /*
-
 The STM32Cube template project startup does:
 
   Reset_Handler:
+    set stack pointer
+    ExitRun0Mode:
+      enable LDO
+      wait until ACTVOSRDY
     SystemInit:
       enable FPU
+      set default flash latency
       system and bus clock sources to default
       if stm32h7 revY then change the switch matrix read issuing capability to 1 for the AXI SRAM target
       enable D2 SRAM
@@ -30,19 +34,27 @@ The STM32Cube template project startup does:
       set vector address to constant
     fill bss
     copy data
+    __libc_init_array:
+      call constructors
     main:
-      setup MPU
-      enable I cache
-      enable D cache
+      MPU_Config:
+        setup MPU
+      CPU_CACHE_Enable:
+        enable I cache
+        enable D cache
       HAL_Init:
-        if I am CM4 flash accelerator configure for second bank and enable
         set priority grouping
-        update SystemCoreClock variable
+        update SystemCoreClock variable, bus clock global variables
         init systick (inc set priority)
-      setup regulators
-      setup oscilators and PLL
-      setup bus dividers, system clock source, flash wait states
-      (commented out:) enable IO compensation cell
+        HAL_MspInit:
+          (weak empty function)
+      SystemClock_Config:
+        setup regulators
+        setup oscilators and PLL
+        setup bus dividers, system clock source, flash wait states
+        (commented out:) enable IO compensation cell
+      MX_GPIO_Init:
+        enable GPIO clocks
 
 This project uses this arrangement:
 

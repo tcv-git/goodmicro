@@ -2341,7 +2341,7 @@ HAL_StatusTypeDef HAL_ADC_Stop_DMA(ADC_HandleTypeDef *hadc)
   * @param hadc ADC handle
   * @retval ADC group regular conversion data
   */
-uint32_t HAL_ADC_GetValue(ADC_HandleTypeDef *hadc)
+uint32_t HAL_ADC_GetValue(const ADC_HandleTypeDef *hadc)
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_INSTANCE(hadc->Instance));
@@ -2849,11 +2849,15 @@ HAL_StatusTypeDef HAL_ADC_ConfigChannel(ADC_HandleTypeDef *hadc, ADC_ChannelConf
       assert_param(IS_ADC_RANGE(ADC_GET_RESOLUTION(hadc), sConfig->Offset));
     }
   }
-
+#if defined(ADC3)
+  /* ADC3 is not available on some STM32H7 products */
+  if (hadc->Instance == ADC3)
+  {
   /* if ROVSE is set, the value of the OFFSETy_EN bit in ADCx_OFRy register is
      ignored (considered as reset) */
   assert_param(!((sConfig->OffsetNumber != ADC_OFFSET_NONE) && (hadc->Init.OversamplingMode == ENABLE)));
-
+  }
+#endif
   /* Verification of channel number */
   if (sConfig->SingleDiff != ADC_DIFFERENTIAL_ENDED)
   {
@@ -2888,17 +2892,19 @@ HAL_StatusTypeDef HAL_ADC_ConfigChannel(ADC_HandleTypeDef *hadc, ADC_ChannelConf
   /*  - Channel rank                                                          */
   if (LL_ADC_REG_IsConversionOngoing(hadc->Instance) == 0UL)
   {
-
-#if defined(ADC_VER_V5_V90)
-    if (hadc->Instance != ADC3)
+    if (!(__LL_ADC_IS_CHANNEL_INTERNAL(sConfig->Channel)))
     {
-      /* ADC channels preselection */
-      hadc->Instance->PCSEL_RES0 |= (1UL << (__LL_ADC_CHANNEL_TO_DECIMAL_NB((uint32_t)sConfig->Channel) & 0x1FUL));
-    }
+#if defined(ADC_VER_V5_V90)
+      if (hadc->Instance != ADC3)
+      {
+        /* ADC channels preselection */
+        hadc->Instance->PCSEL_RES0 |= (1UL << (__LL_ADC_CHANNEL_TO_DECIMAL_NB((uint32_t)sConfig->Channel) & 0x1FUL));
+      }
 #else
-    /* ADC channels preselection */
-    hadc->Instance->PCSEL |= (1UL << (__LL_ADC_CHANNEL_TO_DECIMAL_NB((uint32_t)sConfig->Channel) & 0x1FUL));
+      /* ADC channels preselection */
+      hadc->Instance->PCSEL |= (1UL << (__LL_ADC_CHANNEL_TO_DECIMAL_NB((uint32_t)sConfig->Channel) & 0x1FUL));
 #endif /* ADC_VER_V5_V90 */
+    }
 
     /* Set ADC group regular sequence: channel on the selected scan sequence rank */
     LL_ADC_REG_SetSequencerRanks(hadc->Instance, sConfig->Rank, sConfig->Channel);
@@ -3020,11 +3026,8 @@ HAL_StatusTypeDef HAL_ADC_ConfigChannel(ADC_HandleTypeDef *hadc, ADC_ChannelConf
       /* Configuration of differential mode */
       if (sConfig->SingleDiff == ADC_DIFFERENTIAL_ENDED)
       {
-        /* Set sampling time of the selected ADC channel */
-        /* Note: ADC channel number masked with value "0x1F" to ensure shift value within 32 bits range */
-        LL_ADC_SetChannelSamplingTime(hadc->Instance,
-                                      (uint32_t)(__LL_ADC_DECIMAL_NB_TO_CHANNEL((__LL_ADC_CHANNEL_TO_DECIMAL_NB((uint32_t)sConfig->Channel) + 1UL) & 0x1FUL)),
-                                      sConfig->SamplingTime);
+        /* Set ADC channel preselection of corresponding negative channel */
+        LL_ADC_SetChannelPreselection(hadc->Instance, ADC_CHANNEL_DIFF_NEG_INPUT(hadc, sConfig->Channel));
       }
 
       /* Management of internal measurement channels: Vbat/VrefInt/TempSensor.  */
@@ -3492,7 +3495,7 @@ HAL_StatusTypeDef HAL_ADC_AnalogWDGConfig(ADC_HandleTypeDef *hadc, ADC_AnalogWDG
   * @param hadc ADC handle
   * @retval ADC handle state (bitfield on 32 bits)
   */
-uint32_t HAL_ADC_GetState(ADC_HandleTypeDef *hadc)
+uint32_t HAL_ADC_GetState(const ADC_HandleTypeDef *hadc)
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_INSTANCE(hadc->Instance));
@@ -3506,7 +3509,7 @@ uint32_t HAL_ADC_GetState(ADC_HandleTypeDef *hadc)
   * @param hadc ADC handle
   * @retval ADC error code (bitfield on 32 bits)
   */
-uint32_t HAL_ADC_GetError(ADC_HandleTypeDef *hadc)
+uint32_t HAL_ADC_GetError(const ADC_HandleTypeDef *hadc)
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_INSTANCE(hadc->Instance));

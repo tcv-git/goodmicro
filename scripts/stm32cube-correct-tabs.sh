@@ -154,6 +154,7 @@ expand_t4 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c
 expand_t4 lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_mmc.c
 expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_comp.c
 expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_qspi.c
+expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ramecc.c
 expand_t4 lib/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_timebase_tim_template.c
 expand_t4 lib/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_lcd.c
 expand_t4 projects/disco_f429zi/.template/startup_stm32f429xx.s

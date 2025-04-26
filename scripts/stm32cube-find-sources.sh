@@ -19,7 +19,7 @@
 
 lf(){
  find "$@" -type f | sed 's/\/[^\/\.]\+\(\.[^\/]*\)$/\/*\1/' \
-   | grep -Fv $'/iar/\n/arm/\n/_htmresc/\n/EWARM/\n/MDK-ARM/\n/*.html\n/*.md\n/*.txt' | sort -u
+   | grep -Fv $'/iar/\n/arm/\n/_htmresc/\n/EWARM/\n/MDK-ARM/\n/*.html\n/*.md\n/*.txt\n/.git' | sort -u
 }
 
 lf STM32CubeF0/Drivers/BSP/STM32F0xx-Nucleo
