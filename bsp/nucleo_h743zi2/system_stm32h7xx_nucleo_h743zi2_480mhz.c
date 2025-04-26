@@ -369,11 +369,19 @@ void SystemInit(void)
   SCB_EnableICache();
   SCB_EnableDCache();
 
-#if 0 // FIXME
+  // CSI on (required by compensation cell)
+  RCC->CR |= RCC_CR_CSION;
+
+  // wait until CSI ready
+  while ((RCC->CR & RCC_CR_CSIRDY) != RCC_CR_CSIRDY);
+
+  // enable system configuration interface
+  RCC->APB4ENR |= RCC_APB4ENR_SYSCFGEN;
+  (void)RCC->APB4ENR;
+
   // enable IO compensation cell
   SYSCFG->CCCSR = SYSCFG_CCCSR_EN;
 
   // wait until IO compensation cell is ready
   while ((SYSCFG->CCCSR & SYSCFG_CCCSR_READY) != SYSCFG_CCCSR_READY);
-#endif
 }
