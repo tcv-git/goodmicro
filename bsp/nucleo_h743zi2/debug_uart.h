@@ -22,6 +22,8 @@
 #include "stm32h7xx.h"
 #include "stm32h7xx_simple_gpio.h"
 
+#ifndef ALT_DEBUG
+
 #define DEBUG_TX_AHBxENR                AHB4ENR
 #define DEBUG_TX_AHBxENR_GPIOxEN        RCC_AHB4ENR_GPIODEN
 #define DEBUG_TX_GPIOx                  GPIOD
@@ -37,4 +39,22 @@
 #define DEBUG_UART_APBx_CLK             120000000u
 #define DEBUG_BAUD                      115200u
 
+#else // ALT_DEBUG
+
+#define DEBUG_TX_AHBxENR                AHB4ENR
+#define DEBUG_TX_AHBxENR_GPIOxEN        RCC_AHB4ENR_GPIOBEN
+#define DEBUG_TX_GPIOx                  GPIOB
+#define DEBUG_TX_PINx                   PIN6
+#define DEBUG_TX_AFx                    AF7
+
+#define DEBUG_UART_APBx_ENR             APB2ENR
+#define DEBUG_UART_APBx_ENR_UARTxEN     RCC_APB2ENR_USART1EN
+#define DEBUG_UART_APBx_RSTR            APB2RSTR
+#define DEBUG_UART_APBx_RSTR_UARTxRST   RCC_APB2RSTR_USART1RST
+#define DEBUG_UARTx                     USART1
+
+#define DEBUG_UART_APBx_CLK             120000000u
+#define DEBUG_BAUD                      115200u
+
+#endif // ALT_DEBUG
 #endif // DEBUG_UART_H_INCLUDED
