@@ -22,6 +22,7 @@
 #define DEBUG_UART_H_INCLUDED
 
 #include "stm32h7xx.h"
+#include "stm32h7xx_it.h"
 #include "stm32h7xx_simple_gpio.h"
 
 #define DEBUG_TX_AHBxENR                AHB4ENR
