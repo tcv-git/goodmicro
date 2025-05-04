@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
+#include "stm32h7xx.h"
 #include "bitpool.h"
 #include "bitqueue.h"
 #include "printf_queue.h"
@@ -29,7 +30,7 @@
 #define BUFFER_SIZE  128 // any size up to UINT16_MAX
 #define BUFFER_COUNT  10 // can be up to 16, but only 8 can be queued at once
 
-static char buffers[BUFFER_COUNT][BUFFER_SIZE];
+static char buffers[BUFFER_COUNT][BUFFER_SIZE] __attribute__((aligned(__SCB_DCACHE_LINE_SIZE)));
 
 static volatile unsigned int buffers_available = ((1uLL << BUFFER_COUNT) - 1);
 static volatile unsigned int buffer_queue      = BITQUEUE_EMPTY_INIT;
@@ -107,6 +108,8 @@ char *printf_queue_get_crlf(uint16_t *p_length)
         buffer[length++  ] = '\n';
       }
     }
+
+    SCB_CleanInvalidateDCache_by_Addr(buffer, BUFFER_SIZE);
   }
 
   if (p_length)
