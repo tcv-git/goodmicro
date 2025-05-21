@@ -166,6 +166,7 @@ LDFLAGS += -T $(LINK_SCRIPT)
 LDFLAGS += -Wl,-Map=$(OUTDIR)/$(BINARY).map
 LDFLAGS += -Wl,--cref
 LDFLAGS += -Wl,--gc-sections
+LDFLAGS += -Wl,--print-memory-usage
 LDFLAGS += $(foreach LDIR, $(LIBRARY_PATH), -L $(LDIR))
 
 
