@@ -208,7 +208,7 @@ $(foreach FILE, $(CXXFILES), $(eval $(call CXXFILE_TEMPLATE, $(FILE))))
 
 -include $(OBJDIR)/*.d
 
-$(OUTDIR)/$(BINARY).elf : $(OBJECTS)
+$(OUTDIR)/$(BINARY).elf : $(OBJECTS) $(LINK_SCRIPT)
 	@echo `basename "$(LD)"` -o $@
 	@echo $(LD) $(LDFLAGS) $(OBJECTS) $(foreach LIB, $(LDLIBS), -l$(LIB)) -o $@ >$@.cmd
 	@$(LD) $(LDFLAGS) $(OBJECTS) $(foreach LIB, $(LDLIBS), -l$(LIB)) -o $@
