@@ -18,7 +18,39 @@
 
 .syntax         unified
 
-.section        .text.Reset_Handler
+
+.section .startup_vectors, "a", %progbits
+
+
+.local   startup_vectors
+.type    startup_vectors, %object
+.align   10
+
+startup_vectors:
+        .word   _estack
+        .word   Reset_Handler
+        .word   early_fault_handler  @; NMI
+        .word   early_fault_handler  @; HardFault
+        .word   early_fault_handler  @; MemManage
+        .word   early_fault_handler  @; BusFault
+        .word   early_fault_handler  @; UsageFault
+
+.size    startup_vectors, . - startup_vectors
+
+
+.section        .startup, "ax", %progbits
+
+
+.local          early_fault_handler
+.type           early_fault_handler, %function
+.thumb_func
+
+early_fault_handler:
+        bx      lr
+
+.size early_fault_handler, . - early_fault_handler
+
+
 .global         Reset_Handler
 .type           Reset_Handler, %function
 .thumb_func
@@ -39,17 +71,62 @@ Reset_Handler:
         lsrs    r0, 14          @; PWR_CSR1_ACTVOSRDY
         bcc     1b              @; if !PWR_CSR1_ACTVOSRDY repeat
 
-        @; copy initialized RAM contents
-        ldr     r0, =_sdata
-        ldr     r1, =_sidata
-        ldr     r2, =_edata
-        subs    r2, r0
+        @; copy ITCM contents
+        ldr     r0, =_text0_addr
+        ldr     r1, =_text0_load
+        ldr     r2, =_text0_size
+        ldr     r3, =memcpy
+
+        subs    r3, r0
+        adds    r3, r1
+        blx     r3 @; memcpy from flash
+
+        ldr     r0, =continue_startup
+        bx      r0
+
+.size   Reset_Handler, . - Reset_Handler
+
+
+.section        .text0.continue_startup, "ax", %progbits
+
+.local          continue_startup
+.type           continue_startup, %function
+.thumb_func
+
+continue_startup:
+        @; copy initialized DTCM contents
+        ldr     r0, =_vectors_addr
+        ldr     r1, =_vectors_load
+        ldr     r2, =_vectors_size
         bl      memcpy
 
-        @; clear zero-initialized RAM contents
-        ldr     r0, =_sbss
-        ldr     r2, =_ebss
-        subs    r2, r0
+        @; copy initialized DTCM contents
+        ldr     r0, =_rodata0_addr
+        ldr     r1, =_rodata0_load
+        ldr     r2, =_rodata0_size
+        bl      memcpy
+
+        @; copy initialized DTCM contents
+        ldr     r0, =_data0_addr
+        ldr     r1, =_data0_load
+        ldr     r2, =_data0_size
+        bl      memcpy
+
+        @; copy initialized AXI-SRAM contents
+        ldr     r0, =_data1_addr
+        ldr     r1, =_data1_load
+        ldr     r2, =_data1_size
+        bl      memcpy
+
+        @; clear zero-initialized DTCM contents
+        ldr     r0, =_bss0_addr
+        ldr     r2, =_bss0_size
+        movs    r1, 0
+        bl      memset
+
+        @; clear zero-initialized AXI-SRAM contents
+        ldr     r0, =_bss1_addr
+        ldr     r2, =_bss1_size
         movs    r1, 0
         bl      memset
 
@@ -71,7 +148,7 @@ Reset_Handler:
         .align  2
 1:      .word   0
 
-.size   Reset_Handler, . - Reset_Handler
+.size   continue_startup, . - continue_startup
 
 
 @; define symbol __libc_fini as non-zero to make register_fini do

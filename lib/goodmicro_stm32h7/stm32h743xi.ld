@@ -23,18 +23,13 @@
 
 MEMORY
 {
-/*
-  ITCMRAM ORIGIN=0x00000000 LENGTH=  64K
-  FLASH   ORIGIN=0x08000000 LENGTH=   2M
-  DTCMRAM ORIGIN=0x20000000 LENGTH= 128K
-  D1SRAM  ORIGIN=0x24000000 LENGTH= 512K
-  D2SRAM  ORIGIN=0x30000000 LENGTH= 288K
-  D3SRAM  ORIGIN=0x38000000 LENGTH=  64K
-  BKPSRAM ORIGIN=0x38800000 LENGTH=   4K
-*/
-
-  ROM (rx)  : ORIGIN = 0x08000000, LENGTH =   2M
-  RAM (rwx) : ORIGIN = 0x24000000, LENGTH = 512K
+  ITCMRAM (rx) : ORIGIN = 0x00000000, LENGTH =  64K
+  FLASH   (rx) : ORIGIN = 0x08000000, LENGTH =   2M
+  DTCMRAM (rw) : ORIGIN = 0x20000000, LENGTH = 128K
+  D1SRAM  (rw) : ORIGIN = 0x24000000, LENGTH = 512K
+  D2SRAM  (rw) : ORIGIN = 0x30000000, LENGTH = 288K
+  D3SRAM  (rw) : ORIGIN = 0x38000000, LENGTH =  64K
+  BKPSRAM (rw) : ORIGIN = 0x38800000, LENGTH =   4K
 }
 
 _Min_Stack_Size = 16K;
@@ -46,37 +41,35 @@ SECTIONS
   /*****        ROM                                                       *****/
   /****************************************************************************/
 
-  .vectors :
+  .startup_vectors :
   {
-    KEEP(*(.vectors))
-    KEEP(*(.isr_vector))
-    . = .; /* assignment forces output section to exist even if empty */
+    KEEP(*(.startup_vectors))
   }
-  >ROM
+  >FLASH
+
+  .startup :
+  {
+    *(.startup*)
+  }
+  >FLASH
 
   .init :
   {
     KEEP (*(SORT_NONE(.init)))
   }
-  >ROM
-
-  .text :
-  {
-    *(.text .text.* .stub .gnu.linkonce.t.*)
-  }
-  >ROM
+  >FLASH
 
   .fini :
   {
     KEEP (*(SORT_NONE(.fini)))
   }
-  >ROM
+  >FLASH
 
   .tm_clone_table :
   {
     *(.tm_clone_table)
   }
-  >ROM
+  >FLASH
 
   .preinit_array :
   {
@@ -84,7 +77,7 @@ SECTIONS
     KEEP (*(.preinit_array))
     PROVIDE_HIDDEN (__preinit_array_end = .);
   }
-  >ROM
+  >FLASH
 
   .init_array :
   {
@@ -93,7 +86,7 @@ SECTIONS
     KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
     PROVIDE_HIDDEN (__init_array_end = .);
   }
-  >ROM
+  >FLASH
 
   .fini_array :
   {
@@ -102,7 +95,7 @@ SECTIONS
     KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
     PROVIDE_HIDDEN (__fini_array_end = .);
   }
-  >ROM
+  >FLASH
 
   .ctors :
   {
@@ -112,7 +105,7 @@ SECTIONS
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
   }
-  >ROM
+  >FLASH
 
   .dtors :
   {
@@ -122,13 +115,13 @@ SECTIONS
     KEEP (*(SORT(.dtors.*)))
     KEEP (*(.dtors))
   }
-  >ROM
+  >FLASH
 
   .ARM.extab :
   {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
   }
-  >ROM
+  >FLASH
 
   .ARM.exidx :
   {
@@ -136,70 +129,104 @@ SECTIONS
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     PROVIDE_HIDDEN (__exidx_end = .);
   }
-  >ROM
+  >FLASH
 
   .eh_frame_hdr :
   {
     *(.eh_frame_hdr)
     *(.eh_frame_entry .eh_frame_entry.*)
   }
-  >ROM
+  >FLASH
 
   .eh_frame :
   {
     KEEP (*(.eh_frame))
     *(.eh_frame.*)
   }
-  >ROM
+  >FLASH
 
   .gcc_except_table :
   {
     *(.gcc_except_table .gcc_except_table.*)
   }
-  >ROM
+  >FLASH
 
   .gnu_extab :
   {
     *(.gnu_extab*)
   }
-  >ROM
+  >FLASH
 
-  .rodata :
+  /* vector needs to be 1024 byte(!) aligned, but don't specify that here */
+  /* because it forces the load address to be aligned by the same amount  */
+  .vectors : ALIGN(4)
   {
-    *(.rodata .rodata.* .gnu.linkonce.r.*)
-    *(.rodata1)
+    KEEP(*(.vectors))
+    KEEP(*(.isr_vector))
+    . = .; /* assignment forces output section to exist even if empty */
   }
-  >ROM
+  >ITCMRAM AT>FLASH
+
+  .text0 : ALIGN(4)
+  {
+    *(.text0 .text0.*)
+    *(.text .text.* .stub .gnu.linkonce.t.*)
+    . = .;
+  }
+  >ITCMRAM AT>FLASH
+
+  .rodata0 : ALIGN(4)
+  {
+    *(.rodata0 .rodata0.*)
+    *(.rodata .rodata.* .gnu.linkonce.r.*)
+    . = .;
+  }
+  >ITCMRAM AT>FLASH
+
+  .text1 :
+  {
+    *(.text1 .text1.*)
+    . = .;
+  }
+  >FLASH
+
+  .rodata1 :
+  {
+    *(.rodata1 .rodata1.*)
+    . = .;
+  }
+  >FLASH
 
 
   /****************************************************************************/
   /*****        RAM                                                       *****/
   /****************************************************************************/
 
-  .data :
+  .data0 : ALIGN(4)
   {
+    *(.data0 .data0.*)
     *(.data .data.* .gnu.linkonce.d.*)
     *(.sdata .sdata.* .gnu.linkonce.s.*)
-    *(.data1)
     . = .;
   }
-  >RAM AT>ROM
+  >DTCMRAM AT>FLASH
 
-  .bss (NOLOAD) :
+  .bss0 (NOLOAD) : ALIGN(4)
   {
+    *(.bss0 .bss0.*)
     *(.bss .bss.* .gnu.linkonce.b.*)
-    *(COMMON)
     *(.sbss .sbss.* .scommon)
+    *(COMMON)
     . = .;
   }
-  >RAM
+  >DTCMRAM
 
-  .heap (NOLOAD) : ALIGN(8)
+  .noinit0 (NOLOAD) :
   {
-    *(.heap .heap.*)
-    . = (. < _Min_Heap_Size ? _Min_Heap_Size : .);
+    *(.noinit0 .noinit0.*)
+    . = .;
   }
-  >RAM
+  >DTCMRAM
 
   .stack (NOLOAD) : ALIGN(8)
   {
@@ -207,7 +234,42 @@ SECTIONS
     . = (. < _Min_Stack_Size ? _Min_Stack_Size : .);
     . = ALIGN(8);
   }
-  >RAM
+  >DTCMRAM
+
+  .dma (NOLOAD) : ALIGN(32)
+  {
+    *(.dma .dma.*)
+    . = .;
+  }
+  >D1SRAM
+
+  .data1 : ALIGN(4)
+  {
+    *(.data1 .data1.*)
+    . = .;
+  }
+  >D1SRAM AT>FLASH
+
+  .bss1 (NOLOAD) : ALIGN(4)
+  {
+    *(.bss1 .bss1.*)
+    . = .;
+  }
+  >D1SRAM
+
+  .noinit1 (NOLOAD) :
+  {
+    *(.noinit1 .noinit1.*)
+    . = .;
+  }
+  >D1SRAM
+
+  .heap (NOLOAD) : ALIGN(8)
+  {
+    *(.heap .heap.*)
+    . = (. < _Min_Heap_Size ? _Min_Heap_Size : .);
+  }
+  >D1SRAM
 
 
   /****************************************************************************/
@@ -262,7 +324,7 @@ SECTIONS
     *(*)
     __should_be_empty_end = .;
   }
-  >RAM
+  >D1SRAM
 }
 
 
@@ -277,16 +339,6 @@ ASSERT((SIZEOF(.vectors) >= 0x040), "Section .vectors is unexpectedly small");
 /* The interrupt vector must be aligned to a multiple of its size:
  */
 ASSERT(((ADDR(.vectors) & ((1<<LOG2CEIL(SIZEOF(.vectors)))-1)) == 0), "Section .vectors is not naturally aligned");
-
-/* CMSIS symbols for interrupt vector must be correct if defined in input:
- */
-ASSERT((!DEFINED(__Vectors      )) || (__Vectors      == ADDR(.vectors)), "Symbol __Vectors is not at the start of section .vectors");
-ASSERT((!DEFINED(__Vectors_Size )) || (__Vectors_Size == SIZEOF(.vectors)), "Symbol __Vectors_Size is not the size of section .vectors");
-ASSERT((!DEFINED(__Vectors_End  )) || (__Vectors_End  == (__Vectors + __Vectors_Size)), "Symbol __Vectors_End is not equal to (__Vectors + __Vectors_Size)");
-
-/* ST symbol for interrupt vector must be correct if defined in input:
- */
-ASSERT((!DEFINED(g_pfnVectors)) || (g_pfnVectors == ADDR(.vectors)), "Symbol g_pfnVectors is not at the start of section .vectors");
 
 /* The following sections should either be not present in the input or else empty:
  *
@@ -304,49 +356,43 @@ ASSERT((__should_be_empty_start == __should_be_empty_end), "Non-empty unexpected
 /*******         SYMBOLS                                                  *****/
 /******************************************************************************/
 
-/* CMSIS symbols for memory regions:
- */
-__ROM_BASE = ORIGIN(ROM);
-__ROM_SIZE = LENGTH(ROM);
-__RAM_BASE = ORIGIN(RAM);
-__RAM_SIZE = LENGTH(RAM);
-
 /* Execution start address:
  */
 ENTRY(Reset_Handler)
 
-/* CMSIS symbols for interrupt vector are provided if not defined in input:
+/* Symbols for multi-bank startup
+ *
  */
-PROVIDE(__Vectors      = ADDR(.vectors));
-PROVIDE(__Vectors_Size = SIZEOF(.vectors));
-PROVIDE(__Vectors_End  = (__Vectors + __Vectors_Size));
+_vectors_addr = ADDR(.vectors);
+_vectors_load = LOADADDR(.vectors);
+_vectors_size = SIZEOF(.vectors);
 
-/* CMSIS symbols for start and end of data and bss:
- */
-__data_start__ = ADDR(.data);
-__data_end__   = (ADDR(.data) + SIZEOF(.data));
-__bss_start__  = ADDR(.bss);
-__bss_end__    = (ADDR(.bss) + SIZEOF(.bss));
+_text0_addr = ADDR(.text0);
+_text0_load = LOADADDR(.text0);
+_text0_size = SIZEOF(.text0);
 
-/* Traditional symbols for start and end of data and bss:
- */
-_sdata = __data_start__;
-_edata = __data_end__;
-_sbss  = __bss_start__;
-_ebss  = __bss_end__;
+_rodata0_addr = ADDR(.rodata0);
+_rodata0_load = LOADADDR(.rodata0);
+_rodata0_size = SIZEOF(.rodata0);
 
-/* Traditional symbol for load address of the contents of initialized data:
- */
-_etext = LOADADDR(.data);
+_data0_addr = ADDR(.data0);
+_data0_load = LOADADDR(.data0);
+_data0_size = SIZEOF(.data0);
 
-/* ST symbol for load address of the contents of initialized data:
- */
-_sidata = LOADADDR(.data);
+_data1_addr = ADDR(.data1);
+_data1_load = LOADADDR(.data1);
+_data1_size = SIZEOF(.data1);
+
+_bss0_addr = ADDR(.bss0);
+_bss0_size = SIZEOF(.bss0);
+
+_bss1_addr = ADDR(.bss1);
+_bss1_size = SIZEOF(.bss1);
 
 /* CMSIS symbols for stack:
  */
 __StackLimit = ADDR(.stack);
-__StackTop   = (ORIGIN(RAM) + LENGTH(RAM));
+__StackTop   = (ORIGIN(DTCMRAM) + LENGTH(DTCMRAM));
 __STACK_SIZE = (__StackTop - __StackLimit);
 
 /* ST symbols for stack:
@@ -357,7 +403,7 @@ _estack = __StackTop;
 /* CMSIS symbols for heap:
  */
 __HeapBase  = ADDR(.heap);
-__HeapLimit = (ADDR(.heap) + SIZEOF(.heap));
+__HeapLimit = (ORIGIN(D1SRAM) + LENGTH(D1SRAM));
 __HEAP_SIZE = (__HeapLimit - __HeapBase);
 
 /* Traditional symbols for heap:
