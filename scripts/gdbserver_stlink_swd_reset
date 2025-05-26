@@ -3,8 +3,8 @@
 logfile=$(tempfile -d. -p gdbs_ -s .log)
 logfile=$(readlink -e "$logfile")
 
-gdbs_dir='/opt/st/stm32cubeide_1.6.1/plugins/com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.linux64_1.6.0.202101291314/tools/bin'
-stcp_dir='/opt/st/stm32cubeide_1.6.1/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.linux64_1.6.0.202101291314/tools/bin'
+gdbs_dir='/opt/st/stm32cubeide_1.18.1/plugins/com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.linux64_2.2.100.202501151542/tools/bin'
+stcp_dir='/opt/st/stm32cubeide_1.18.1/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.linux64_2.2.100.202412061334/tools/bin'
 
 cd "$gdbs_dir"
 
