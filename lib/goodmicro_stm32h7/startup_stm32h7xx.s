@@ -1,4 +1,4 @@
-@; startup.s
+@; startup_stm32h7xx.s
 @; PUBLIC DOMAIN
 @; https://www.purposeful.co.uk/goodmicro/
 
@@ -24,25 +24,47 @@
 .thumb_func
 
 Reset_Handler:
-        bl      startup_ldo
+        ldr     r2, =0x58024800 @; PWR_BASE
+
+        ldr     r0, [r2, 12]    @; PWR_CR3
+        lsrs    r1, r0, 1       @; if PWR_CR3_BYPASS
+        bcs     .               @; loop here forever
+
+        lsrs    r1, r0, 3       @; if PWR_CR3_SCUEN
+        itt     cs
+        orrcs   r0, 2           @; |= PWR_CR3_LDOEN
+        strcs   r0, [r2, 12]    @; PWR_CR3
+1:
+        ldr     r0, [r2, 4]     @; PWR_CSR1
+        lsrs    r0, 14          @; PWR_CSR1_ACTVOSRDY
+        bcc     1b              @; if !PWR_CSR1_ACTVOSRDY repeat
+
+        @; copy initialized RAM contents
         ldr     r0, =_sdata
         ldr     r1, =_sidata
         ldr     r2, =_edata
         subs    r2, r0
         bl      memcpy
 
+        @; clear zero-initialized RAM contents
         ldr     r0, =_sbss
         ldr     r2, =_ebss
         subs    r2, r0
         movs    r1, 0
         bl      memset
 
+        @; setup clocks etc
         bl      SystemInit
+
+        @; call library initializers and C++ constructors
         bl      __libc_init_array
 
+        @; args to main are ((int)0, (*char[]){NULL})
         movs    r0, 0
         adr.n   r1, 1f
         bl      main
+
+        @; return value of main is argument to exit
         bl      exit
         b       .
 
