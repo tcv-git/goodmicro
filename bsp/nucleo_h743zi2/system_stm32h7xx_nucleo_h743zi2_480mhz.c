@@ -98,7 +98,7 @@ This project uses this arrangement:
 #define PLL1_N        240
 #define PLL1_FRACN      0
 #define PLL1_P          2  // core
-#define PLL1_Q          4  // RNG
+#define PLL1_Q          4  // RNG, SPI1,2,3
 #define PLL1_R         16  // trace
 #define PLL1_P_EN       1
 #define PLL1_Q_EN       1
@@ -121,7 +121,7 @@ This project uses this arrangement:
 #define PLL3_M          2
 #define PLL3_N        240
 #define PLL3_FRACN      0
-#define PLL3_P          6  // SPI/I2S 1/2/3 SAI1/2/3/4
+#define PLL3_P          6  // SAI
 #define PLL3_Q          8  // nothing
 #define PLL3_R          8  // LTDC
 #define PLL3_P_EN       0
@@ -145,7 +145,7 @@ This project uses this arrangement:
 #define RCC_D2CCIP1R_DFSDM1SEL_Value    0  // APB2CLK
 #define RCC_D2CCIP1R_SPDIFSEL_Value     1  // PLL2_R
 #define RCC_D2CCIP1R_SPI45SEL_Value     0  // APB2CLK
-#define RCC_D2CCIP1R_SPI123SEL_Value    2  // PLL3_P
+#define RCC_D2CCIP1R_SPI123SEL_Value    0  // PLL1_Q
 #define RCC_D2CCIP1R_SAI23SEL_Value     2  // PLL3_P
 #define RCC_D2CCIP1R_SAI1SEL_Value      2  // PLL3_P
 
