@@ -25,26 +25,6 @@
 #include "peripheral_enable.h"
 #include "debug_printf.h"
 
-#define DMA_SxCR_PL_LOW             (0 << DMA_SxCR_PL_Pos)
-#define DMA_SxCR_PL_MEDIUM          (1 << DMA_SxCR_PL_Pos)
-#define DMA_SxCR_PL_HIGH            (2 << DMA_SxCR_PL_Pos)
-#define DMA_SxCR_PL_VHIGH           (3 << DMA_SxCR_PL_Pos)
-
-#define DMA_SxCR_MSIZE_8BIT         (0 << DMA_SxCR_MSIZE_Pos)
-#define DMA_SxCR_MSIZE_16BIT        (1 << DMA_SxCR_MSIZE_Pos)
-#define DMA_SxCR_MSIZE_32BIT        (2 << DMA_SxCR_MSIZE_Pos)
-
-#define DMA_SxCR_PSIZE_8BIT         (0 << DMA_SxCR_PSIZE_Pos)
-#define DMA_SxCR_PSIZE_16BIT        (1 << DMA_SxCR_PSIZE_Pos)
-#define DMA_SxCR_PSIZE_32BIT        (2 << DMA_SxCR_PSIZE_Pos)
-
-#define DMA_SxCR_DIR_P2M            (0 << DMA_SxCR_DIR_Pos)
-#define DMA_SxCR_DIR_M2P            (1 << DMA_SxCR_DIR_Pos)
-#define DMA_SxCR_DIR_M2M            (2 << DMA_SxCR_DIR_Pos)
-
-#define DEBUG_TX_DMA_xISR_ALLIFx    (DEBUG_TX_DMA_xISR_TCIFx   | DEBUG_TX_DMA_xISR_HTIFx   | DEBUG_TX_DMA_xISR_TEIFx   | DEBUG_TX_DMA_xISR_DMEIFx   | DEBUG_TX_DMA_xISR_FEIFx  )
-#define DEBUG_TX_DMA_xIFCR_CALLIFx  (DEBUG_TX_DMA_xIFCR_CTCIFx | DEBUG_TX_DMA_xIFCR_CHTIFx | DEBUG_TX_DMA_xIFCR_CTEIFx | DEBUG_TX_DMA_xIFCR_CDMEIFx | DEBUG_TX_DMA_xIFCR_CFEIFx)
-
 void debug_uart_init(void)
 {
     NVIC_DisableIRQ(DEBUG_UART_IRQn);
@@ -61,7 +41,9 @@ void debug_uart_init(void)
     DEBUG_TX_DMAMUXx_Channelx->CCR = DEBUG_TX_DMAMUXx_CxCR_DMAREQ_ID;
     DEBUG_TX_DMAx_Streamx->M0AR    = 0;  // prevent incorrect free on first interrupt
 
+    // FIXME priority should be an init function argument
     NVIC_ClearPendingIRQ (DEBUG_TX_DMAx_Streamx_IRQn);
+    NVIC_SetPriority     (DEBUG_TX_DMAx_Streamx_IRQn, 3);
     NVIC_EnableIRQ       (DEBUG_TX_DMAx_Streamx_IRQn);
 
     peripheral_reset_enable(&RCC->DEBUG_UART_APBx_RSTR, &RCC->DEBUG_UART_APBx_ENR, DEBUG_UART_APBx_ENR_UARTxEN);
