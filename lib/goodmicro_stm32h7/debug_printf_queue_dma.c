@@ -23,26 +23,6 @@
 #include "peripheral_enable.h"
 #include "debug_printf.h"
 
-#define DMA_SxCR_PL_LOW             (0 << DMA_SxCR_PL_Pos)
-#define DMA_SxCR_PL_MEDIUM          (1 << DMA_SxCR_PL_Pos)
-#define DMA_SxCR_PL_HIGH            (2 << DMA_SxCR_PL_Pos)
-#define DMA_SxCR_PL_VHIGH           (3 << DMA_SxCR_PL_Pos)
-
-#define DMA_SxCR_MSIZE_8BIT         (0 << DMA_SxCR_MSIZE_Pos)
-#define DMA_SxCR_MSIZE_16BIT        (1 << DMA_SxCR_MSIZE_Pos)
-#define DMA_SxCR_MSIZE_32BIT        (2 << DMA_SxCR_MSIZE_Pos)
-
-#define DMA_SxCR_PSIZE_8BIT         (0 << DMA_SxCR_PSIZE_Pos)
-#define DMA_SxCR_PSIZE_16BIT        (1 << DMA_SxCR_PSIZE_Pos)
-#define DMA_SxCR_PSIZE_32BIT        (2 << DMA_SxCR_PSIZE_Pos)
-
-#define DMA_SxCR_DIR_P2M            (0 << DMA_SxCR_DIR_Pos)
-#define DMA_SxCR_DIR_M2P            (1 << DMA_SxCR_DIR_Pos)
-#define DMA_SxCR_DIR_M2M            (2 << DMA_SxCR_DIR_Pos)
-
-#define DEBUG_TX_DMA_xISR_ALLIFx    (DEBUG_TX_DMA_xISR_TCIFx   | DEBUG_TX_DMA_xISR_HTIFx   | DEBUG_TX_DMA_xISR_TEIFx   | DEBUG_TX_DMA_xISR_DMEIFx   | DEBUG_TX_DMA_xISR_FEIFx  )
-#define DEBUG_TX_DMA_xIFCR_CALLIFx  (DEBUG_TX_DMA_xIFCR_CTCIFx | DEBUG_TX_DMA_xIFCR_CHTIFx | DEBUG_TX_DMA_xIFCR_CTEIFx | DEBUG_TX_DMA_xIFCR_CDMEIFx | DEBUG_TX_DMA_xIFCR_CFEIFx)
-
 void debug_uart_init(void)
 {
     NVIC_DisableIRQ(DEBUG_UART_IRQn);

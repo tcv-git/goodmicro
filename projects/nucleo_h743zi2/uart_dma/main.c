@@ -20,36 +20,12 @@
 #include <stdarg.h>
 #include "stm32h7xx.h"
 #include "stm32h7xx_it.h"
+#include "stm32h7xx_extra.h"
 #include "stm32h7xx_simple_gpio.h"
 #include "peripheral_enable.h"
 #include "delay.h"
 #include "debug_printf.h"
 #include "printf_queue.h"
-
-////////////////////////////////////////////////////////////////////////
-
-#define DMA_SxCR_MSIZE_8BIT                              0
-#define DMA_SxCR_MSIZE_16BIT              DMA_SxCR_MSIZE_0
-#define DMA_SxCR_MSIZE_32BIT              DMA_SxCR_MSIZE_1
-
-#define DMA_SxCR_PL_LOW                   (                            0)
-#define DMA_SxCR_PL_MEDIUM                (                DMA_SxCR_PL_0)
-#define DMA_SxCR_PL_HIGH                  (DMA_SxCR_PL_1                )
-#define DMA_SxCR_PL_VHIGH                 (DMA_SxCR_PL_1 | DMA_SxCR_PL_0)
-
-#define DMA_SxCR_MSIZE_8BIT                              0
-#define DMA_SxCR_MSIZE_16BIT              DMA_SxCR_MSIZE_0
-#define DMA_SxCR_MSIZE_32BIT              DMA_SxCR_MSIZE_1
-#define DMA_SxCR_PSIZE_8BIT                              0
-#define DMA_SxCR_PSIZE_16BIT              DMA_SxCR_PSIZE_0
-#define DMA_SxCR_PSIZE_32BIT              DMA_SxCR_PSIZE_1
-
-#define DMA_SxCR_DIR_P2M                               0
-#define DMA_SxCR_DIR_M2P                  DMA_SxCR_DIR_0
-#define DMA_SxCR_DIR_M2M                  DMA_SxCR_DIR_1
-
-#define DMAMUX1_CxCR_DMAREQ_ID_USART1_TX  42
-#define DMAMUX1_CxCR_DMAREQ_ID_USART3_TX  46
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -83,24 +59,21 @@
 #define NEWUART_TX_DMA_xISR_TEIFx           DMA_HISR_TEIF7
 #define NEWUART_TX_DMA_xISR_DMEIFx          DMA_HISR_DMEIF7
 #define NEWUART_TX_DMA_xISR_FEIFx           DMA_HISR_FEIF7
+#define NEWUART_TX_DMA_xISR_ALLIFx          DMA_HISR_ALLIF7
 
 #define NEWUART_TX_DMA_xIFCR_CTCIFx         DMA_HIFCR_CTCIF7
 #define NEWUART_TX_DMA_xIFCR_CHTIFx         DMA_HIFCR_CHTIF7
 #define NEWUART_TX_DMA_xIFCR_CTEIFx         DMA_HIFCR_CTEIF7
 #define NEWUART_TX_DMA_xIFCR_CDMEIFx        DMA_HIFCR_CDMEIF7
 #define NEWUART_TX_DMA_xIFCR_CFEIFx         DMA_HIFCR_CFEIF7
+#define NEWUART_TX_DMA_xIFCR_CALLIFx        DMA_HIFCR_CALLIF7
 
 #define NEWUART_TX_DMAx_Streamx             DMA1_Stream7
 #define NEWUART_TX_DMAx_Streamx_IRQn        DMA1_Stream7_IRQn
 #define NEWUART_TX_DMAx_Streamx_IRQHandler  DMA1_Stream7_IRQHandler
 
 #define NEWUART_TX_DMAMUXx_Channelx         DMAMUX1_Channel7
-#define NEWUART_TX_DMAMUXx_CxCR_DMAREQ_ID   DMAMUX1_CxCR_DMAREQ_ID_USART3_TX
-
-////////////////////////////////////////////////////////////////////////
-
-#define NEWUART_TX_DMA_xISR_ALLIFx    (NEWUART_TX_DMA_xISR_TCIFx   | NEWUART_TX_DMA_xISR_HTIFx   | NEWUART_TX_DMA_xISR_TEIFx   | NEWUART_TX_DMA_xISR_DMEIFx   | NEWUART_TX_DMA_xISR_FEIFx  )
-#define NEWUART_TX_DMA_xIFCR_CALLIFx  (NEWUART_TX_DMA_xIFCR_CTCIFx | NEWUART_TX_DMA_xIFCR_CHTIFx | NEWUART_TX_DMA_xIFCR_CTEIFx | NEWUART_TX_DMA_xIFCR_CDMEIFx | NEWUART_TX_DMA_xIFCR_CFEIFx)
+#define NEWUART_TX_DMAMUXx_CCR_DMAREQ_ID    DMAMUX1_CCR_DMAREQ_ID_USART3_TX
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -118,7 +91,7 @@ void newuart_init(void)
     }
 
     NEWUART_DMAx->NEWUART_TX_DMA_xIFCR = (NEWUART_DMAx->NEWUART_TX_DMA_xISR & NEWUART_TX_DMA_xIFCR_CALLIFx);
-    NEWUART_TX_DMAMUXx_Channelx->CCR   = NEWUART_TX_DMAMUXx_CxCR_DMAREQ_ID;
+    NEWUART_TX_DMAMUXx_Channelx->CCR   = NEWUART_TX_DMAMUXx_CCR_DMAREQ_ID;
     NEWUART_TX_DMAx_Streamx->M0AR      = 0;
 
     NVIC_ClearPendingIRQ(NEWUART_TX_DMAx_Streamx_IRQn);

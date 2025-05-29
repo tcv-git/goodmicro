@@ -20,10 +20,9 @@
 #define DEBUG_UART_H_INCLUDED
 
 #include "stm32h7xx.h"
+#include "stm32h7xx_it.h"
+#include "stm32h7xx_extra.h"
 #include "stm32h7xx_simple_gpio.h"
-
-#define DMAMUX1_CxCR_DMAREQ_ID_USART1_TX  42
-#define DMAMUX1_CxCR_DMAREQ_ID_USART3_TX  46
 
 #ifndef ALT_DEBUG
 
@@ -50,7 +49,7 @@
 #define DEBUG_DMAx                        DMA1
 
 #define DEBUG_TX_DMAMUXx_Channelx         DMAMUX1_Channel7
-#define DEBUG_TX_DMAMUXx_CxCR_DMAREQ_ID   DMAMUX1_CxCR_DMAREQ_ID_USART3_TX
+#define DEBUG_TX_DMAMUXx_CxCR_DMAREQ_ID   DMAMUX1_CCR_DMAREQ_ID_USART3_TX
 
 #define DEBUG_TX_DMA_xISR                 HISR
 #define DEBUG_TX_DMA_xISR_TCIFx           DMA_HISR_TCIF7
@@ -58,6 +57,7 @@
 #define DEBUG_TX_DMA_xISR_TEIFx           DMA_HISR_TEIF7
 #define DEBUG_TX_DMA_xISR_DMEIFx          DMA_HISR_DMEIF7
 #define DEBUG_TX_DMA_xISR_FEIFx           DMA_HISR_FEIF7
+#define DEBUG_TX_DMA_xISR_ALLIFx          DMA_HISR_ALLIF7
 
 #define DEBUG_TX_DMA_xIFCR                HIFCR
 #define DEBUG_TX_DMA_xIFCR_CTCIFx         DMA_HIFCR_CTCIF7
@@ -65,6 +65,7 @@
 #define DEBUG_TX_DMA_xIFCR_CTEIFx         DMA_HIFCR_CTEIF7
 #define DEBUG_TX_DMA_xIFCR_CDMEIFx        DMA_HIFCR_CDMEIF7
 #define DEBUG_TX_DMA_xIFCR_CFEIFx         DMA_HIFCR_CFEIF7
+#define DEBUG_TX_DMA_xIFCR_CALLIFx        DMA_HIFCR_CALLIF7
 
 #define DEBUG_TX_DMAx_Streamx             DMA1_Stream7
 #define DEBUG_TX_DMAx_Streamx_IRQn        DMA1_Stream7_IRQn
