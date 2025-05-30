@@ -42,6 +42,15 @@ static inline void peripheral_enable(volatile uint32_t *enr, uint32_t bit)
   (void)*enr;
 }
 
+static inline void peripheral_reset_disable(volatile uint32_t *rstr, volatile uint32_t *enr, uint32_t bit)
+{
+  uint32_t rst = *rstr;
+
+  *rstr = (rst | bit);
+  *enr &= ~bit;
+  *rstr = (rst & ~bit);
+}
+
 #ifdef __cplusplus
 }
 #endif
