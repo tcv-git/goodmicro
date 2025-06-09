@@ -72,9 +72,17 @@ static inline __attribute__((const,always_inline)) uint64_t udiv64(uint64_t divi
   {
     uint64_t reciprocal = ((1uLL << 32) / divisor);
 
-    if (__builtin_constant_p(reciprocal) && (reciprocal <= UINT32_MAX))
+    if (__builtin_constant_p(reciprocal))
     {
-      return udiv64i(dividend, divisor, reciprocal);
+      if (reciprocal > UINT32_MAX)
+      {
+        // if we can't represent reciprocal, then divisor must have been 1
+        return dividend;
+      }
+      else
+      {
+        return udiv64i(dividend, divisor, reciprocal);
+      }
     }
     else
     {
