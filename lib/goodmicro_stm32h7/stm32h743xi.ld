@@ -224,6 +224,7 @@ SECTIONS
   .noinit0 (NOLOAD) :
   {
     *(.noinit0 .noinit0.*)
+    *(.noinit .noinit.*)
     . = .;
   }
   >DTCMRAM
