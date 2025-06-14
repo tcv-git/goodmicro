@@ -22,7 +22,7 @@
 #include "stm32f4xx.h"
 #include "system_stm32f405-439.h"
 #include "debug_printf.h"
-#include "hwrand.h"
+#include "rng.h"
 
 #define CLOCK_RATIO   1000
 #define COURSE_CLOCK  (SYSTEM_CORE_CLOCK / CLOCK_RATIO)
@@ -93,7 +93,7 @@ int main (void)
 {
   debug_uart_init();
 
-  hwrand_init();
+  rng_init();
 
   coarse_clock_init();
 
@@ -101,14 +101,14 @@ int main (void)
 
   for (i = 0; i < 200; i++)
   {
-    test(hwrand32() % 50);
+    test(rng_rand32() % 50);
   }
 
   for (j = 24; j > 0; j--)
   {
     for (i = 0; i < 50; i++)
     {
-      test(hwrand32() >> j);
+      test(rng_rand32() >> j);
     }
   }
 
@@ -116,7 +116,7 @@ int main (void)
   {
     for (i = 0; i < 30; i++)
     {
-      uint64_t rand64 = (((uint64_t)hwrand32() << 32) | hwrand32());
+      uint64_t rand64 = (((uint64_t)rng_rand32() << 32) | rng_rand32());
 
       test(rand64 >> j);
     }

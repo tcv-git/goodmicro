@@ -1,4 +1,4 @@
-// hwrand.h
+// rng.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -18,18 +18,18 @@
   through you.
 */
 
-#ifndef HWRAND_H_INCLUDED
-#define HWRAND_H_INCLUDED
+#ifndef RNG_H_INCLUDED
+#define RNG_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void         hwrand_init (void);
-unsigned int hwrand32    (void);
+void         rng_init   (void);
+unsigned int rng_rand32 (void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HWRAND_H_INCLUDED */
+#endif /* RNG_H_INCLUDED */

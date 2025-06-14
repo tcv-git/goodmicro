@@ -22,7 +22,7 @@
 #include "stm32f4xx.h"
 #include "system_stm32f405-439.h"
 #include "debug_printf.h"
-#include "hwrand.h"
+#include "rng.h"
 
 #define CLOCK_RATIO   1000
 #define COURSE_CLOCK  (SYSTEM_CORE_CLOCK / CLOCK_RATIO)
@@ -190,7 +190,7 @@ int main (void)
 {
   debug_uart_init();
 
-  hwrand_init();
+  rng_init();
 
   coarse_clock_init();
 
@@ -203,7 +203,7 @@ int main (void)
 
     for (i = 1; i < 32; i++)
     {
-      time_delay_ns((1uL << i) | (hwrand32() >> (32 - i)));
+      time_delay_ns((1uL << i) | (rng_rand32() >> (32 - i)));
     }
 
     time_delay_ns(UINT32_MAX);
@@ -213,7 +213,7 @@ int main (void)
 
     for (i = 1; i < 29; i++)
     {
-      time_delay_us((1uL << i) | (hwrand32() >> (32 - i)));
+      time_delay_us((1uL << i) | (rng_rand32() >> (32 - i)));
     }
 
     time_delay_ms(0);
@@ -221,7 +221,7 @@ int main (void)
 
     for (i = 1; i < 19; i++)
     {
-      time_delay_ms((1uL << i) | (hwrand32() >> (32 - i)));
+      time_delay_ms((1uL << i) | (rng_rand32() >> (32 - i)));
     }
 
     time_delay_s(0);
@@ -229,7 +229,7 @@ int main (void)
 
     for (i = 1; i < 9; i++)
     {
-      time_delay_s((1uL << i) | (hwrand32() >> (32 - i)));
+      time_delay_s((1uL << i) | (rng_rand32() >> (32 - i)));
     }
   }
 }
