@@ -1,4 +1,4 @@
-// hwrand.c
+// rng.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -16,21 +16,18 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include "stm32h7xx.h"
-#include "peripheral_enable.h"
-#include "hwrand.h"
+#ifndef RNG_H_INCLUDED
+#define RNG_H_INCLUDED
 
-void hwrand_init (void)
-{
-  peripheral_reset_enable(&RCC->AHB2RSTR, &RCC->AHB2ENR, RCC_AHB2ENR_RNGEN);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  RNG->CR = RNG_CR_CED;
-  RNG->CR = (RNG_CR_CED | RNG_CR_RNGEN);
+void         rng_init   (void);
+unsigned int rng_rand32 (void);
+
+#ifdef __cplusplus
 }
+#endif
 
-unsigned int hwrand32 (void)
-{
-  while ((RNG->SR & (RNG_SR_SECS | RNG_SR_CECS | RNG_SR_DRDY)) != RNG_SR_DRDY);
-
-  return RNG->DR;
-}
+#endif /* RNG_H_INCLUDED */

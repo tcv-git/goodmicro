@@ -17,7 +17,7 @@
 */
 
 #include "debug_printf.h"
-#include "hwrand.h"
+#include "rng.h"
 #include "udiv64.h"
 
 unsigned long long int test_udiv64i(unsigned long long int, unsigned int, unsigned int, unsigned int *);
@@ -26,15 +26,15 @@ int main (void)
 {
   debug_uart_init();
 
-  hwrand_init ();
+  rng_init ();
 
   unsigned int count      = 0;
   unsigned int sum_cycles = 0;
 
   for (;;)
   {
-    unsigned long long dividend = ((((unsigned long long)hwrand32 ()) << 32) | hwrand32 ());
-    unsigned int       divisor  = hwrand32 ();
+    unsigned long long dividend = ((((unsigned long long)rng_rand32 ()) << 32) | rng_rand32 ());
+    unsigned int       divisor  = rng_rand32 ();
 
     if (divisor)
     {

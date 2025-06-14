@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include "debug_printf.h"
-#include "hwrand.h"
+#include "rng.h"
 
 //#define CLK  84000000uLL
 //#define CLK 168000000uLL
@@ -34,13 +34,13 @@ int main (void)
 {
   debug_uart_init();
 
-  hwrand_init ();
+  rng_init ();
 
   unsigned int count = 0;
 
   for (;;)
   {
-    unsigned int argument = hwrand32 ();
+    unsigned int argument = rng_rand32 ();
 
     unsigned long long int cycles_s  = (((argument * CLK)            )             );
     unsigned long long int cycles_ms = (((argument * CLK) +       999) /       1000);

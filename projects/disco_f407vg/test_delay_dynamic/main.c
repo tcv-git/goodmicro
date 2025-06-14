@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include "system_stm32f4xx.h"
 #include "debug_printf.h"
-#include "hwrand.h"
+#include "rng.h"
 
 unsigned long long int delay_s (unsigned int);
 unsigned long long int delay_ms(unsigned int);
@@ -30,14 +30,14 @@ int main (void)
 {
   debug_uart_init();
 
-  hwrand_init ();
+  rng_init ();
 
   unsigned int count = 0;
 
   for (;;)
   {
-    unsigned int core_clock = hwrand32();
-    unsigned int argument = hwrand32();
+    unsigned int core_clock = rng_rand32();
+    unsigned int argument = rng_rand32();
 
     unsigned long long int cycles_s  = (((1uLL * argument * core_clock)            )             );
     unsigned long long int cycles_ms = (((1uLL * argument * core_clock) +       999) /       1000);

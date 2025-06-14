@@ -18,13 +18,13 @@
 
 #include "lcd.h"
 #include "lcd_text.h"
-#include "hwrand.h"
+#include "rng.h"
 #include "bitpool.h"
 
 static void bitpool_free_test(void)
 {
-  unsigned int argument = (hwrand32() % 32);
-  unsigned int initial = (hwrand32() & ~(1u << argument));
+  unsigned int argument = (rng_rand32() % 32);
+  unsigned int initial = (rng_rand32() & ~(1u << argument));
   unsigned int expected_final = (initial | (1u << argument));
 
   volatile unsigned int control = initial;
@@ -46,7 +46,7 @@ int main (void)
   lcd_init();
   lcd_text_mask(0, 0, 40, 40);
 
-  hwrand_init ();
+  rng_init ();
 
   unsigned int i = 0;
 

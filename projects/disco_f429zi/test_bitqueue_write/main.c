@@ -18,7 +18,7 @@
 
 #include <string.h>
 #include "debug_printf.h"
-#include "hwrand.h"
+#include "rng.h"
 #include "bitqueue.h"
 
 static void bitqueue_write_test(void)
@@ -34,7 +34,7 @@ static void bitqueue_write_test(void)
 
   for (position = 0; position < 8; position++)
   {
-    int message_index = ((hwrand32() % (20 - position)) - 4);
+    int message_index = ((rng_rand32() % (20 - position)) - 4);
 
     if (message_index < 0)
     {
@@ -50,7 +50,7 @@ static void bitqueue_write_test(void)
     }
   }
 
-  int argument_message_index = (hwrand32() % (16 - position));
+  int argument_message_index = (rng_rand32() % (16 - position));
 
   unsigned int argument_message = messages[argument_message_index];
 
@@ -107,7 +107,7 @@ int main (void)
 {
   debug_uart_init();
 
-  hwrand_init ();
+  rng_init ();
 
   unsigned int i = 0;
 

@@ -18,7 +18,7 @@
 
 #include "stm32h7xx.h"
 #include "stm32h7xx_simple_gpio.h"
-#include "hwrand.h"
+#include "rng.h"
 #include "debug_printf.h"
 #include "delay.h"
 
@@ -48,11 +48,11 @@ int main(void)
 {
     leds_init();
     debug_uart_init();
-    hwrand_init();
+    rng_init();
 
     for (;;)
     {
-        unsigned int r = hwrand32();
+        unsigned int r = rng_rand32();
 
         debug_printf("%u\n", r);
 

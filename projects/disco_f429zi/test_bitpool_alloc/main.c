@@ -18,12 +18,12 @@
 
 #include "lcd.h"
 #include "lcd_text.h"
-#include "hwrand.h"
+#include "rng.h"
 #include "bitpool.h"
 
 static void bitpool_alloc_test(void)
 {
-  int          expected_result = (31 - (hwrand32() % 33));
+  int          expected_result = (31 - (rng_rand32() % 33));
   unsigned int expected_final;
   unsigned int initial;
 
@@ -39,7 +39,7 @@ static void bitpool_alloc_test(void)
   }
   else
   {
-    expected_final = (hwrand32() >> (32 - expected_result));
+    expected_final = (rng_rand32() >> (32 - expected_result));
 
     initial = (expected_final | (1u << expected_result));
   }
@@ -64,7 +64,7 @@ int main (void)
   lcd_init();
   lcd_text_mask(0, 0, 40, 40);
 
-  hwrand_init ();
+  rng_init ();
 
   unsigned int i = 0;
 

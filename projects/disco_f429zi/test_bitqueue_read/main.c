@@ -18,7 +18,7 @@
 
 #include <string.h>
 #include "debug_printf.h"
-#include "hwrand.h"
+#include "rng.h"
 #include "bitqueue.h"
 
 static void bitqueue_read_check(unsigned int initial, int expected_result, unsigned int expected_final)
@@ -56,7 +56,7 @@ static void bitqueue_read_test(void)
 
   for (position = 0; position < 8; position++)
   {
-    int message_index = ((hwrand32() % (20 - position)) - 4);
+    int message_index = ((rng_rand32() % (20 - position)) - 4);
 
     if (message_index < 0)
     {
@@ -129,7 +129,7 @@ int main (void)
   bitqueue_read_check(0xEEEEEEEEu, 14, 0x00010000u);
   bitqueue_read_check(0xFFFFFFFFu, 15, 0x00010000u);
 
-  hwrand_init ();
+  rng_init ();
 
   unsigned int i = 0;
 

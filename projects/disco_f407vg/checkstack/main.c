@@ -21,13 +21,13 @@
 #include <string.h>
 #include "debug_printf.h"
 #include "delay.h"
-#include "hwrand.h"
+#include "rng.h"
 #include "stack.h"
 #include "heap.h"
 
 int main(void)
 {
-  hwrand_init();
+  rng_init();
   debug_uart_init();
   debug_printf("booted\n");
 
