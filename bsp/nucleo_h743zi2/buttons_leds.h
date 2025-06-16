@@ -1,4 +1,4 @@
-// main.c
+// buttons_leds.h
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -16,30 +16,25 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include "stm32h7xx.h"
-#include "stm32h7xx_simple_gpio.h"
-#include "rng.h"
-#include "debug_printf.h"
-#include "delay.h"
-#include "buttons_leds.h"
+#ifndef BUTTONS_LEDS_H_INCLUDED
+#define BUTTONS_LEDS_H_INCLUDED
 
-int main(void)
-{
-    buttons_init();
-    leds_init();
-    debug_uart_init();
-    rng_init();
+#include <stdbool.h>
 
-    for (;;)
-    {
-        unsigned int r = rng_rand32();
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-        debug_printf("%u\n", r);
+void buttons_init(void);
+bool button_pressed(void);
 
-        led_red   ((r >> 31) & 1);
-        led_amber ((r >> 30) & 1);
-        led_green ((r >> 29) & 1);
+void leds_init(void);
+void led_red(bool on);
+void led_amber(bool on);
+void led_green(bool on);
 
-        DELAY_MS((r % (button_pressed() ? 201 : 951)) + 50);
-    }
+#ifdef __cplusplus
 }
+#endif
+
+#endif // BUTTONS_LEDS_H_INCLUDED

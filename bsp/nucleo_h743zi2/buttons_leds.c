@@ -1,4 +1,4 @@
-// main.c
+// buttons_leds.c
 // PUBLIC DOMAIN
 // https://www.purposeful.co.uk/goodmicro/
 
@@ -16,31 +16,43 @@
   problems encountered by those who obtain the software through you.
 */
 
+#include <stdbool.h>
 #include "stm32h7xx.h"
 #include "stm32h7xx_simple_gpio.h"
-#include "delay.h"
+#include "peripheral_enable.h"
 #include "buttons_leds.h"
 
-int main(void)
+void buttons_init(void)
 {
-  buttons_init();
-  leds_init();
+    peripheral_enable(&RCC->AHB4ENR, RCC_AHB4ENR_GPIOCEN);
 
-  unsigned int i = 0;
+    GPIO_input(GPIOC, PIN13);
+}
 
-  for (;;)
-  {
-    switch (i)
-    {
-      case 0:  led_red(false);  led_amber(false);  led_green(false);  DELAY_MS(150);  break;
-      case 1:  led_red(true);   led_amber(false);  led_green(false);  DELAY_MS(150);  break;
-      case 2:  led_red(true);   led_amber(true);   led_green(false);  DELAY_MS( 50);  break;
-      case 3:  led_red(false);  led_amber(true);   led_green(false);  DELAY_MS(150);  break;
-      case 4:  led_red(false);  led_amber(true);   led_green(true);   DELAY_MS( 50);  break;
-      case 5:  led_red(false);  led_amber(false);  led_green(true);   DELAY_MS(150);  break;
-    }
+bool button_pressed(void)
+{
+    return ((GPIOC->IDR & PIN13) != 0);
+}
 
-    i += (button_pressed() ? 5 : 1);
-    i %= 6;
-  }
+void leds_init(void)
+{
+    peripheral_enable(&RCC->AHB4ENR, (RCC_AHB4ENR_GPIOBEN | RCC_AHB4ENR_GPIOEEN));
+
+    GPIO_output_push_pull_slow(GPIOB, (PIN0 | PIN14));
+    GPIO_output_push_pull_slow(GPIOE, PIN1);
+}
+
+void led_red(bool on)
+{
+  GPIO_set_reset(GPIOB, (on ? PIN14_HI : PIN14_LO));
+}
+
+void led_amber(bool on)
+{
+  GPIO_set_reset(GPIOE, (on ? PIN1_HI : PIN1_LO));
+}
+
+void led_green(bool on)
+{
+  GPIO_set_reset(GPIOB, (on ? PIN0_HI : PIN0_LO));
 }
