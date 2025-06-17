@@ -30,10 +30,7 @@ void debug_uart_init(void)
 
     peripheral_enable(&RCC->DEBUG_DMA_AHBxENR, DEBUG_DMA_AHBxENR_DMAxEN);
 
-    while (DEBUG_TX_DMAx_Streamx->CR != 0)
-    {
-        DEBUG_TX_DMAx_Streamx->CR = 0;
-    }
+    dma_stop(DEBUG_TX_DMAx_Streamx);
 
     DEBUG_DMAx->DEBUG_TX_DMA_xIFCR = (DEBUG_DMAx->DEBUG_TX_DMA_xISR & DEBUG_TX_DMA_xIFCR_CALLIFx);
     DEBUG_TX_DMAMUXx_Channelx->CCR = DEBUG_TX_DMAMUXx_CxCR_DMAREQ_ID;

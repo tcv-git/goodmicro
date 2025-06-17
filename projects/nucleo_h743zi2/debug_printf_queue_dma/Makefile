@@ -27,6 +27,7 @@ CFILES :=
 CFILES += ../../../bsp/nucleo_h743zi2/system_stm32h7xx_nucleo_h743zi2_480mhz.c
 CFILES += ../../../lib/goodmicro_stm32h7/debug_printf_queue_dma.c
 CFILES += ../../../lib/goodmicro_stm32h7/printf_queue.c
+CFILES += ../../../lib/goodmicro_stm32h7/stm32h7xx_extra.c
 CFILES += main.c
 
 # input for C++ compiler

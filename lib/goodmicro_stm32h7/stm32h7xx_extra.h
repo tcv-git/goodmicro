@@ -193,4 +193,7 @@
 
 #define PriorityGroupingPreemptionBits(n)  (7-(n))
 
+void dma_stop(DMA_Stream_TypeDef *stream);
+
+
 #endif // STM32H7XX_EXTRA_H_INCLUDED

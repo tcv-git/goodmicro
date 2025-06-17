@@ -85,10 +85,7 @@ void newuart_init(void)
 
     peripheral_enable(&RCC->NEWUART_DMA_AHBxENR, NEWUART_DMA_AHBxENR_DMAxEN);
 
-    while (NEWUART_TX_DMAx_Streamx->CR != 0)
-    {
-      NEWUART_TX_DMAx_Streamx->CR = 0;
-    }
+    dma_stop(NEWUART_TX_DMAx_Streamx);
 
     NEWUART_DMAx->NEWUART_TX_DMA_xIFCR = (NEWUART_DMAx->NEWUART_TX_DMA_xISR & NEWUART_TX_DMA_xIFCR_CALLIFx);
     NEWUART_TX_DMAMUXx_Channelx->CCR   = NEWUART_TX_DMAMUXx_CCR_DMAREQ_ID;
