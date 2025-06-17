@@ -4,6 +4,7 @@
 #  https://www.purposeful.co.uk/goodmicro/
 #
 
+.EXTRA_PREREQS := Makefile
 MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 
 
