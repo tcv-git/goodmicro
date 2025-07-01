@@ -28,3 +28,6 @@
 [submodule "lib/Device_STM32L4xx"]
 	path = lib/Device_STM32L4xx
 	url = https://github.com/STMicroelectronics/cmsis-device-l4.git
+[submodule "lib/CMSIS-RTX"]
+	path = lib/CMSIS-RTX
+	url = https://github.com/ARM-software/CMSIS-RTX.git
