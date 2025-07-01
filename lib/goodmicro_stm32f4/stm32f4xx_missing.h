@@ -174,8 +174,6 @@ typedef struct
 //
 // #############################################################################
 
-#define FLASH_SR_OPERR                          FLASH_SR_SOP                             /*!< 0x00000002 */
-
 #define FLASH_CR_ERRIE_Pos                      (25U)
 #define FLASH_CR_ERRIE_Msk                      (0x1UL << FLASH_CR_ERRIE_Pos)            /*!< 0x02000000 */
 #define FLASH_CR_ERRIE                          FLASH_CR_ERRIE_Msk

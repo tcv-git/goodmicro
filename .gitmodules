@@ -1,3 +1,30 @@
 [submodule "submodules/CMSIS_6"]
 	path = submodules/CMSIS_6
 	url = https://github.com/ARM-software/CMSIS_6.git
+[submodule "lib/Device_STM32F0xx"]
+	path = lib/Device_STM32F0xx
+	url = https://github.com/STMicroelectronics/cmsis-device-f0.git
+[submodule "lib/Device_STM32F1xx"]
+	path = lib/Device_STM32F1xx
+	url = https://github.com/STMicroelectronics/cmsis-device-f1.git
+[submodule "lib/Device_STM32F2xx"]
+	path = lib/Device_STM32F2xx
+	url = https://github.com/STMicroelectronics/cmsis-device-f2.git
+[submodule "lib/Device_STM32F4xx"]
+	path = lib/Device_STM32F4xx
+	url = https://github.com/STMicroelectronics/cmsis-device-f4.git
+[submodule "lib/Device_STM32F7xx"]
+	path = lib/Device_STM32F7xx
+	url = https://github.com/STMicroelectronics/cmsis-device-f7.git
+[submodule "lib/Device_STM32G4xx"]
+	path = lib/Device_STM32G4xx
+	url = https://github.com/STMicroelectronics/cmsis-device-g4.git
+[submodule "lib/Device_STM32H7xx"]
+	path = lib/Device_STM32H7xx
+	url = https://github.com/STMicroelectronics/cmsis-device-h7.git
+[submodule "lib/Device_STM32L0xx"]
+	path = lib/Device_STM32L0xx
+	url = https://github.com/STMicroelectronics/cmsis-device-l0.git
+[submodule "lib/Device_STM32L4xx"]
+	path = lib/Device_STM32L4xx
+	url = https://github.com/STMicroelectronics/cmsis-device-l4.git
