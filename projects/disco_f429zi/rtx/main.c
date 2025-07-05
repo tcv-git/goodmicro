@@ -16,38 +16,73 @@
   problems encountered by those who obtain the software through you.
 */
 
-#include "cmsis_os2.h"
+#include "stm32f4xx.h"
+#include "stm32f4xx_it.h"
 #include "stm32f4xx_simple_gpio.h"
+#include "peripheral_enable.h"
 #include "delay.h"
+#include "cmsis_os2.h"
 
 #define GREEN_ON   PIN13_HI
 #define GREEN_OFF  PIN13_LO
 #define RED_ON     PIN14_HI
 #define RED_OFF    PIN14_LO
 
-__NO_RETURN static void app_main (void *argument)
+static void __NO_RETURN task1(void *argument);
+static void __NO_RETURN task2(void *argument);
+
+static osSemaphoreId_t semaphore1;
+static osSemaphoreId_t semaphore2;
+
+int main(void)
 {
-  (void)argument;
+    peripheral_enable(&RCC->AHB1ENR, RCC_AHB1ENR_GPIOGEN);
+    GPIO_output_push_pull_slow(GPIOG, (PIN13 | PIN14));
 
-  RCC->AHB1ENR |= (RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOGEN);
-  (void)RCC->AHB1ENR;
+    osKernelInitialize();
 
-  GPIO_output_push_pull_slow(GPIOG, (PIN13 | PIN14));
-  GPIO_input(GPIOA, PIN0);
+    semaphore1 = osSemaphoreNew(1, 0, NULL);
+    semaphore2 = osSemaphoreNew(1, 0, NULL);
 
-  for (;;)
-  {
-    GPIO_set_reset(GPIOG, (GREEN_ON | RED_OFF));
-    DELAY_MS((GPIOA->IDR & PIN0) ? 150 : 400);
-    GPIO_set_reset(GPIOG, (RED_ON | GREEN_OFF));
-    DELAY_MS((GPIOA->IDR & PIN0) ? 150 : 400);
-  }
+    osThreadId_t thread1 = osThreadNew(task1, NULL, NULL);
+    osThreadId_t thread2 = osThreadNew(task2, NULL, NULL);
+
+#if 0
+    osThreadSetPriority(thread1, osPriorityNormal);
+    osThreadSetPriority(thread2, osPriorityAboveNormal);
+#endif
+
+    NVIC_EnableIRQ(TIM2_IRQn);
+
+    osKernelStart();
+    for (;;);
 }
 
-int main (void)
+static void __NO_RETURN task1(void *argument)
 {
-  osKernelInitialize();                 // Initialize CMSIS-RTOS
-  osThreadNew(app_main, NULL, NULL);    // Create application main thread
-  osKernelStart();                      // Start thread execution
-  for (;;) {}
+    (void)argument;
+
+    for(;;)
+    {
+        NVIC_SetPendingIRQ(TIM2_IRQn);
+        (void)osSemaphoreAcquire(semaphore1, osWaitForever);
+        GPIO_set_reset(GPIOG, GREEN_ON);
+    }
+}
+
+void TIM2_IRQHandler(void)
+{
+    (void)osSemaphoreRelease(semaphore2);
+}
+
+static void __NO_RETURN task2(void *argument)
+{
+    (void)argument;
+
+    for (;;)
+    {
+        (void)osSemaphoreAcquire(semaphore2, osWaitForever);
+        GPIO_set_reset(GPIOG, GREEN_OFF);
+        (void)osSemaphoreRelease(semaphore1);
+    }
 }
