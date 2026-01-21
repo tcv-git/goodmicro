@@ -1,38 +1,68 @@
 // main.c
-// PUBLIC DOMAIN
-// https://www.purposeful.co.uk/goodmicro/
 
-/*
-  I, Tom Vajzovic, am the author of this software and its documentation.
-  I permanently abandon all copyright and other intellectual property rights
-  in them.
-
-  I am fairly certain that the software does what the documentation says it
-  does, but I do not guarantee that it does, or that it does what you think it
-  should.  I do not guarantee that it will not have undesirable side effects.
-
-  If you use, modify or distribute this software then you do so at your own
-  risk.  If you do not pass on this warning then you may be responsible for any
-  problems encountered by those who obtain the software through you.
-*/
-
+#include <stdint.h>
+#include <stdbool.h>
 #include "stm32g4xx.h"
 #include "stm32g4xx_simple_gpio.h"
+#include "peripheral_enable.h"
 #include "delay.h"
+
+static void button_init(void)
+{
+    peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_GPIOCEN);
+
+    GPIO_input(GPIOC, PIN13);
+}
+
+static bool button_pressed(void)
+{
+    return ((GPIOC->IDR & PIN13) != 0);
+}
+
+static void led_init(void)
+{
+    peripheral_enable(&RCC->AHB2ENR, RCC_AHB2ENR_GPIOAEN);
+
+    GPIO_output_push_pull_slow(GPIOA, PIN5);
+}
+
+static void led_on(void)
+{
+    GPIO_set_reset(GPIOA, PIN5_HI);
+}
+
+static void led_off(void)
+{
+      GPIO_set_reset(GPIOA, PIN5_LO);
+}
 
 int main(void)
 {
-  RCC->AHB2ENR |= (RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOCEN);
-  (void)RCC->AHB2ENR;
+    led_init();
+    button_init();
 
-  GPIO_output_push_pull_slow(GPIOA, PIN5);
-  GPIO_input(GPIOC, PIN13);
+    for (;;)
+    {
+        DELAY_MS(100);
+        while (!button_pressed());
+        DELAY_MS(100);
+        while (button_pressed());
 
-  for (;;)
-  {
-    GPIO_set_reset(GPIOA, PIN5_HI);
-    DELAY_MS((GPIOC->IDR & PIN13) ? 150 : 400);
-    GPIO_set_reset(GPIOA, PIN5_LO);
-    DELAY_MS((GPIOC->IDR & PIN13) ? 150 : 400);
-  }
+        led_on();
+
+        // trigger lo
+        //
+        // pwm on
+
+        DELAY_MS(100);
+        while (!button_pressed());
+        DELAY_MS(100);
+        while (button_pressed());
+
+        // pwm off
+        //
+        // trigger hi
+
+        led_off();
+    }
 }
