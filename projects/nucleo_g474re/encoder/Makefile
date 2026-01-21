@@ -242,4 +242,4 @@ erase :
 	../../../scripts/erase_stm32f2_swd_hrst
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32f2_swd_hrst $<
+	../../../scripts/program_stm32g4_swd_hrst $<
