@@ -18,7 +18,7 @@ ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_dynamic.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
-ASFILES += ../../../lib/goodmicro_cortexm/startup.s
+ASFILES += ../../../lib/goodmicro_cortexm/startup_noexit.s
 ASFILES += ../../../lib/goodmicro_stm32g4/vectors/vectors_stm32g474xx.s
 
 # input for C compiler
