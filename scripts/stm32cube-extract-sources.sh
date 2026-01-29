@@ -212,4 +212,23 @@ copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Te
 copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/SW4STM32/STM32L452RE_NUCLEO/.project
 copyto projects/nucleo_l452re/.template    STM32CubeL4/Projects/NUCLEO-L452RE/Templates/Src/*.c
 
+copyto bsp/STM32H5xx_Nucleo                STM32CubeH5/Drivers/BSP/STM32H5xx_Nucleo/*.c
+copyto bsp/STM32H5xx_Nucleo                STM32CubeH5/Drivers/BSP/STM32H5xx_Nucleo/*.h
+copyto lib/Device_STM32H5xx/Include        STM32CubeH5/Drivers/CMSIS/Device/ST/STM32H5xx/Include/*.h
+copyto lib/Device_STM32H5xx/Include        STM32CubeH5/Drivers/CMSIS/Device/ST/STM32H5xx/Include/Templates/*.h
+copyto lib/Device_STM32H5xx/Source         STM32CubeH5/Drivers/CMSIS/Device/ST/STM32H5xx/Source/Templates/*.c
+copyto lib/Device_STM32H5xx/Source         STM32CubeH5/Drivers/CMSIS/Device/ST/STM32H5xx/Source/Templates/gcc/*.s
+copyto lib/Device_STM32H5xx/Linker         STM32CubeH5/Drivers/CMSIS/Device/ST/STM32H5xx/Source/Templates/gcc/linker/*.ld
+copyto lib/CMSIS/Include                   STM32CubeH5/Drivers/CMSIS/Include/*.h
+copyto lib/STM32H5xx_HAL_Driver/Inc        STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc/*.h
+copyto lib/STM32H5xx_HAL_Driver/Inc/Legacy STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc/Legacy/*.h
+copyto lib/STM32H5xx_HAL_Driver/Src        STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/*.c
+copyto projects/nucleo_h563zi/.template    STM32CubeH5/Projects/NUCLEO-H563ZI/Templates/TrustZoneDisabled/Inc/*.h
+copyto projects/nucleo_h563zi/.template    STM32CubeH5/Projects/NUCLEO-H563ZI/Templates/TrustZoneDisabled/Src/*.c
+copyto projects/nucleo_h563zi/.template    STM32CubeH5/Projects/NUCLEO-H563ZI/Templates/TrustZoneDisabled/STM32CubeIDE/*.ld
+copyto projects/nucleo_h563zi/.template    STM32CubeH5/Projects/NUCLEO-H563ZI/Templates/TrustZoneDisabled/STM32CubeIDE/.cproject
+copyto projects/nucleo_h563zi/.template    STM32CubeH5/Projects/NUCLEO-H563ZI/Templates/TrustZoneDisabled/STM32CubeIDE/.project
+copyto projects/nucleo_h563zi/.template    STM32CubeH5/Projects/NUCLEO-H563ZI/Templates/TrustZoneDisabled/STM32CubeIDE/Example/Startup/*.s
+copyto projects/nucleo_h563zi/.template    STM32CubeH5/Projects/NUCLEO-H563ZI/Templates/TrustZoneDisabled/STM32CubeIDE/Example/User/*.c
+
 rm tmp
