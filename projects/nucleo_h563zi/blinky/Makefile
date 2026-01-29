@@ -238,7 +238,7 @@ clean :
 .PHONY : erase flash
 
 erase :
-	../../../scripts/erase_stm32f4_swd_hrst
+	../../../scripts/erase_stm32h5_swd_hrst
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32f4_swd_hrst $<
+	../../../scripts/program_stm32h5_swd_hrst $<
