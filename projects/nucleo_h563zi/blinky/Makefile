@@ -24,7 +24,7 @@ ASFILES += ../../../lib/goodmicro_stm32h5/vectors/vectors_stm32h563xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_h563zi/buttons_leds.c
-CFILES += ../../../lib/Device_STM32H5xx/Source/system_stm32h5xx.c
+CFILES += ../../../bsp/nucleo_h563zi/system_nucleo_h563zi_250mhz.c
 CFILES += main.c
 
 # input for C++ compiler
