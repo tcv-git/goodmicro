@@ -35,6 +35,10 @@ void debug_printf(const char *fmt, ...) __attribute__((format(printf,1,2)));
 //
 void debug_putc(unsigned char c);
 
+// read an unsigned byte from the interface or return negative if none available
+//
+int debug_getc(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -27,14 +27,16 @@ void debug_uart_init(void)
     peripheral_reset_enable(&RCC->DEBUG_UART_APBx_RSTR, &RCC->DEBUG_UART_APBx_ENR, DEBUG_UART_APBx_ENR_UARTxEN);
 
     peripheral_enable(&RCC->DEBUG_TX_AHBxENR, DEBUG_TX_AHBxENR_GPIOxEN);
+    peripheral_enable(&RCC->DEBUG_RX_AHBxENR, DEBUG_RX_AHBxENR_GPIOxEN);
 
     GPIO_alternate_push_pull_slow (DEBUG_TX_GPIOx, DEBUG_TX_PINx, DEBUG_TX_AFx);
+    GPIO_alternate_pull_up_slow   (DEBUG_RX_GPIOx, DEBUG_RX_PINx, DEBUG_RX_AFx);
 
     DEBUG_UARTx->CR1 = 0;
     DEBUG_UARTx->CR2 = 0;
     DEBUG_UARTx->CR3 = 0;
     DEBUG_UARTx->BRR = ((DEBUG_UART_APBx_CLK + (DEBUG_BAUD / 2)) / DEBUG_BAUD);
-    DEBUG_UARTx->CR1 = (USART_CR1_FIFOEN | USART_CR1_TE | USART_CR1_UE);
+    DEBUG_UARTx->CR1 = (USART_CR1_FIFOEN | USART_CR1_TE | USART_CR1_RE | USART_CR1_UE);
 }
 
 static void internal_putc(unsigned char c)
@@ -86,4 +88,17 @@ void debug_printf(const char *fmt, ...)
   {
     debug_putc(buffer[i]);
   }
+}
+
+int debug_getc(void)
+{
+    if (((DEBUG_UARTx->CR1 & USART_CR1_UE) == USART_CR1_UE)
+        && ((DEBUG_UARTx->ISR & USART_ISR_RXNE_RXFNE) == USART_ISR_RXNE_RXFNE))
+    {
+        return (uint8_t)DEBUG_UARTx->RDR;
+    }
+    else
+    {
+        return -1;
+    }
 }
