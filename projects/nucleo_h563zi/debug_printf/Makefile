@@ -16,7 +16,7 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 # input for assembler
 ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
-ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_dynamic.s
+ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_250MHz.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_cortexm/startup_noexit.s
 ASFILES += ../../../lib/goodmicro_stm32h5/vectors/vectors_stm32h563xx.s
@@ -82,7 +82,7 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
 CPPFLAGS += -DSTM32H563xx
-CPPFLAGS += -DSYSTEM_CORE_CLOCK=0 # zero means check SystemCoreClock variable at runtime
+CPPFLAGS += -DSYSTEM_CORE_CLOCK=250000000
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
 
