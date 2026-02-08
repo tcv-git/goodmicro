@@ -23,6 +23,7 @@ ASFILES += ../../../lib/goodmicro_stm32l0/vectors/vectors_stm32l073xx.s
 
 # input for C compiler
 CFILES :=
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32l0/system_stm32l0xx_msi_2mhz.c
 CFILES += main.c
 

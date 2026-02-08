@@ -27,6 +27,7 @@ CFILES :=
 CFILES += ../../../bsp/feather_f405rg/alnum.c
 CFILES += ../../../bsp/feather_f405rg/limit_buttons.c
 CFILES += ../../../lib/goodmicro_armv7m/uptime.c
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32f4/i2c_master.c
 CFILES += ../../../lib/goodmicro_stm32f4/system_stm32f405-439.c
 CFILES += main.c

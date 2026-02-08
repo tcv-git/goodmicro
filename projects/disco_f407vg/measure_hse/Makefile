@@ -24,6 +24,7 @@ ASFILES += measure_hse_loop.s
 
 # input for C compiler
 CFILES :=
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32f4/debug_printf_blocking.c
 CFILES += ../../../lib/goodmicro_stm32f4/system_stm32f405-439.c
 CFILES += measure_hse.c

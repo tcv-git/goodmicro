@@ -24,6 +24,7 @@ ASFILES += ../../../lib/goodmicro_stm32f4/vectors/vectors_stm32f429xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/eval_f429ni/eval_f429ni_sdram.c
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32f4/debug_printf_blocking.c
 CFILES += ../../../lib/goodmicro_stm32f4/system_stm32f405-439.c
 CFILES += main.c

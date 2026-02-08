@@ -28,6 +28,7 @@ CFILES += ../../../bsp/disco_f429zi/disco_f429zi_sdram.c
 CFILES += ../../../bsp/disco_f429zi/lcd.c
 CFILES += ../../../bsp/disco_f429zi/lcd_text.c
 CFILES += ../../../lib/goodmicro_armv7m/uptime.c
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32f4/i2c_master.c
 CFILES += ../../../lib/goodmicro_stm32f4/system_stm32f405-439.c
 CFILES += main.c

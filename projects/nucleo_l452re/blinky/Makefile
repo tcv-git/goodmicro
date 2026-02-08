@@ -24,6 +24,7 @@ ASFILES += ../../../lib/goodmicro_stm32l4/vectors/vectors_stm32l452xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_l452re/system_nucleo_l452re_80mhz.c
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += main.c
 
 # input for C++ compiler

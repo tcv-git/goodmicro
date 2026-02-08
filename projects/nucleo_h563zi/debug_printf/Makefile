@@ -24,6 +24,7 @@ ASFILES += ../../../lib/goodmicro_stm32h5/vectors/vectors_stm32h563xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_h563zi/system_nucleo_h563zi_250mhz.c
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32h5/debug_printf_blocking.c
 CFILES += main.c
 

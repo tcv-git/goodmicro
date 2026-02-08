@@ -20,10 +20,11 @@ ASFILES += ../../../lib/Device_STM32F1xx/Source/startup_stm32f100xb.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/STM32VL-Discovery/stm32vl_discovery.c
+CFILES += ../../../bsp/disco_f100rb/system_disco_f100rb_24mhz.c
 CFILES += ../../../lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
 CFILES += ../../../lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
 CFILES += ../../../lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
-CFILES += ../../../bsp/disco_f100rb/system_disco_f100rb_24mhz.c
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += main.c
 
 # input for C++ compiler

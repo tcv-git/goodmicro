@@ -24,6 +24,7 @@ ASFILES += ../../../lib/goodmicro_stm32f4/vectors/vectors_stm32f446xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_f446re/system_nucleo_f446re_180mhz.c
+CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32f4/debug_printf_blocking.c
 CFILES += main.c
 
