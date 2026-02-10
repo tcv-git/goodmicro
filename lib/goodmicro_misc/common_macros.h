@@ -31,4 +31,12 @@
 #define MAX(a,b)  (((a) < (b)) ? (b) : (a))
 #endif
 
+#ifndef SUCCESS
+#define SUCCESS  0
+#endif
+
+#ifndef FAILURE
+#define FAILURE  (-1)
+#endif
+
 #endif // COMMON_MACROS_H_INCLUDED
