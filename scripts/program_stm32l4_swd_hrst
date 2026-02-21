@@ -61,7 +61,7 @@ cat >"$cfg" <<EOF
 # stlink to stm32l4xx by swd with system reset and no test reset
 #
 
-source [find interface/stlink.cfg]
+source [find interface/stlink-dap.cfg]
 
 transport select dapdirect_swd
 

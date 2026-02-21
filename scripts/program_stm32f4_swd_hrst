@@ -61,9 +61,9 @@ cat >"$cfg" <<EOF
 # stlink to stm32f4xx by swd with system reset and no test reset
 #
 
-source [find interface/stlink.cfg]
+source [find interface/stlink-dap.cfg]
 
-transport select hla_swd
+transport select dapdirect_swd
 
 # increase working area to 128KB
 set WORKAREASIZE 0x20000
