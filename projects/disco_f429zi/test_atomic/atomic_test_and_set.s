@@ -120,15 +120,14 @@ atomic_dec_nowrap_u8:
 
 atomic_set_u8_if_zero:
     ldrexb  r2, [r0]
-    cmp     r2, 0
-    ittt    ne
-    clrexne
-    movne   r0, r2
-    bxne    lr
+    cbnz    r2, 1f
     strexb  r2, r1, [r0]
     tst     r2, r2
     bne.n   atomic_set_u8_if_zero
     movs    r0, 0
+    bx      lr
+1:  movs    r0, 1
+    clrex
     bx      lr
 
 .size atomic_set_u8_if_zero, .-atomic_set_u8_if_zero
@@ -146,14 +145,14 @@ atomic_set_i8_if_le_zero:
     ldrexb  r2, [r0]
     sxtb    r2, r2
     cmp     r2, 0
-    ittt    gt
-    movgt   r0, 1
-    clrexgt
-    bxgt    lr
+    bgt     1f
     strexb  r2, r1, [r0]
     tst     r2, r2
     bne.n   atomic_set_i8_if_le_zero
     movs    r0, 0
+    bx      lr
+1:  movs    r0, 1
+    clrex
     bx      lr
 
 .size atomic_set_i8_if_le_zero, .-atomic_set_i8_if_le_zero
