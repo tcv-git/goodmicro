@@ -70,6 +70,12 @@ uint32_t atomic_swap_u32(volatile uint32_t*, uint32_t);
 //
 uint32_t atomic_or_u32(volatile uint32_t *, uint32_t);
 
+// If the word pointed to by the first argument is equal to the second argument
+// change its value to the third argument and return zero, otherwise do not
+// change anything and return non-zero.
+//
+int atomic_change_u32_from_to(volatile uint32_t *, uint32_t, uint32_t);
+
 // If the byte pointed to by the third argument is zero, atomically clear the
 // bits set in the second argument from the word pointed to by the first
 // argument and return zero. Otherwise do not change anything and return
