@@ -118,6 +118,20 @@ int main(void)
 #endif
 
 #if 0
+  volatile uint32_t value = 12345;
+
+  int result;
+
+  result = atomic_change_u32_from_to(&value, 12345, 54321);     lcd_printf("result %i value %u\n", result, (unsigned int)value);
+  result = atomic_change_u32_from_to(&value, 54321, 77);        lcd_printf("result %i value %u\n", result, (unsigned int)value);
+
+  value = 1;
+
+  result = atomic_change_u32_from_to(&value, 0, 5);             lcd_printf("result %i value %u\n", result, (unsigned int)value);
+  result = atomic_change_u32_from_to(&value, -1, 3);            lcd_printf("result %i value %u\n", result, (unsigned int)value);
+#endif
+
+#if 0
   volatile uint32_t word = 0xFFFFFFFFuL;
   volatile uint8_t test;
 
@@ -135,7 +149,6 @@ int main(void)
   test = 42; result = atomic_bic_u32_if_u8_eq_zero(&word, 0xFF00, &test); lcd_printf("result %i value %08X\n", result, word);
 
   test = 0; result = atomic_bic_u32_if_u8_eq_zero(&word, 0xF000, &test); lcd_printf("result %i value %08X\n", result, word);
-
 #endif
 
   for (;;);

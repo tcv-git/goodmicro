@@ -216,6 +216,30 @@ atomic_or_u32:
 .size atomic_or_u32, .-atomic_or_u32
 
 
+.section  .text.atomic_change_u32_from_to, "ax", %progbits
+
+.global   atomic_change_u32_from_to
+.type     atomic_change_u32_from_to, %function
+.thumb_func
+
+@; int atomic_change_u32_from_to(volatile uint32_t *, uint32_t, uint32_t);
+
+atomic_change_u32_from_to:
+    ldrex   r3, [r0]
+    cmp     r3, r1
+    bne     1f
+    strex   r3, r2, [r0]
+    tst     r3, r3
+    bne.n   atomic_change_u32_from_to
+    movs    r0, 0
+    bx      lr
+1:  clrex
+    movs    r0, 1
+    bx      lr
+
+.size atomic_change_u32_from_to, .-atomic_change_u32_from_to
+
+
 .section  .text.atomic_bic_u32_if_u8_eq_zero, "ax", %progbits
 
 .global   atomic_bic_u32_if_u8_eq_zero
