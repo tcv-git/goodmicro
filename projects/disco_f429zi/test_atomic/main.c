@@ -28,9 +28,7 @@ int main(void)
 
   lcd_printf("hello\n");
 
-
 #if 1
-
   volatile uint8_t  value8;
   volatile uint32_t value32;
 
@@ -65,6 +63,23 @@ int main(void)
 
   value = 255;  result = atomic_inc_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
   value = 255;  result = atomic_dec_nowrap_u8(&value);  lcd_printf("result %i value %i\n", result, value);
+#endif
+
+#if 0
+  volatile uint8_t value = 0;
+
+  int result;
+
+  result = atomic_set_u8_if_zero(&value, 4);      lcd_printf("result %i value %i\n", result, value);
+  result = atomic_set_u8_if_zero(&value, 7);      lcd_printf("result %i value %i\n", result, value);
+
+  value = 255;
+
+  result = atomic_set_u8_if_zero(&value, 5);      lcd_printf("result %i value %i\n", result, value);
+
+  value = 0;
+
+  result = atomic_set_u8_if_zero(&value, 3);      lcd_printf("result %i value %i\n", result, value);
 #endif
 
 #if 0
