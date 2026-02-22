@@ -15,12 +15,12 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 
 # input for assembler
 ASFILES :=
-ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
+ASFILES += ../../../lib/goodmicro_armv7m/atomic_test_and_set.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_180MHz.s
+ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_stm32f4/startup/startup_stm32f405-439_extram.s
 ASFILES += ../../../lib/goodmicro_stm32f4/vectors/vectors_stm32f429xx.s
-ASFILES += atomic_test_and_set.s
 
 # input for C compiler
 CFILES :=
