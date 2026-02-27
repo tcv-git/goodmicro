@@ -26,9 +26,9 @@ ASFILES += ../../../lib/goodmicro_stm32h7/vectors/vectors_stm32h743xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../bsp/nucleo_h743zi2/system_stm32h7xx_nucleo_h743zi2_480mhz.c
+CFILES += ../../../lib/goodmicro_armv7m/printf_queue.c
 CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32h7/debug_printf_blocking.c
-CFILES += ../../../lib/goodmicro_stm32h7/printf_queue.c
 CFILES += ../../../lib/goodmicro_stm32h7/stm32h7xx_extra.c
 CFILES += main.c
 

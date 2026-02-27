@@ -28,9 +28,9 @@ CFILES :=
 CFILES += ../../../bsp/disco_f429zi/disco_f429zi_sdram.c
 CFILES += ../../../bsp/disco_f429zi/lcd.c
 CFILES += ../../../bsp/disco_f429zi/lcd_text.c
+CFILES += ../../../lib/goodmicro_armv7m/printf_queue.c
 CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32f4/debug_printf_blocking.c
-CFILES += ../../../lib/goodmicro_stm32f4/printf_queue.c
 CFILES += ../../../lib/goodmicro_stm32f4/system_stm32f405-439.c
 CFILES += main.c
 
@@ -90,6 +90,9 @@ CPPFLAGS :=
 CPPFLAGS += -DSTM32F429xx
 CPPFLAGS += -DCMSIS_device_header='"stm32f4xx.h"'
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
+CPPFLAGS += -DPRINTF_BUFFER_SIZE=64
+CPPFLAGS += -DPRINTF_BUFFER_COUNT=8
+CPPFLAGS += -DPRINTF_BUFFER_SECTION='".sram_uninit.printf_queue_buffers"'
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
 
 # flags for assembler

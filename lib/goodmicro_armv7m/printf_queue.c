@@ -21,18 +21,35 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
-#include "stm32h7xx.h"
+#include CMSIS_device_header
 #include "bitpool.h"
 #include "bitqueue.h"
 #include "printf_queue.h"
 
 
-#define BUFFER_SIZE  128 // any size up to UINT16_MAX
-#define BUFFER_COUNT  10 // can be up to 16, but only 8 can be queued at once
+#ifndef PRINTF_BUFFER_SIZE
+#define PRINTF_BUFFER_SIZE  128 // any size up to UINT16_MAX
+#endif
 
-static char buffers[BUFFER_COUNT][BUFFER_SIZE] __attribute__((aligned(__SCB_DCACHE_LINE_SIZE)));
+#ifndef PRINTF_BUFFER_COUNT
+#define PRINTF_BUFFER_COUNT  10 // can be up to 16, but only 8 can be queued at once
+#endif
 
-static volatile unsigned int buffers_available = ((1uLL << BUFFER_COUNT) - 1);
+#if defined(__DCACHE_PRESENT) && (__DCACHE_PRESENT != 0)
+#define ATTRIBUTE_ALIGNED __attribute__((aligned(__SCB_DCACHE_LINE_SIZE)))
+#else
+#define ATTRIBUTE_ALIGNED
+#endif
+
+#ifdef PRINTF_BUFFER_SECTION
+#define ATTRIBUTE_SECTION __attribute__((section(PRINTF_BUFFER_SECTION)))
+#else
+#define ATTRIBUTE_SECTION
+#endif
+
+static char buffers[PRINTF_BUFFER_COUNT][PRINTF_BUFFER_SIZE] ATTRIBUTE_ALIGNED ATTRIBUTE_SECTION;
+
+static volatile unsigned int buffers_available = ((1uLL << PRINTF_BUFFER_COUNT) - 1);
 static volatile unsigned int buffer_queue      = BITQUEUE_EMPTY_INIT;
 
 
@@ -47,7 +64,7 @@ void printf_queue_put(const char *format, va_list args)
     return;
   }
 
-  int len = vsnprintf(buffers[buffer_index], BUFFER_SIZE, format, args);
+  int len = vsnprintf(buffers[buffer_index], PRINTF_BUFFER_SIZE, format, args);
 
   if (len < 1)
   {
@@ -102,14 +119,16 @@ char *printf_queue_get_crlf(uint16_t *p_length)
 
     if ((length > 0) && (buffer[length - 1] == '\n'))
     {
-      if ((length == 1) || (buffer[length - 2] != '\r'))
+      if ((length < 2) || (buffer[length - 2] != '\r'))
       {
         buffer[length - 1] = '\r';
         buffer[length++  ] = '\n';
       }
     }
 
-    SCB_CleanInvalidateDCache_by_Addr(buffer, BUFFER_SIZE);
+#if defined(__DCACHE_PRESENT) && (__DCACHE_PRESENT != 0)
+    SCB_CleanInvalidateDCache_by_Addr(buffer, PRINTF_BUFFER_SIZE);
+#endif
   }
 
   if (p_length)
@@ -127,7 +146,7 @@ void printf_queue_free(const char *buffer)
 {
   if (buffer)
   {
-    unsigned int buffer_index = ((buffer - &buffers[0][0]) / BUFFER_SIZE);
+    unsigned int buffer_index = ((buffer - &buffers[0][0]) / PRINTF_BUFFER_SIZE);
 
     bitpool_free(&buffers_available, buffer_index);
   }
