@@ -77,6 +77,7 @@ COMMON_FLAGS += -fno-diagnostics-show-caret
 # NB: inlude path goes under INPUT DEFINITIONS above
 CPPFLAGS :=
 CPPFLAGS += -DSTM32F100xB
+CPPFLAGS += -DCMSIS_device_header='"stm32f1xx.h"'
 CPPFLAGS += -D__PROGRAM_START=Reset_Handler
 CPPFLAGS += $(foreach IDIR, $(INCLUDE_PATH), -I $(IDIR))
 
