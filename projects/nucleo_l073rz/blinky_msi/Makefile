@@ -235,10 +235,10 @@ clean :
 
 .PHONY : erase flash
 
-# FIXME use correct scripts
+# explicit call to /bin/bash and redundant quoting required for windows
 
 erase :
-	../../../bsp/nucleo_l073rz/erase.sh
+	/bin/bash "../../../bsp/nucleo_l073rz/erase.sh"
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../bsp/nucleo_l073rz/program.sh $<
+	/bin/bash "../../../bsp/nucleo_l073rz/program.sh" "$<"

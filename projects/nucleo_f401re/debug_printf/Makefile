@@ -239,8 +239,10 @@ clean :
 
 .PHONY : erase flash
 
+# explicit call to /bin/bash and redundant quoting required for windows
+
 erase :
-	../../../bsp/nucleo_f401re/erase.sh
+	/bin/bash "../../../bsp/nucleo_f401re/erase.sh"
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../bsp/nucleo_f401re/program.sh $<
+	/bin/bash "../../../bsp/nucleo_f401re/program.sh" "$<"
