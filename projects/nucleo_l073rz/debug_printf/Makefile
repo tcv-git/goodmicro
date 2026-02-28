@@ -240,7 +240,7 @@ clean :
 # FIXME use correct scripts
 
 erase :
-	../../../scripts/erase_stm32f2_swd_hrst
+	../../../bsp/nucleo_l073rz/erase.sh
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32f2_swd_hrst $<
+	../../../bsp/nucleo_l073rz/program.sh $<

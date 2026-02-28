@@ -1,6 +1,6 @@
-#! /bin/bash -e
+#! /bin/bash -eu
 
-# program_stm32l4_swd_hrst.sh
+# program.sh
 # PUBLIC DOMAIN
 # https://www.purposeful.co.uk/goodmicro/
 
@@ -17,6 +17,11 @@
 # risk.  If you do not pass on this warning then you may be responsible for any
 # problems encountered by those who obtain the software through you.
 
+set +e
+trap 'echo "this script must be executed not sourced" >&2' RETURN
+return 1 2>/dev/null
+trap - RETURN
+set -eu
 
 this_script="$(readlink -ve "$BASH_SOURCE")"
 this_script_dir="$(dirname "$this_script")"
@@ -34,15 +39,15 @@ for winprog in "/cygdrive/c/Program Files/STMicroelectronics/STM32 ST-LINK Utili
 do
   if [ -x "$winprog" ]
   then
-    exec "$winprog" -c SWD FREQ=1800 UR -P "$hex" -V -HardRst
+    exec "$winprog" -c SWD FREQ=1000 UR -P "$hex" -V -HardRst
   fi
 done
 
-for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
+for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools /c/ST/STM32CubeIDE*/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
 do
   if [ -x "$d/bin/STM32_Programmer_CLI" ]
   then
-    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=SWD freq=2000 reset=HWrst mode=UR --write "$hex" --verify -hardRst -run
+    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=SWD freq=1000 reset=HWrst mode=UR --write "$hex" --verify -hardRst -run
   fi
 done
 
@@ -52,22 +57,4 @@ then
   exit 1
 fi
 
-cfg="$(tempfile -s.openocd.cfg)"
-
-trap "rm -f \"$cfg\"" EXIT
-
-cat >"$cfg" <<EOF
-#
-# stlink to stm32l4xx by swd with system reset and no test reset
-#
-
-source [find interface/stlink-dap.cfg]
-
-transport select dapdirect_swd
-
-source [find target/stm32l4x.cfg]
-
-reset_config srst_only connect_assert_srst
-EOF
-
-openocd -f "$cfg" -c "program \"$hex\" verify reset exit"
+exec openocd -f "$this_script_dir/st_nucleo_f4.cfg" -c "program \"$hex\" verify reset exit"

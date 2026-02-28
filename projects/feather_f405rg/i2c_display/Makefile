@@ -242,7 +242,7 @@ clean :
 .PHONY : erase flash
 
 erase :
-	../../../scripts/erase_stm32f4_swd_srst
+	../../../bsp/feather_f405rg/erase.sh
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32f4_swd_srst $<
+	../../../bsp/feather_f405rg/program.sh $<

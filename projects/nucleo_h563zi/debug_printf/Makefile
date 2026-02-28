@@ -240,7 +240,7 @@ clean :
 .PHONY : erase flash
 
 erase :
-	../../../scripts/erase_stm32h5_swd_hrst
+	../../../bsp/nucleo_h563zi/erase.sh
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32h5_swd_hrst $<
+	../../../bsp/nucleo_h563zi/program.sh $<

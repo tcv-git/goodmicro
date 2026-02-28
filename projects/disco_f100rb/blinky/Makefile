@@ -231,10 +231,10 @@ clean :
 
 #################### HARDWARE TARGETS ##########################################
 
-.PHONY : flash winflash
+.PHONY : erase flash
+
+erase :
+	../../../bsp/disco_f100rb/erase.sh
 
 flash : $(OUTDIR)/$(BINARY).elf
-	openocd -f board/stm32vldiscovery.cfg -c "program $< verify reset exit"
-
-winflash : $(OUTDIR)/$(BINARY).hex
-	"/cygdrive/c/Program Files (x86)/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe" -c SWD UR -P $< -V -HardRst
+	../../../bsp/disco_f100rb/program.sh $<

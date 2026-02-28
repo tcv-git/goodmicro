@@ -240,7 +240,7 @@ clean :
 .PHONY : erase flash
 
 erase :
-	../../../scripts/erase_stm32f4_jtag_hrst
+	../../../bsp/eval_f429ni/erase.sh
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32f4_jtag_hrst $<
+	../../../bsp/eval_f429ni/program.sh $<

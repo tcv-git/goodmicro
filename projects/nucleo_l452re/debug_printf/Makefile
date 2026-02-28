@@ -239,7 +239,7 @@ clean :
 .PHONY : erase flash
 
 erase :
-	../../../scripts/erase_stm32l4_swd_hrst
+	../../../bsp/nucleo_l452re/erase.sh
 
 flash : $(OUTDIR)/$(BINARY).elf
-	../../../scripts/program_stm32l4_swd_hrst $<
+	../../../bsp/nucleo_l452re/program.sh $<

@@ -1,6 +1,6 @@
-#! /bin/bash -e
+#! /bin/bash -eu
 
-# erase_stm32f2_jtag_srst.sh
+# erase.sh
 # PUBLIC DOMAIN
 # https://www.purposeful.co.uk/goodmicro/
 
@@ -17,6 +17,11 @@
 # risk.  If you do not pass on this warning then you may be responsible for any
 # problems encountered by those who obtain the software through you.
 
+set +e
+trap 'echo "this script must be executed not sourced" >&2' RETURN
+return 1 2>/dev/null
+trap - RETURN
+set -eu
 
 this_script="$(readlink -ve "$BASH_SOURCE")"
 this_script_dir="$(dirname "$this_script")"
@@ -32,15 +37,15 @@ for winprog in "/cygdrive/c/Program Files/STMicroelectronics/STM32 ST-LINK Utili
 do
   if [ -x "$winprog" ]
   then
-    exec "$winprog" -c JTAG FREQ=2250 -ME -Rst
+    exec "$winprog" -c SWD FREQ=1000 UR -ME -HardRst
   fi
 done
 
-for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
+for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools /c/ST/STM32CubeIDE*/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
 do
   if [ -x "$d/bin/STM32_Programmer_CLI" ]
   then
-    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=JTAG freq=2000 reset=SWrst mode=HOTPLUG --erase all -rst
+    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=SWD freq=1000 reset=HWrst mode=UR --erase all -hardRst
   fi
 done
 
@@ -50,22 +55,4 @@ then
   exit 1
 fi
 
-cfg="$(tempfile -s.openocd.cfg)"
-
-trap "rm -f \"$cfg\"" EXIT
-
-cat >"$cfg" <<EOF
-#
-# stlink to stm32f2xx by jtag with no reset lines
-#
-
-source [find interface/stlink.cfg]
-
-transport select hla_jtag
-
-source [find target/stm32f2x.cfg]
-
-reset_config none
-EOF
-
-openocd -f "$cfg" -c "init; reset halt; stm32f2x mass_erase 0; exit"
+exec openocd -f "$this_script_dir/st_nucleo_f2.cfg" -c "init; reset halt; stm32f2x mass_erase 0; exit"

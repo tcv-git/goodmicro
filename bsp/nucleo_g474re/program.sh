@@ -1,6 +1,6 @@
-#! /bin/bash -e
+#! /bin/bash -eu
 
-# erase_stm32f4_swd_hrst.sh
+# program.sh
 # PUBLIC DOMAIN
 # https://www.purposeful.co.uk/goodmicro/
 
@@ -17,30 +17,37 @@
 # risk.  If you do not pass on this warning then you may be responsible for any
 # problems encountered by those who obtain the software through you.
 
+set +e
+trap 'echo "this script must be executed not sourced" >&2' RETURN
+return 1 2>/dev/null
+trap - RETURN
+set -eu
 
 this_script="$(readlink -ve "$BASH_SOURCE")"
 this_script_dir="$(dirname "$this_script")"
 this_script_name="$(basename "$this_script")"
 
-if [ $# -ne 0 ]
+if [ $# -ne 1 ]
 then
-  echo "$this_script_name: unexpected argument(s)" >&2
+  echo Usage: $this_script_name FILE.hex >&2
   exit 1
 fi
+
+hex="$(readlink -ven "$1")"
 
 for winprog in "/cygdrive/c/Program Files/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe" "/cygdrive/c/Program Files (x86)/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe"
 do
   if [ -x "$winprog" ]
   then
-    exec "$winprog" -c SWD FREQ=1800 UR -ME -HardRst
+    exec "$winprog" -c SWD FREQ=1000 UR -P "$hex" -V -HardRst
   fi
 done
 
-for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
+for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools /c/ST/STM32CubeIDE*/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
 do
   if [ -x "$d/bin/STM32_Programmer_CLI" ]
   then
-    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=SWD freq=2000 reset=HWrst mode=UR --erase all -hardRst
+    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=SWD freq=1000 reset=HWrst mode=UR --write "$hex" --verify -hardRst -run
   fi
 done
 
@@ -50,25 +57,4 @@ then
   exit 1
 fi
 
-cfg="$(tempfile -s.openocd.cfg)"
-
-trap "rm -f \"$cfg\"" EXIT
-
-cat >"$cfg" <<EOF
-#
-# stlink to stm32f4xx by swd with system reset and no test reset
-#
-
-source [find interface/stlink-dap.cfg]
-
-transport select dapdirect_swd
-
-# increase working area to 128KB
-set WORKAREASIZE 0x20000
-
-source [find target/stm32f4x.cfg]
-
-reset_config srst_only connect_assert_srst
-EOF
-
-openocd -f "$cfg" -c "init; reset halt; stm32f4x mass_erase 0; exit"
+exec openocd -f "$this_script_dir/st_nucleo_g4.cfg" -c "program \"$hex\" verify reset exit"

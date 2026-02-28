@@ -1,6 +1,6 @@
-#! /bin/bash -e
+#! /bin/bash -eu
 
-# program_stm32f2_jtag_srst.sh
+# erase.sh
 # PUBLIC DOMAIN
 # https://www.purposeful.co.uk/goodmicro/
 
@@ -17,32 +17,35 @@
 # risk.  If you do not pass on this warning then you may be responsible for any
 # problems encountered by those who obtain the software through you.
 
+set +e
+trap 'echo "this script must be executed not sourced" >&2' RETURN
+return 1 2>/dev/null
+trap - RETURN
+set -eu
 
 this_script="$(readlink -ve "$BASH_SOURCE")"
 this_script_dir="$(dirname "$this_script")"
 this_script_name="$(basename "$this_script")"
 
-if [ $# -ne 1 ]
+if [ $# -ne 0 ]
 then
-  echo Usage: $this_script_name FILE.hex >&2
+  echo "$this_script_name: unexpected argument(s)" >&2
   exit 1
 fi
-
-hex="$(readlink -ven "$1")"
 
 for winprog in "/cygdrive/c/Program Files/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe" "/cygdrive/c/Program Files (x86)/STMicroelectronics/STM32 ST-LINK Utility/ST-LINK Utility/ST-LINK_CLI.exe"
 do
   if [ -x "$winprog" ]
   then
-    exec "$winprog" -c JTAG FREQ=2250 -P "$hex" -V -Rst
+    exec "$winprog" -c SWD FREQ=1000 UR -ME -HardRst
   fi
 done
 
-for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
+for d in /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer /opt/st/stm32cubeide_*/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools /c/ST/STM32CubeIDE*/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.*/tools
 do
   if [ -x "$d/bin/STM32_Programmer_CLI" ]
   then
-    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=JTAG freq=2000 reset=SWrst mode=NORMAL --write "$hex" --verify -rst -run
+    LD_LIBRARY_PATH="$d/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH-}" exec "$d/bin/STM32_Programmer_CLI" --connect port=SWD freq=1000 reset=HWrst mode=UR --erase all -hardRst
   fi
 done
 
@@ -52,22 +55,4 @@ then
   exit 1
 fi
 
-cfg="$(tempfile -s.openocd.cfg)"
-
-trap "rm -f \"$cfg\"" EXIT
-
-cat >"$cfg" <<EOF
-#
-# stlink to stm32f2xx by jtag with no reset lines
-#
-
-source [find interface/stlink.cfg]
-
-transport select hla_jtag
-
-source [find target/stm32f2x.cfg]
-
-reset_config none
-EOF
-
-openocd -f "$cfg" -c "program \"$hex\" verify reset exit"
+exec openocd -f "$this_script_dir/st_nucleo_f4.cfg" -c "init; reset halt; stm32f4x mass_erase 0; exit"
