@@ -57,28 +57,28 @@ static volatile unsigned int buffer_queue      = BITQUEUE_EMPTY_INIT;
  */
 void printf_queue_put(const char *format, va_list args)
 {
-  int buffer_index = bitpool_alloc(&buffers_available);
+    int buffer_index = bitpool_alloc(&buffers_available);
 
-  if (buffer_index < 0)
-  {
+    if (buffer_index < 0)
+    {
+        return;
+    }
+
+    int length = vsnprintf(buffers[buffer_index], PRINTF_BUFFER_SIZE, format, args);
+
+    if (length < 1)
+    {
+        bitpool_free(&buffers_available, buffer_index);
+        return;
+    }
+
+    if (bitqueue_write(&buffer_queue, buffer_index) != 0)
+    {
+        bitpool_free(&buffers_available, buffer_index);
+        return;
+    }
+
     return;
-  }
-
-  int len = vsnprintf(buffers[buffer_index], PRINTF_BUFFER_SIZE, format, args);
-
-  if (len < 1)
-  {
-    bitpool_free(&buffers_available, buffer_index);
-    return;
-  }
-
-  if (bitqueue_write(&buffer_queue, buffer_index) != 0)
-  {
-    bitpool_free(&buffers_available, buffer_index);
-    return;
-  }
-
-  return;
 }
 
 
@@ -88,16 +88,16 @@ void printf_queue_put(const char *format, va_list args)
  */
 char *printf_queue_get(void)
 {
-  int buffer_index = bitqueue_read(&buffer_queue);
+    int buffer_index = bitqueue_read(&buffer_queue);
 
-  if (buffer_index < 0)
-  {
-    return NULL;
-  }
-  else
-  {
-    return buffers[buffer_index];
-  }
+    if (buffer_index < 0)
+    {
+        return NULL;
+    }
+    else
+    {
+        return buffers[buffer_index];
+    }
 }
 
 
@@ -109,34 +109,34 @@ char *printf_queue_get(void)
  */
 char *printf_queue_get_crlf(uint16_t *p_length)
 {
-  char *buffer = printf_queue_get();
+    char *buffer = printf_queue_get();
 
-  uint16_t length = 0;
+    uint16_t length = 0;
 
-  if (buffer)
-  {
-    length = strlen(buffer);
-
-    if ((length > 0) && (buffer[length - 1] == '\n'))
+    if (buffer)
     {
-      if ((length < 2) || (buffer[length - 2] != '\r'))
-      {
-        buffer[length - 1] = '\r';
-        buffer[length++  ] = '\n';
-      }
-    }
+        length = strlen(buffer);
+
+        if ((length > 0) && (buffer[length - 1] == '\n'))
+        {
+            if ((length < 2) || (buffer[length - 2] != '\r'))
+            {
+                buffer[length - 1] = '\r';
+                buffer[length++  ] = '\n';
+            }
+        }
 
 #if defined(__DCACHE_PRESENT) && (__DCACHE_PRESENT != 0)
-    SCB_CleanInvalidateDCache_by_Addr(buffer, PRINTF_BUFFER_SIZE);
+        SCB_CleanInvalidateDCache_by_Addr(buffer, PRINTF_BUFFER_SIZE);
 #endif
-  }
+    }
 
-  if (p_length)
-  {
-    *p_length = length;
-  }
+    if (p_length)
+    {
+        *p_length = length;
+    }
 
-  return buffer;
+    return buffer;
 }
 
 
@@ -144,10 +144,10 @@ char *printf_queue_get_crlf(uint16_t *p_length)
  */
 void printf_queue_free(const char *buffer)
 {
-  if (buffer)
-  {
-    unsigned int buffer_index = ((buffer - &buffers[0][0]) / PRINTF_BUFFER_SIZE);
+    if (buffer)
+    {
+        unsigned int buffer_index = ((buffer - &buffers[0][0]) / PRINTF_BUFFER_SIZE);
 
-    bitpool_free(&buffers_available, buffer_index);
-  }
+        bitpool_free(&buffers_available, buffer_index);
+    }
 }
