@@ -16,8 +16,8 @@ MAKEFLAGS := --no-builtin-rules --no-builtin-variables
 # input for assembler
 ASFILES :=
 ASFILES += ../../../lib/goodmicro_armv7m/_exit.s
+ASFILES += ../../../lib/goodmicro_armv7m/atomic_test_and_set.s
 ASFILES += ../../../lib/goodmicro_armv7m/bitpool.s
-ASFILES += ../../../lib/goodmicro_armv7m/bitqueue.s
 ASFILES += ../../../lib/goodmicro_armv7m/delay_cyccnt_168MHz.s
 ASFILES += ../../../lib/goodmicro_armv7m/udiv64.s
 ASFILES += ../../../lib/goodmicro_stm32f4/startup/startup_stm32f405-439.s
@@ -26,6 +26,7 @@ ASFILES += ../../../lib/goodmicro_stm32f4/vectors/vectors_stm32f405xx.s
 # input for C compiler
 CFILES :=
 CFILES += ../../../lib/goodmicro_armv7m/printf_queue.c
+CFILES += ../../../lib/goodmicro_armv7m/struct_queue.c
 CFILES += ../../../lib/goodmicro_misc/syscall_stubs.c
 CFILES += ../../../lib/goodmicro_stm32f4/debug_printf_queue_dma.c
 CFILES += ../../../lib/goodmicro_stm32f4/system_stm32f405-439.c

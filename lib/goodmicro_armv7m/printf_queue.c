@@ -23,16 +23,16 @@
 #include <stdio.h>
 #include CMSIS_device_header
 #include "bitpool.h"
-#include "bitqueue.h"
+#include "struct_queue.h"
 #include "printf_queue.h"
 
 
 #ifndef PRINTF_BUFFER_SIZE
-#define PRINTF_BUFFER_SIZE  128 // any size up to UINT16_MAX
+#define PRINTF_BUFFER_SIZE  122 // any size up to UINT16_MAX
 #endif
 
 #ifndef PRINTF_BUFFER_COUNT
-#define PRINTF_BUFFER_COUNT  10 // can be up to 16, but only 8 can be queued at once
+#define PRINTF_BUFFER_COUNT  10 // up to 32
 #endif
 
 #if defined(__DCACHE_PRESENT) && (__DCACHE_PRESENT != 0)
@@ -47,10 +47,18 @@
 #define ATTRIBUTE_SECTION
 #endif
 
-static char buffers[PRINTF_BUFFER_COUNT][PRINTF_BUFFER_SIZE] ATTRIBUTE_ALIGNED ATTRIBUTE_SECTION;
+struct queued_buffer
+{
+    struct queued_buffer *next;
+    uint16_t              length;
+    char                  buffer[PRINTF_BUFFER_SIZE];
+};
+
+static struct queued_buffer queued_buffers[PRINTF_BUFFER_COUNT] ATTRIBUTE_ALIGNED ATTRIBUTE_SECTION;
 
 static volatile unsigned int buffers_available = ((1uLL << PRINTF_BUFFER_COUNT) - 1);
-static volatile unsigned int buffer_queue      = BITQUEUE_EMPTY_INIT;
+
+static struct queued_item * volatile queue_head = NULL;
 
 
 /* works like vprintf
@@ -64,7 +72,7 @@ void printf_queue_put(const char *format, va_list args)
         return;
     }
 
-    int length = vsnprintf(buffers[buffer_index], PRINTF_BUFFER_SIZE, format, args);
+    int length = vsnprintf(queued_buffers[buffer_index].buffer, PRINTF_BUFFER_SIZE, format, args);
 
     if (length < 1)
     {
@@ -72,13 +80,14 @@ void printf_queue_put(const char *format, va_list args)
         return;
     }
 
-    if (bitqueue_write(&buffer_queue, buffer_index) != 0)
+    if (length >= PRINTF_BUFFER_SIZE)
     {
-        bitpool_free(&buffers_available, buffer_index);
-        return;
+        length = (PRINTF_BUFFER_SIZE - 1);
     }
 
-    return;
+    queued_buffers[buffer_index].length = length;
+
+    queue_write(&queue_head, (struct queued_item*)&queued_buffers[buffer_index]);
 }
 
 
@@ -88,15 +97,15 @@ void printf_queue_put(const char *format, va_list args)
  */
 char *printf_queue_get(void)
 {
-    int buffer_index = bitqueue_read(&buffer_queue);
+    struct queued_buffer *entry = (struct queued_buffer*)queue_read(&queue_head);
 
-    if (buffer_index < 0)
+    if (entry == NULL)
     {
         return NULL;
     }
     else
     {
-        return buffers[buffer_index];
+        return entry->buffer;
     }
 }
 
@@ -109,25 +118,25 @@ char *printf_queue_get(void)
  */
 char *printf_queue_get_crlf(uint16_t *p_length)
 {
-    char *buffer = printf_queue_get();
+    struct queued_buffer *entry = (struct queued_buffer*)queue_read(&queue_head);
 
     uint16_t length = 0;
 
-    if (buffer)
+    if (entry)
     {
-        length = strlen(buffer);
+        length = entry->length;
 
-        if ((length > 0) && (buffer[length - 1] == '\n'))
+        if ((length > 0) && (entry->buffer[length - 1] == '\n'))
         {
-            if ((length < 2) || (buffer[length - 2] != '\r'))
+            if ((length < 2) || (entry->buffer[length - 2] != '\r'))
             {
-                buffer[length - 1] = '\r';
-                buffer[length++  ] = '\n';
+                entry->buffer[length - 1] = '\r';
+                entry->buffer[length++  ] = '\n';
             }
         }
 
 #if defined(__DCACHE_PRESENT) && (__DCACHE_PRESENT != 0)
-        SCB_CleanInvalidateDCache_by_Addr(buffer, PRINTF_BUFFER_SIZE);
+        SCB_CleanInvalidateDCache_by_Addr(entry->buffer, PRINTF_BUFFER_SIZE);
 #endif
     }
 
@@ -136,7 +145,7 @@ char *printf_queue_get_crlf(uint16_t *p_length)
         *p_length = length;
     }
 
-    return buffer;
+    return entry ? entry->buffer : NULL;
 }
 
 
@@ -146,7 +155,7 @@ void printf_queue_free(const char *buffer)
 {
     if (buffer)
     {
-        unsigned int buffer_index = ((buffer - &buffers[0][0]) / PRINTF_BUFFER_SIZE);
+        unsigned int buffer_index = ((buffer - &queued_buffers[0].buffer[0]) / sizeof(struct queued_buffer));
 
         bitpool_free(&buffers_available, buffer_index);
     }
