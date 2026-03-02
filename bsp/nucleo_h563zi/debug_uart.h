@@ -54,11 +54,11 @@
 #define DEBUG_TX_DMAx_Channelx              GPDMA1_Channel1
 #define DEBUG_TX_DMAx_Channelx_IRQn         GPDMA1_Channel1_IRQn
 #define DEBUG_TX_DMAx_Channelx_IRQHandler   GPDMA1_Channel1_IRQHandler
-#define DEBUG_TX_DMAx_Channelx_CCR_REQSEL   26
+#define DEBUG_TX_DMAx_Channelx_CTR2_REQSEL  26
 
 #define DEBUG_RX_DMAx_Channelx              GPDMA1_Channel0
 #define DEBUG_RX_DMAx_Channelx_IRQn         GPDMA1_Channel0_IRQn
 #define DEBUG_RX_DMAx_Channelx_IRQHandler   GPDMA1_Channel0_IRQHandler
-#define DEBUG_RX_DMAx_Channelx_CCR_REQSEL   25
+#define DEBUG_RX_DMAx_Channelx_CTR2_REQSEL  25
 
 #endif // DEBUG_UART_H_INCLUDED
