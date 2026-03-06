@@ -23,11 +23,14 @@ int main(void)
 {
   debug_uart_init();
 
-  unsigned int i;
-
-  for (i = 0;; i++)
+  for (;;)
   {
-    debug_printf("%u\n", i);
+    char buf[9];
+    unsigned int count = terminal_read(buf, 8);
+    buf[count] = 0;
+
+    debug_printf("%u %s\n", count, buf);
+
     DELAY_MS(100);
   }
 }

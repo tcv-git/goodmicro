@@ -19,6 +19,8 @@
 #ifndef DEBUG_PRINTF_H_INCLUDED
 #define DEBUG_PRINTF_H_INCLUDED
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,9 +37,13 @@ void debug_printf(const char *fmt, ...) __attribute__((format(printf,1,2)));
 //
 void debug_putc(unsigned char c);
 
+// read up to read_buffer_size bytes and return the number read
+//
+uint32_t terminal_read(char *read_buffer, uint32_t read_buffer_size);
+
 // read an unsigned byte from the interface or return negative if none available
 //
-int debug_getc(void);
+int terminal_getc(void);
 
 #ifdef __cplusplus
 }
